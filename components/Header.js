@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
-import { Menu, X, Calendar, Users, Handshake } from 'lucide-react';
+import { Menu, X, Calendar, Users, Handshake, ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { siteConfig } from '@/config/site';
 
@@ -11,49 +11,50 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between">
+    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/90 shadow-md">
+      <div className="container flex h-20 items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center space-x-3">
+        <Link href="/" className="flex items-center space-x-3 group">
           <Image 
             src={siteConfig.logo} 
             alt={siteConfig.name}
-            width={40}
-            height={40}
-            className="h-10 w-auto"
+            width={50}
+            height={50}
+            className="h-12 w-auto transition-transform group-hover:scale-110"
           />
-          <span className="hidden font-bold text-xl sm:inline-block">
+          <span className="hidden font-black text-2xl sm:inline-block bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
             {siteConfig.name}
           </span>
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
-          <Link href="/events" className="transition-colors hover:text-primary flex items-center gap-2">
-            <Calendar className="h-4 w-4" />
+        <nav className="hidden md:flex items-center space-x-8 text-base font-bold">
+          <Link href="/events" className="transition-colors hover:text-pink-600 flex items-center gap-2 group">
+            <Calendar className="h-5 w-5 group-hover:scale-110 transition-transform" />
             Events
           </Link>
-          <Link href="/gallery" className="transition-colors hover:text-primary">
+          <Link href="/gallery" className="transition-colors hover:text-purple-600 flex items-center gap-2 group">
+            <ImageIcon className="h-5 w-5 group-hover:scale-110 transition-transform" />
             Gallery
           </Link>
-          <Link href="/community" className="transition-colors hover:text-primary flex items-center gap-2">
-            <Users className="h-4 w-4" />
+          <Link href="/community" className="transition-colors hover:text-blue-600 flex items-center gap-2 group">
+            <Users className="h-5 w-5 group-hover:scale-110 transition-transform" />
             Community
           </Link>
-          <Link href="/partner" className="transition-colors hover:text-primary flex items-center gap-2">
-            <Handshake className="h-4 w-4" />
+          <Link href="/partner" className="transition-colors hover:text-orange-600 flex items-center gap-2 group">
+            <Handshake className="h-5 w-5 group-hover:scale-110 transition-transform" />
             Partner
           </Link>
         </nav>
 
         {/* CTA Buttons */}
         <div className="hidden md:flex items-center space-x-3">
-          <Button asChild variant="outline">
+          <Button asChild variant="outline" className="font-bold border-2 hover:border-pink-500 hover:text-pink-600">
             <Link href={`https://wa.me/${siteConfig.contact.whatsapp.replace(/[^0-9]/g, '')}`} target="_blank">
               WhatsApp
             </Link>
           </Button>
-          <Button asChild>
+          <Button asChild className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-bold rounded-full px-6 shadow-lg">
             <Link href="/events">
               Buy Tickets
             </Link>
@@ -62,52 +63,56 @@ export default function Header() {
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden"
+          className="md:hidden p-2 rounded-lg hover:bg-pink-50 transition-colors"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
-          {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          {mobileMenuOpen ? <X className="h-7 w-7 text-pink-600" /> : <Menu className="h-7 w-7 text-pink-600" />}
         </button>
       </div>
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t">
-          <nav className="container py-4 space-y-3">
+        <div className="md:hidden border-t bg-white shadow-lg">
+          <nav className="container py-6 space-y-4">
             <Link 
               href="/events" 
-              className="block py-2 text-sm font-medium transition-colors hover:text-primary"
+              className="flex items-center gap-3 py-3 text-lg font-bold transition-colors hover:text-pink-600 border-l-4 border-transparent hover:border-pink-600 pl-4"
               onClick={() => setMobileMenuOpen(false)}
             >
+              <Calendar className="h-6 w-6" />
               Events
             </Link>
             <Link 
               href="/gallery" 
-              className="block py-2 text-sm font-medium transition-colors hover:text-primary"
+              className="flex items-center gap-3 py-3 text-lg font-bold transition-colors hover:text-purple-600 border-l-4 border-transparent hover:border-purple-600 pl-4"
               onClick={() => setMobileMenuOpen(false)}
             >
+              <ImageIcon className="h-6 w-6" />
               Gallery
             </Link>
             <Link 
               href="/community" 
-              className="block py-2 text-sm font-medium transition-colors hover:text-primary"
+              className="flex items-center gap-3 py-3 text-lg font-bold transition-colors hover:text-blue-600 border-l-4 border-transparent hover:border-blue-600 pl-4"
               onClick={() => setMobileMenuOpen(false)}
             >
+              <Users className="h-6 w-6" />
               Community
             </Link>
             <Link 
               href="/partner" 
-              className="block py-2 text-sm font-medium transition-colors hover:text-primary"
+              className="flex items-center gap-3 py-3 text-lg font-bold transition-colors hover:text-orange-600 border-l-4 border-transparent hover:border-orange-600 pl-4"
               onClick={() => setMobileMenuOpen(false)}
             >
+              <Handshake className="h-6 w-6" />
               Partner With Us
             </Link>
-            <div className="pt-4 space-y-2">
-              <Button asChild variant="outline" className="w-full">
+            <div className="pt-4 space-y-3">
+              <Button asChild variant="outline" className="w-full font-bold border-2">
                 <Link href={`https://wa.me/${siteConfig.contact.whatsapp.replace(/[^0-9]/g, '')}`} target="_blank">
                   WhatsApp
                 </Link>
               </Button>
-              <Button asChild className="w-full">
+              <Button asChild className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-bold rounded-full shadow-lg">
                 <Link href="/events">
                   Buy Tickets
                 </Link>
