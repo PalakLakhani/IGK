@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Facebook, Instagram, MessageCircle } from 'lucide-react';
 import { siteConfig } from '@/config/site';
+import NewsletterSubscribe from './NewsletterSubscribe';
 
 export default function Footer() {
   return (
