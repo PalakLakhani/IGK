@@ -18,9 +18,12 @@ export const siteConfig = {
   },
   
   theme: {
-    primaryColor: '#0A192F', // Deep Navy
-    accentColor: '#F59E0B', // Amber/Gold
-    secondaryColor: '#14B8A6' // Teal
+    primaryColor: '#FF385C', // Vibrant Pink/Red
+    accentColor: '#FFD700', // Bright Gold
+    secondaryColor: '#00CED1', // Bright Turquoise
+    purple: '#9B4DCA', // Vibrant Purple
+    orange: '#FF6B35', // Bright Orange
+    green: '#00D9A3' // Bright Green
   },
   
   externalTicketing: {
