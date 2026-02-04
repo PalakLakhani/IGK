@@ -174,7 +174,7 @@ export default function HomePage() {
         ) : (
           <div className="relative container h-full flex items-center justify-center text-white">
             <Image
-              src="https://images.unsplash.com/photo-1603228254119-e6a4d095dc59?w=1920&h=1080&fit=crop"
+              src="https://images.unsplash.com/photo-1761503390713-a1fd8b8bb6c5?w=1920&h=1080&fit=crop"
               alt="Colorful celebration"
               fill
               className="object-cover"
