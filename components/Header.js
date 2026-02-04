@@ -30,6 +30,10 @@ export default function Header() {
             <Calendar className="h-5 w-5 group-hover:scale-110 transition-transform" />
             Events
           </Link>
+          <Link href="/team" className="transition-colors hover:text-green-600 flex items-center gap-2 group">
+            <Users className="h-5 w-5 group-hover:scale-110 transition-transform" />
+            Team
+          </Link>
           <Link href="/gallery" className="transition-colors hover:text-purple-600 flex items-center gap-2 group">
             <ImageIcon className="h-5 w-5 group-hover:scale-110 transition-transform" />
             Gallery
