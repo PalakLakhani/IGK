@@ -10,6 +10,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
 import EventCard from '@/components/EventCard';
+import Image from 'next/image';
 
 export default function EventsPage() {
   const [events, setEvents] = useState([]);
@@ -45,7 +46,6 @@ export default function EventsPage() {
   const applyFilters = () => {
     let filtered = [...events];
 
-    // Search filter
     if (searchQuery) {
       filtered = filtered.filter(event => 
         event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -54,12 +54,10 @@ export default function EventsPage() {
       );
     }
 
-    // City filter
     if (selectedCity && selectedCity !== 'all') {
       filtered = filtered.filter(event => event.city === selectedCity);
     }
 
-    // Category filter
     if (selectedCategory && selectedCategory !== 'all') {
       filtered = filtered.filter(event => event.category === selectedCategory);
     }
@@ -74,19 +72,26 @@ export default function EventsPage() {
     <div className="min-h-screen flex flex-col">
       <Header />
 
-      {/* Page Header */}
-      <section className="py-12 bg-gradient-to-br from-slate-900 to-slate-800 text-white">
-        <div className="container">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">All Events</h1>
-          <p className="text-xl text-gray-300">Discover amazing cultural experiences happening across Germany</p>
+      {/* Page Header with Mixed Event Images */}
+      <section className="relative py-24 overflow-hidden">
+        <Image
+          src="https://images.unsplash.com/photo-1768054186550-4bdbb8f2640e"
+          alt="Events"
+          fill
+          className="object-cover"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/95 via-pink-600/90 to-orange-500/85" />
+        <div className="relative container text-center text-white">
+          <h1 className="text-6xl md:text-7xl font-black mb-6 drop-shadow-2xl">All Events</h1>
+          <p className="text-2xl md:text-3xl font-semibold max-w-3xl mx-auto drop-shadow-lg">Discover amazing cultural experiences happening across Germany</p>
         </div>
       </section>
 
       {/* Filters */}
-      <section className="py-8 border-b bg-background">
+      <section className="py-8 border-b bg-white shadow-sm">
         <div className="container">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {/* Search */}
             <div className="relative md:col-span-2">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
@@ -97,7 +102,6 @@ export default function EventsPage() {
               />
             </div>
 
-            {/* City Filter */}
             <Select value={selectedCity} onValueChange={setSelectedCity}>
               <SelectTrigger>
                 <SelectValue placeholder="All Cities" />
@@ -111,7 +115,6 @@ export default function EventsPage() {
               </SelectContent>
             </Select>
 
-            {/* Category Filter */}
             <Select value={selectedCategory} onValueChange={setSelectedCategory}>
               <SelectTrigger>
                 <SelectValue placeholder="All Categories" />
@@ -129,7 +132,7 @@ export default function EventsPage() {
       </section>
 
       {/* Events Tabs */}
-      <section className="py-12 flex-1">
+      <section className="py-12 flex-1 bg-gradient-to-b from-pink-50 via-white to-purple-50">
         <div className="container">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
             <TabsList className="grid w-full max-w-md mx-auto grid-cols-3">
