@@ -1,16 +1,26 @@
-import './globals.css'
+import { Inter } from 'next/font/google';
+import './globals.css';
+import { siteConfig } from '@/config/site';
+
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'Next.js MongoDB Template',
-  description: 'A simple template with App Router, MongoDB, and shadcn/ui',
-}
+  title: siteConfig.name + ' - Premium Indian Events in Germany',
+  description: siteConfig.description,
+  keywords: 'Indian events, Holi, Bollywood, Garba, Germany, Berlin, Munich, Frankfurt, cultural events',
+  openGraph: {
+    title: siteConfig.name,
+    description: siteConfig.description,
+    images: [siteConfig.logo],
+  },
+};
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>
+      <body className={inter.className}>
         {children}
       </body>
     </html>
-  )
+  );
 }
