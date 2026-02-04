@@ -13,18 +13,15 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/90 shadow-md">
       <div className="container flex h-20 items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="flex items-center space-x-3 group">
+        {/* Logo Only - No Text */}
+        <Link href="/" className="flex items-center group">
           <Image 
             src={siteConfig.logo} 
             alt={siteConfig.name}
             width={50}
             height={50}
-            className="h-12 w-auto transition-transform group-hover:scale-110"
+            className="h-14 w-auto transition-transform group-hover:scale-110"
           />
-          <span className="hidden font-black text-2xl sm:inline-block bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-            {siteConfig.name}
-          </span>
         </Link>
 
         {/* Desktop Navigation */}
