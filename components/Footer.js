@@ -66,20 +66,6 @@ export default function Footer() {
           <div>
             <NewsletterSubscribe variant="footer" />
           </div>
-          
-          {/* Legal */}
-          <div>
-            <h3 className="font-semibold mb-4">Legal</h3>
-            <ul className="space-y-2 text-sm">
-              <li><Link href="/impressum" className="text-muted-foreground hover:text-primary">Impressum</Link></li>
-              <li><Link href="/datenschutz" className="text-muted-foreground hover:text-primary">Datenschutz</Link></li>
-              <li><Link href="/terms" className="text-muted-foreground hover:text-primary">Terms</Link></li>
-            </ul>
-            <div className="mt-4 text-sm text-muted-foreground">
-              <p>{siteConfig.contact.email}</p>
-              <p>{siteConfig.contact.phone}</p>
-            </div>
-          </div>
         </div>
 
         {/* Copyright */}
