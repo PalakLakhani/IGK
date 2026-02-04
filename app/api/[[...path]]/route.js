@@ -369,13 +369,23 @@ export async function POST(request) {
     if (path === 'newsletter') {
       const { email } = body;
       
-      if (!email) {
-        return corsResponse({ error: 'Email required' }, 400);
+      if (!email || !email.includes('@')) {
+        return corsResponse({ error: 'Valid email required' }, 400);
       }
 
-      // TODO: Save to newsletter collection
-      
-      return corsResponse({ message: 'Subscribed successfully!' });
+      try {
+        const { Newsletter } = await import('@/lib/models/Newsletter');
+        const result = await Newsletter.subscribe(email);
+        
+        if (result.success) {
+          return corsResponse({ message: 'Successfully subscribed to newsletter!' });
+        } else {
+          return corsResponse({ error: result.message || 'Already subscribed' }, 400);
+        }
+      } catch (error) {
+        console.error('Newsletter error:', error);
+        return corsResponse({ error: 'Failed to subscribe' }, 500);
+      }
     }
 
     return corsResponse({ error: 'Endpoint not found' }, 404);
