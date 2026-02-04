@@ -4,12 +4,11 @@ import { useState } from 'react';
 import { Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useToast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
 
 export default function NewsletterSubscribe({ variant = 'inline' }) {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,24 +24,13 @@ export default function NewsletterSubscribe({ variant = 'inline' }) {
       const data = await res.json();
 
       if (res.ok) {
-        toast({
-          title: "Success!",
-          description: "You've been subscribed to our newsletter.",
-        });
+        toast.success("Success! You've been subscribed to our newsletter.");
         setEmail('');
       } else {
-        toast({
-          title: "Error",
-          description: data.error || "Failed to subscribe. Please try again.",
-          variant: "destructive"
-        });
+        toast.error(data.error || "Failed to subscribe. Please try again.");
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to subscribe. Please try again.",
-        variant: "destructive"
-      });
+      toast.error("Failed to subscribe. Please try again.");
     } finally {
       setLoading(false);
     }
