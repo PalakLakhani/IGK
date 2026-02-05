@@ -115,6 +115,12 @@ export default function AdminPage() {
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   
+  // Gallery state
+  const [showGalleryManager, setShowGalleryManager] = useState(false);
+  const [selectedEventForGallery, setSelectedEventForGallery] = useState(null);
+  const [galleryUploading, setGalleryUploading] = useState(false);
+  const galleryInputRef = useRef(null);
+  
   // Event form state - Updated schema with new content fields
   const [showEventForm, setShowEventForm] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
