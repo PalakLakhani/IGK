@@ -5,12 +5,13 @@ import Image from 'next/image';
 import { Facebook, Instagram, MessageCircle } from 'lucide-react';
 import { siteConfig } from '@/config/site';
 import NewsletterSubscribe from './NewsletterSubscribe';
+import OurBrands from './OurBrands';
 
 export default function Footer() {
   return (
     <footer className="border-t bg-muted/40">
       <div className="container py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
@@ -50,6 +51,9 @@ export default function Footer() {
               <li><Link href="/contact" className="text-muted-foreground hover:text-primary">Contact</Link></li>
             </ul>
           </div>
+
+          {/* Our Brands */}
+          <OurBrands variant="footer" />
 
           {/* Support */}
           <div>
