@@ -113,7 +113,7 @@ export default function AdminPage() {
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   
-  // Event form state - Updated schema
+  // Event form state - Updated schema with new content fields
   const [showEventForm, setShowEventForm] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
   const [eventForm, setEventForm] = useState({
@@ -125,17 +125,26 @@ export default function AdminPage() {
     endTime: '', // Optional
     city: '',
     venue: '',
+    venueAddress: '',
     category: '',
     brand: 'IGK',
-    description: '',
+    // Content fields
+    heroTagline: '', // Max 140 chars - homepage hero only
+    shortSummary: '', // Max 220 chars - event cards
+    description: '', // Full description - event detail page only
     poster: '', // URL or uploaded path
     coverImagePath: '', // Uploaded file path
     desipassUrl: '',
     eventbriteUrl: '',
+    googleMapsUrl: '',
     status: 'published',
     statusOverride: 'auto',
     attendeesCount: 0,
-    featured: false
+    featured: false,
+    // Arrays for optional sections
+    rules: [],
+    schedule: [],
+    faqs: []
   });
 
   // Team member form state
