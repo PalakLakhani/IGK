@@ -319,6 +319,8 @@ export default function HomePage() {
                     src={type.image}
                     alt={type.title}
                     fill
+                    loading="lazy"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     className="object-cover transition-transform group-hover:scale-110"
                   />
                   <div className={`absolute inset-0 bg-gradient-to-t ${type.gradient} opacity-80 group-hover:opacity-90 transition-all`} />
