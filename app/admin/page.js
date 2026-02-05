@@ -26,6 +26,7 @@ import { format, parseISO } from 'date-fns';
 export default function AdminPage() {
   const router = useRouter();
   const fileInputRef = useRef(null);
+  const teamFileInputRef = useRef(null);
   const [password, setPassword] = useState('');
   const [authenticated, setAuthenticated] = useState(false);
   const [events, setEvents] = useState([]);
@@ -35,6 +36,7 @@ export default function AdminPage() {
   const [settings, setSettings] = useState({});
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadingTeamPhoto, setUploadingTeamPhoto] = useState(false);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('overview');
   
