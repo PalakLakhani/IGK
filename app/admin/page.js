@@ -873,7 +873,68 @@ export default function AdminPage() {
                     <div><Label>{teamForm.type === 'leadership' ? 'Designation' : 'Role'}</Label><Input value={teamForm.type === 'leadership' ? teamForm.designation : teamForm.role} onChange={(e) => setTeamForm({ ...teamForm, [teamForm.type === 'leadership' ? 'designation' : 'role']: e.target.value })} placeholder={teamForm.type === 'leadership' ? 'CEO, Head of Marketing...' : 'City Lead, Coordinator...'} /></div>
                     <div><Label>City</Label><Select value={teamForm.city} onValueChange={(v) => setTeamForm({ ...teamForm, city: v })}><SelectTrigger><SelectValue placeholder="Select city" /></SelectTrigger><SelectContent>{cities.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent></Select></div>
                   </div>
-                  <div><Label>Photo URL</Label><Input value={teamForm.image} onChange={(e) => setTeamForm({ ...teamForm, image: e.target.value })} placeholder="https://..." />{teamForm.image && <div className="relative h-24 w-24 mt-2 rounded-full overflow-hidden mx-auto"><Image src={teamForm.image} alt="" fill className="object-cover" /></div>}</div>
+                  
+                  {/* Photo Upload Section */}
+                  <div className="space-y-3">
+                    <Label className="flex items-center gap-2">
+                      <Upload className="h-4 w-4" />
+                      Profile Photo
+                    </Label>
+                    
+                    {/* File Upload */}
+                    <div className="border-2 border-dashed rounded-lg p-4 text-center hover:border-pink-500 transition-colors">
+                      <Input 
+                        ref={teamFileInputRef}
+                        type="file" 
+                        accept="image/*"
+                        onChange={handleTeamPhotoUpload}
+                        disabled={uploadingTeamPhoto}
+                        className="hidden"
+                        id="team-photo-upload"
+                      />
+                      <label htmlFor="team-photo-upload" className="cursor-pointer">
+                        {uploadingTeamPhoto ? (
+                          <div className="flex items-center justify-center gap-2 text-pink-600">
+                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-pink-600"></div>
+                            Uploading...
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            <Upload className="h-8 w-8 mx-auto text-gray-400" />
+                            <p className="text-sm text-gray-600">Click to upload photo</p>
+                            <p className="text-xs text-gray-400">JPG, PNG, WebP (max 5MB)</p>
+                          </div>
+                        )}
+                      </label>
+                    </div>
+
+                    {/* Preview */}
+                    {teamForm.image && (
+                      <div className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
+                        <div className="relative h-20 w-20 rounded-full overflow-hidden flex-shrink-0 border-2 border-pink-500">
+                          <Image src={teamForm.image} alt="Preview" fill className="object-cover" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-green-600">Photo uploaded!</p>
+                          <p className="text-xs text-gray-500 truncate">{teamForm.image}</p>
+                          <Button 
+                            type="button" 
+                            variant="ghost" 
+                            size="sm" 
+                            className="text-red-500 hover:text-red-700 mt-1 h-7 px-2"
+                            onClick={() => {
+                              setTeamForm({ ...teamForm, image: '' });
+                              if (teamFileInputRef.current) teamFileInputRef.current.value = '';
+                            }}
+                          >
+                            <Trash2 className="h-3 w-3 mr-1" />
+                            Remove
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
                   <div className="grid grid-cols-2 gap-4">
                     <div><Label>LinkedIn</Label><Input value={teamForm.linkedin} onChange={(e) => setTeamForm({ ...teamForm, linkedin: e.target.value })} placeholder="https://linkedin.com/in/..." /></div>
                     <div><Label>Instagram</Label><Input value={teamForm.instagram} onChange={(e) => setTeamForm({ ...teamForm, instagram: e.target.value })} placeholder="https://instagram.com/..." /></div>
