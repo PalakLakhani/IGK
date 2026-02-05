@@ -547,6 +547,9 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Our Brands Section */}
+      <OurBrands />
+
       {/* Testimonials */}
       <section className="py-20 bg-gradient-to-br from-yellow-50 via-orange-50 to-pink-50">
         <div className="container">
@@ -629,6 +632,7 @@ export default function HomePage() {
 
       <Footer />
       <WhatsAppFloat />
+      <MascotAssistant />
     </div>
   );
 }
