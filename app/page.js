@@ -201,7 +201,7 @@ export default function HomePage() {
                       <ArrowRight className="ml-2 h-6 w-6" />
                     </Link>
                   </Button>
-                  <Button size="lg" variant="outline" asChild className="text-white border-2 border-white hover:bg-white hover:text-pink-600 font-bold text-lg px-8 py-7 rounded-full backdrop-blur">
+                  <Button size="lg" variant="outline" asChild className="text-black bg-white border-2 border-white hover:bg-yellow-400 hover:border-yellow-400 hover:text-black font-bold text-lg px-8 py-7 rounded-full shadow-lg">
                     <Link href="/events">
                       View All Events
                     </Link>
