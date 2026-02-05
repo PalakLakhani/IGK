@@ -501,17 +501,18 @@ export async function POST(request) {
 
     // Submit testimonial
     if (path === 'testimonials') {
-      const { name, email, eventAttended, rating, testimonial, city } = body;
+      const { name, email, eventAttended, rating, testimonial, city, website } = body;
 
       if (!name || !email || !eventAttended || !testimonial) {
         return corsResponse({ error: 'Missing required fields' }, 400);
       }
 
-      // Only accept 5-star ratings
-      if (rating !== 5) {
+      // Validate rating (1-5 stars)
+      const ratingNum = parseInt(rating);
+      if (isNaN(ratingNum) || ratingNum < 1 || ratingNum > 5) {
         return corsResponse({ 
-          error: 'Only 5-star ratings are accepted',
-          message: 'Thank you for your feedback! We only display 5-star ratings on our website.'
+          error: 'Invalid rating',
+          message: 'Please select a rating between 1 and 5 stars.'
         }, 400);
       }
 
@@ -520,9 +521,10 @@ export async function POST(request) {
           name,
           email,
           eventAttended,
-          rating: 5,
+          rating: ratingNum,
           testimonial,
-          city
+          city,
+          website // Honeypot field for spam detection
         });
 
         return corsResponse({ 
@@ -530,6 +532,13 @@ export async function POST(request) {
           message: 'Thank you for your review! It will be displayed after moderation.'
         }, 201);
       } catch (err) {
+        // Handle rate limiting and spam errors gracefully
+        if (err.message.includes('one review per hour')) {
+          return corsResponse({ error: err.message }, 429);
+        }
+        if (err.message.includes('Spam')) {
+          return corsResponse({ error: 'Submission failed' }, 400);
+        }
         return corsResponse({ error: err.message }, 400);
       }
     }
