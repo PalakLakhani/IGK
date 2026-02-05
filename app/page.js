@@ -190,9 +190,12 @@ export default function HomePage() {
                     <span>{heroEvents[currentSlide]?.city}</span>
                   </div>
                 </div>
-                <p className="text-2xl text-white/95 leading-relaxed max-w-2xl">
-                  {heroEvents[currentSlide]?.description}
-                </p>
+                {/* Hero Tagline - Short text only, max 2 lines */}
+                {(heroEvents[currentSlide]?.heroTagline || heroEvents[currentSlide]?.city) && (
+                  <p className="text-xl md:text-2xl text-white/95 leading-relaxed max-w-2xl line-clamp-2">
+                    {heroEvents[currentSlide]?.heroTagline || `Don't miss this event in ${heroEvents[currentSlide]?.city}.`}
+                  </p>
+                )}
                 <div className="flex flex-wrap gap-4">
                   <Button size="lg" asChild className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold text-lg px-8 py-7 rounded-full shadow-2xl transform hover:scale-105 transition-all">
                     <Link href={`/events/${heroEvents[currentSlide]?.slug}`}>
