@@ -12,15 +12,15 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/90 shadow-md">
-      <div className="container flex h-20 items-center justify-between">
+      <div className="container flex h-24 items-center justify-between">
         {/* Logo Only - No Text */}
         <Link href="/" className="flex items-center group">
           <Image 
             src={siteConfig.logo} 
             alt={siteConfig.name}
-            width={50}
-            height={50}
-            className="h-14 w-auto transition-transform group-hover:scale-110"
+            width={80}
+            height={80}
+            className="h-20 w-auto transition-transform group-hover:scale-110"
           />
         </Link>
 
