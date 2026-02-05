@@ -187,12 +187,13 @@ export default function AdminPage() {
   const fetchAllData = async (pwd) => {
     setLoading(true);
     try {
-      const [eventsRes, ordersRes, testimonialsRes, settingsRes, teamRes] = await Promise.all([
+      const [eventsRes, ordersRes, testimonialsRes, settingsRes, teamRes, newsletterRes] = await Promise.all([
         fetch('/api/events?type=classified'),
         fetch('/api/admin/orders', { headers: { 'x-admin-password': pwd } }),
         fetch('/api/admin/testimonials', { headers: { 'x-admin-password': pwd } }),
         fetch('/api/admin/settings', { headers: { 'x-admin-password': pwd } }),
-        fetch('/api/admin/team', { headers: { 'x-admin-password': pwd } })
+        fetch('/api/admin/team', { headers: { 'x-admin-password': pwd } }),
+        fetch('/api/admin/newsletter', { headers: { 'x-admin-password': pwd } })
       ]);
 
       const eventsData = await eventsRes.json();
@@ -200,6 +201,7 @@ export default function AdminPage() {
       const testimonialsData = await testimonialsRes.json();
       const settingsData = await settingsRes.json();
       const teamData = await teamRes.json();
+      const newsletterData = await newsletterRes.json();
 
       // Combine upcoming and past events
       const allEvents = [...(eventsData.upcoming || []), ...(eventsData.past || [])];
@@ -208,6 +210,7 @@ export default function AdminPage() {
       setTestimonials(testimonialsData.testimonials || []);
       setSettings(settingsData.settings || {});
       setTeamMembers(teamData.members || []);
+      setNewsletterSubscribers(newsletterData.subscribers || []);
     } catch (err) {
       console.error('Error fetching data:', err);
     } finally {
