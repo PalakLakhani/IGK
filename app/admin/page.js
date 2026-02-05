@@ -471,17 +471,25 @@ export default function AdminPage() {
       endTime,
       city: event.city || '',
       venue: event.venue || '',
+      venueAddress: event.venueAddress || '',
       category: event.category || '',
       brand: event.brand || 'IGK',
+      // Content fields
+      heroTagline: event.heroTagline || '',
+      shortSummary: event.shortSummary || '',
       description: event.description || '',
       poster: event.poster || event.coverImageUrl || '',
       coverImagePath: event.coverImagePath || '',
       desipassUrl: event.desipassUrl || event.ticketPlatforms?.desipassUrl || '',
       eventbriteUrl: event.eventbriteUrl || event.ticketPlatforms?.eventbriteUrl || '',
+      googleMapsUrl: event.googleMapsUrl || '',
       status: event.status || 'published',
       statusOverride: event.statusOverride || 'auto',
       attendeesCount: event.attendeesCount || 0,
-      featured: event.featured || false
+      featured: event.featured || false,
+      rules: event.rules || [],
+      schedule: event.schedule || [],
+      faqs: event.faqs || []
     });
     setShowEventForm(true);
   };
@@ -490,9 +498,11 @@ export default function AdminPage() {
     setEditingEvent(null);
     setEventForm({
       title: '', slug: '', startDate: '', startTime: '19:00', endDate: '', endTime: '',
-      city: '', venue: '', category: '', brand: 'IGK', description: '', poster: '',
-      coverImagePath: '', desipassUrl: '', eventbriteUrl: '', status: 'published',
-      statusOverride: 'auto', attendeesCount: 0, featured: false
+      city: '', venue: '', venueAddress: '', category: '', brand: 'IGK', 
+      heroTagline: '', shortSummary: '', description: '', poster: '',
+      coverImagePath: '', desipassUrl: '', eventbriteUrl: '', googleMapsUrl: '', 
+      status: 'published', statusOverride: 'auto', attendeesCount: 0, featured: false,
+      rules: [], schedule: [], faqs: []
     });
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
