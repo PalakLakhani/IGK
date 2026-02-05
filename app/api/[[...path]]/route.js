@@ -39,13 +39,15 @@ export async function GET(request) {
     // Seed events (for initial setup)
     if (path === 'seed-events') {
       try {
+        // Get the events collection and clear all existing events first
+        const db = await getDatabase();
+        await db.collection('events').deleteMany({});
+        
+        // Now seed fresh events
         for (const eventData of sampleEvents) {
-          const existing = await Event.findBySlug(eventData.slug);
-          if (!existing) {
-            await Event.create(eventData);
-          }
+          await Event.create(eventData);
         }
-        return corsResponse({ message: 'Events seeded successfully', count: sampleEvents.length });
+        return corsResponse({ message: 'Events cleared and seeded successfully', count: sampleEvents.length });
       } catch (error) {
         console.error('Seed error:', error);
         return corsResponse({ error: 'Failed to seed events', details: error.message }, 500);
