@@ -21,18 +21,11 @@ import { format } from 'date-fns';
 export default function HomePage() {
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [testimonials, setTestimonials] = useState([]);
-  const [stats, setStats] = useState({
-    totalEvents: 50,
-    totalCities: 8,
-    totalAttendees: 25000,
-    averageRating: 5.0
-  });
   const [loading, setLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
     fetchUpcomingEvents();
-    fetchStats();
     fetchTestimonials();
   }, []);
 
@@ -45,18 +38,6 @@ export default function HomePage() {
       console.error('Error fetching events:', error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const fetchStats = async () => {
-    try {
-      const res = await fetch('/api/stats');
-      const data = await res.json();
-      if (data.stats) {
-        setStats(data.stats);
-      }
-    } catch (error) {
-      console.error('Error fetching stats:', error);
     }
   };
 
