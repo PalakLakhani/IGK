@@ -8,11 +8,30 @@ import NewsletterSubscribe from './NewsletterSubscribe';
 import OurBrands from './OurBrands';
 
 export default function Footer() {
+  // Unified Quick Links (matching header nav + extras)
+  const quickLinks = [
+    { href: '/events', label: 'Events' },
+    { href: '/about', label: 'About Us' },
+    { href: '/team', label: 'Team' },
+    { href: '/gallery', label: 'Gallery' },
+    { href: '/community', label: 'Community' },
+    { href: '/partner', label: 'Partners' },
+    { href: '/contact', label: 'Contact' },
+    { href: '/testimonials', label: 'Share Your Experience' },
+  ];
+
+  // Legal Links
+  const legalLinks = [
+    { href: '/impressum', label: 'Impressum' },
+    { href: '/terms', label: 'Terms of Service' },
+    { href: '/datenschutz', label: 'Privacy Policy (GDPR)' },
+  ];
+
   return (
     <footer className="border-t bg-muted/40">
       <div className="container py-12">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
-          {/* Brand - Updated */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+          {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
               <Image 
@@ -23,7 +42,6 @@ export default function Footer() {
                 className="h-12 w-auto"
               />
             </div>
-            {/* Updated Tagline */}
             <p className="text-sm font-semibold text-foreground">
               {siteConfig.tagline}
             </p>
@@ -43,7 +61,7 @@ export default function Footer() {
               </a>
             </div>
 
-            {/* Social Icons - Including LinkedIn */}
+            {/* Social Icons */}
             <div className="flex space-x-4 pt-2">
               <Link href={siteConfig.social.instagram} target="_blank" className="text-muted-foreground hover:text-pink-500 transition-colors">
                 <Instagram className="h-5 w-5" />
@@ -64,28 +82,30 @@ export default function Footer() {
           <div>
             <h3 className="font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/events" className="text-muted-foreground hover:text-primary">Events</Link></li>
-              <li><Link href="/gallery" className="text-muted-foreground hover:text-primary">Gallery</Link></li>
-              <li><Link href="/community" className="text-muted-foreground hover:text-primary">Community</Link></li>
-              <li><Link href="/about" className="text-muted-foreground hover:text-primary">About Us</Link></li>
-              <li><Link href="/contact" className="text-muted-foreground hover:text-primary">Contact</Link></li>
-              <li><Link href="/testimonials" className="text-muted-foreground hover:text-primary">Share Your Experience</Link></li>
+              {quickLinks.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="text-muted-foreground hover:text-primary">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
           {/* Our Brands */}
           <OurBrands variant="footer" />
 
-          {/* Legal & Support - Updated */}
+          {/* Legal */}
           <div>
-            <h3 className="font-semibold mb-4">Legal & Support</h3>
+            <h3 className="font-semibold mb-4">Legal</h3>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/tickets" className="text-muted-foreground hover:text-primary">My Tickets</Link></li>
-              <li><Link href="/partner" className="text-muted-foreground hover:text-primary">Partner With Us</Link></li>
-              <li><Link href="/impressum" className="text-muted-foreground hover:text-primary">Impressum</Link></li>
-              <li><Link href="/terms" className="text-muted-foreground hover:text-primary">Terms of Service</Link></li>
-              <li><Link href="/datenschutz" className="text-muted-foreground hover:text-primary">GDPR Privacy Policy</Link></li>
-              <li><Link href="/refund-policy" className="text-muted-foreground hover:text-primary">Refund Policy</Link></li>
+              {legalLinks.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="text-muted-foreground hover:text-primary">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
