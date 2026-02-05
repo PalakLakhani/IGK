@@ -53,8 +53,8 @@ export default function EventCard({ event }) {
 
   const gradientClass = categoryColors[event.category] || categoryColors.default;
   
-  // Generate excerpt from description (single source of truth)
-  const excerpt = generateExcerpt(event.description, 140);
+  // Use shortSummary if available, otherwise generate excerpt from description
+  const cardSummary = event.shortSummary || generateExcerpt(event.description, 160);
 
   return (
     <Card className="overflow-hidden border-none shadow-2xl hover:shadow-pink-500/50 transition-all hover:scale-105 transform bg-white">
