@@ -162,6 +162,18 @@ export async function GET(request) {
       return corsResponse({ testimonials });
     }
 
+    // Admin: Get newsletter subscribers
+    if (path === 'admin/newsletter') {
+      const password = request.headers.get('x-admin-password');
+      
+      if (password !== process.env.ADMIN_PASSWORD && password !== 'admin123') {
+        return corsResponse({ error: 'Unauthorized' }, 401);
+      }
+
+      const subscribers = await Newsletter.getAll();
+      return corsResponse({ subscribers, count: subscribers.length });
+    }
+
     // Admin: Get settings
     if (path === 'admin/settings') {
       const password = request.headers.get('x-admin-password');
