@@ -801,6 +801,18 @@ export async function DELETE(request) {
       return corsResponse({ message: 'Event deleted successfully' });
     }
 
+    // Delete team member
+    if (path.startsWith('admin/team/')) {
+      const memberId = path.replace('admin/team/', '');
+      const success = await TeamMember.delete(memberId);
+      
+      if (!success) {
+        return corsResponse({ error: 'Team member not found' }, 404);
+      }
+
+      return corsResponse({ message: 'Team member deleted successfully' });
+    }
+
     return corsResponse({ error: 'Endpoint not found' }, 404);
 
   } catch (error) {
