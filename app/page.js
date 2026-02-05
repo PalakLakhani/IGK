@@ -14,6 +14,7 @@ import EventCard from '@/components/EventCard';
 import NewsletterSubscribe from '@/components/NewsletterSubscribe';
 import OurBrands from '@/components/OurBrands';
 import MascotAssistant from '@/components/MascotAssistant';
+import StatsBar from '@/components/StatsBar';
 import { siteConfig } from '@/config/site';
 import { format } from 'date-fns';
 
