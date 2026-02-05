@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { Event } from '@/lib/models/Event';
 import { Order } from '@/lib/models/Order';
 import { Ticket } from '@/lib/models/Ticket';
+import { Testimonial } from '@/lib/models/Testimonial';
+import { SiteSettings } from '@/lib/models/SiteSettings';
 import { sampleEvents } from '@/lib/seed-events';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
@@ -49,6 +51,43 @@ export async function GET(request) {
       }
     }
 
+    // Get site statistics (dynamic)
+    if (path === 'stats') {
+      try {
+        const events = await Event.findAll({ status: 'published' });
+        const cities = [...new Set(events.map(e => e.city))];
+        
+        // Get total attendees (manual + aggregated)
+        const manualAttendees = await SiteSettings.get('totalAttendeesManual') || 25000;
+        const eventAttendees = events.reduce((sum, e) => sum + (e.attendeesCount || 0), 0);
+        const totalAttendees = manualAttendees + eventAttendees;
+        
+        // Get average rating from testimonials
+        const ratingData = await Testimonial.getAverageRating();
+        
+        return corsResponse({
+          stats: {
+            totalEvents: events.length,
+            totalCities: cities.length,
+            totalAttendees,
+            averageRating: ratingData.averageRating,
+            totalRatings: ratingData.totalRatings
+          }
+        });
+      } catch (error) {
+        console.error('Stats error:', error);
+        return corsResponse({
+          stats: {
+            totalEvents: 50,
+            totalCities: 8,
+            totalAttendees: 25000,
+            averageRating: 5.0,
+            totalRatings: 0
+          }
+        });
+      }
+    }
+
     // Get all events with filters
     if (path === 'events') {
       const category = searchParams.get('category');
@@ -82,6 +121,44 @@ export async function GET(request) {
       }
 
       return corsResponse({ event });
+    }
+
+    // Get testimonials
+    if (path === 'testimonials') {
+      const limit = parseInt(searchParams.get('limit')) || 10;
+      const testimonials = await Testimonial.getRecentApproved(limit);
+      const ratingData = await Testimonial.getAverageRating();
+      
+      return corsResponse({ 
+        testimonials,
+        averageRating: ratingData.averageRating,
+        totalRatings: ratingData.totalRatings
+      });
+    }
+
+    // Admin: Get pending testimonials
+    if (path === 'admin/testimonials') {
+      const password = request.headers.get('x-admin-password');
+      
+      if (password !== process.env.ADMIN_PASSWORD) {
+        return corsResponse({ error: 'Unauthorized' }, 401);
+      }
+
+      const testimonials = await Testimonial.findAll({ approvedOnly: false });
+      return corsResponse({ testimonials });
+    }
+
+    // Admin: Get settings
+    if (path === 'admin/settings') {
+      const password = request.headers.get('x-admin-password');
+      
+      if (password !== process.env.ADMIN_PASSWORD) {
+        return corsResponse({ error: 'Unauthorized' }, 401);
+      }
+
+      await SiteSettings.initializeDefaults();
+      const settings = await SiteSettings.getAll();
+      return corsResponse({ settings });
     }
 
     // Get order by orderId and email
@@ -175,7 +252,7 @@ export async function GET(request) {
     // Scrape Linktree for community links
     if (path === 'community/links') {
       try {
-        const response = await axios.get('https://linktr.ee/indianexpatsingermany', {
+        const response = await axios.get('https://linktr.ee/igkonnekt', {
           headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
           }
@@ -184,62 +261,184 @@ export async function GET(request) {
         const $ = cheerio.load(response.data);
         const links = [];
 
-        // Find all link elements (Linktree structure may vary)
-        $('a[href]').each((i, elem) => {
-          const href = $(elem).attr('href');
-          const text = $(elem).text().trim();
-          
-          if (href && text && !href.includes('linktree') && !href.includes('linktr.ee')) {
-            // Categorize links
-            let category = 'other';
-            const lowerHref = href.toLowerCase();
-            const lowerText = text.toLowerCase();
+        // Try to extract from script tag (Linktree stores data in JSON)
+        const scriptContent = $('script#__NEXT_DATA__').html();
+        if (scriptContent) {
+          try {
+            const data = JSON.parse(scriptContent);
+            const linksData = data?.props?.pageProps?.links || [];
             
-            if (lowerHref.includes('whatsapp') || lowerText.includes('whatsapp')) {
-              category = 'whatsapp';
-            } else if (lowerHref.includes('facebook') || lowerText.includes('facebook')) {
-              category = 'facebook';
-            } else if (lowerHref.includes('telegram') || lowerText.includes('telegram')) {
-              category = 'telegram';
-            } else if (lowerHref.includes('instagram') || lowerText.includes('instagram')) {
-              category = 'instagram';
-            }
+            linksData.forEach(link => {
+              if (link.url && link.title) {
+                let category = 'other';
+                const lowerUrl = link.url.toLowerCase();
+                const lowerTitle = link.title.toLowerCase();
+                
+                if (lowerUrl.includes('whatsapp') || lowerTitle.includes('whatsapp')) {
+                  category = 'whatsapp';
+                } else if (lowerUrl.includes('facebook') || lowerTitle.includes('facebook')) {
+                  category = 'facebook';
+                } else if (lowerUrl.includes('telegram') || lowerTitle.includes('telegram')) {
+                  category = 'telegram';
+                } else if (lowerUrl.includes('instagram') || lowerTitle.includes('instagram')) {
+                  category = 'instagram';
+                } else if (lowerUrl.includes('linkedin') || lowerTitle.includes('linkedin')) {
+                  category = 'linkedin';
+                }
 
-            links.push({
-              title: text,
-              url: href,
-              category
+                links.push({
+                  title: link.title,
+                  url: link.url,
+                  category
+                });
+              }
             });
+          } catch (e) {
+            console.error('JSON parse error:', e);
           }
-        });
+        }
 
-        // Fallback sample data if scraping fails
+        // Fallback: scrape from HTML
         if (links.length === 0) {
-          return corsResponse({
-            links: [
-              { title: 'Berlin Indian Community', url: 'https://chat.whatsapp.com/sample1', category: 'whatsapp' },
-              { title: 'Munich Desi Group', url: 'https://chat.whatsapp.com/sample2', category: 'whatsapp' },
-              { title: 'Frankfurt Indian Expats', url: 'https://facebook.com/groups/sample', category: 'facebook' },
-              { title: 'Germans Indians Network', url: 'https://t.me/sample', category: 'telegram' },
-              { title: 'IGK Events Instagram', url: 'https://instagram.com/igkevents', category: 'instagram' }
-            ],
-            note: 'Sample data - Live scraping unavailable'
+          $('a[href]').each((i, elem) => {
+            const href = $(elem).attr('href');
+            const text = $(elem).text().trim();
+            
+            if (href && text && !href.includes('linktree') && !href.includes('linktr.ee')) {
+              let category = 'other';
+              const lowerHref = href.toLowerCase();
+              const lowerText = text.toLowerCase();
+              
+              if (lowerHref.includes('whatsapp') || lowerText.includes('whatsapp')) {
+                category = 'whatsapp';
+              } else if (lowerHref.includes('facebook') || lowerText.includes('facebook')) {
+                category = 'facebook';
+              } else if (lowerHref.includes('telegram') || lowerText.includes('telegram')) {
+                category = 'telegram';
+              } else if (lowerHref.includes('instagram') || lowerText.includes('instagram')) {
+                category = 'instagram';
+              }
+
+              links.push({
+                title: text,
+                url: href,
+                category
+              });
+            }
           });
         }
 
-        return corsResponse({ links });
-      } catch (error) {
-        console.error('Scraping error:', error);
-        // Return fallback data
+        // Return scraped links or fallback
+        if (links.length > 0) {
+          return corsResponse({ links, source: 'linktree' });
+        }
+
+        // Fallback sample data if scraping fails
         return corsResponse({
           links: [
-            { title: 'Berlin Indian Community', url: 'https://chat.whatsapp.com/sample1', category: 'whatsapp' },
-            { title: 'Munich Desi Group', url: 'https://chat.whatsapp.com/sample2', category: 'whatsapp' },
-            { title: 'Frankfurt Indian Expats', url: 'https://facebook.com/groups/sample', category: 'facebook' },
-            { title: 'German Indians Network', url: 'https://t.me/sample', category: 'telegram' },
-            { title: 'IGK Events Instagram', url: 'https://instagram.com/igkevents', category: 'instagram' }
+            { title: 'IGK WhatsApp Community', url: 'https://chat.whatsapp.com/sample1', category: 'whatsapp' },
+            { title: 'Berlin Indian Community', url: 'https://chat.whatsapp.com/sample2', category: 'whatsapp' },
+            { title: 'IGK Instagram', url: 'https://instagram.com/igkonnekt', category: 'instagram' },
+            { title: 'IGK Facebook', url: 'https://facebook.com/igkonnekt', category: 'facebook' },
+            { title: 'IGK LinkedIn', url: 'https://linkedin.com/company/igkonnekt', category: 'linkedin' }
           ],
-          note: 'Sample data - Live scraping unavailable'
+          note: 'Sample data - Visit linktr.ee/igkonnekt for live links',
+          source: 'fallback'
+        });
+      } catch (error) {
+        console.error('Scraping error:', error);
+        return corsResponse({
+          links: [
+            { title: 'IGK WhatsApp Community', url: 'https://chat.whatsapp.com/sample1', category: 'whatsapp' },
+            { title: 'Berlin Indian Community', url: 'https://chat.whatsapp.com/sample2', category: 'whatsapp' },
+            { title: 'IGK Instagram', url: 'https://instagram.com/igkonnekt', category: 'instagram' },
+            { title: 'IGK Facebook', url: 'https://facebook.com/igkonnekt', category: 'facebook' }
+          ],
+          note: 'Sample data - Visit linktr.ee/igkonnekt for live links',
+          source: 'fallback'
+        });
+      }
+    }
+
+    // Scrape DesiPass events
+    if (path === 'desipass/events') {
+      try {
+        const eventUrls = [
+          'https://www.desipass.com/events/events-details?eventId=01KFGQC5TH7MJ7R58V1Q5PSTAK',
+          'https://www.desipass.com/events/events-details?eventId=01KGAHGE2M0213NYZBFPZ8WT5Y'
+        ];
+
+        const events = [];
+
+        for (const url of eventUrls) {
+          try {
+            const response = await axios.get(url, {
+              headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+              },
+              timeout: 5000
+            });
+
+            const $ = cheerio.load(response.data);
+            
+            // Try to extract event details (structure may vary)
+            const title = $('h1').first().text().trim() || 
+                          $('[class*="title"]').first().text().trim() ||
+                          'Event from DesiPass';
+            
+            const dateText = $('[class*="date"]').first().text().trim() ||
+                            $('time').first().text().trim() || '';
+            
+            const location = $('[class*="location"]').first().text().trim() ||
+                            $('[class*="venue"]').first().text().trim() || 'Germany';
+
+            const image = $('meta[property="og:image"]').attr('content') ||
+                         $('img[class*="event"]').first().attr('src') || '';
+
+            events.push({
+              title,
+              date: dateText,
+              location,
+              image,
+              ticketUrl: url,
+              platform: 'DesiPass',
+              source: 'scraped'
+            });
+          } catch (err) {
+            console.error(`Error scraping ${url}:`, err.message);
+          }
+        }
+
+        // Fallback with placeholder data if scraping fails
+        if (events.length === 0) {
+          events.push(
+            {
+              title: 'Upcoming Event on DesiPass',
+              date: 'Check DesiPass for dates',
+              location: 'Germany',
+              image: 'https://images.unsplash.com/photo-1603228254119-e6a4d095dc59?w=800',
+              ticketUrl: 'https://www.desipass.com/events/events-details?eventId=01KFGQC5TH7MJ7R58V1Q5PSTAK',
+              platform: 'DesiPass',
+              source: 'placeholder'
+            },
+            {
+              title: 'Another Event on DesiPass',
+              date: 'Check DesiPass for dates',
+              location: 'Germany',
+              image: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800',
+              ticketUrl: 'https://www.desipass.com/events/events-details?eventId=01KGAHGE2M0213NYZBFPZ8WT5Y',
+              platform: 'DesiPass',
+              source: 'placeholder'
+            }
+          );
+        }
+
+        return corsResponse({ events });
+      } catch (error) {
+        console.error('DesiPass scraping error:', error);
+        return corsResponse({ 
+          events: [],
+          error: 'Failed to fetch DesiPass events'
         });
       }
     }
@@ -259,6 +458,92 @@ export async function POST(request) {
 
   try {
     const body = await request.json();
+
+    // Submit testimonial
+    if (path === 'testimonials') {
+      const { name, email, eventAttended, rating, testimonial, city } = body;
+
+      if (!name || !email || !eventAttended || !testimonial) {
+        return corsResponse({ error: 'Missing required fields' }, 400);
+      }
+
+      // Only accept 5-star ratings
+      if (rating !== 5) {
+        return corsResponse({ 
+          error: 'Only 5-star ratings are accepted',
+          message: 'Thank you for your feedback! We only display 5-star ratings on our website.'
+        }, 400);
+      }
+
+      try {
+        const newTestimonial = await Testimonial.create({
+          name,
+          email,
+          eventAttended,
+          rating: 5,
+          testimonial,
+          city
+        });
+
+        return corsResponse({ 
+          testimonial: newTestimonial,
+          message: 'Thank you for your review! It will be displayed after moderation.'
+        }, 201);
+      } catch (err) {
+        return corsResponse({ error: err.message }, 400);
+      }
+    }
+
+    // Admin: Approve testimonial
+    if (path === 'admin/testimonials/approve') {
+      const password = request.headers.get('x-admin-password');
+      
+      if (password !== process.env.ADMIN_PASSWORD) {
+        return corsResponse({ error: 'Unauthorized' }, 401);
+      }
+
+      const { id } = body;
+      const success = await Testimonial.approve(id);
+      
+      if (!success) {
+        return corsResponse({ error: 'Testimonial not found' }, 404);
+      }
+
+      return corsResponse({ message: 'Testimonial approved' });
+    }
+
+    // Admin: Reject testimonial
+    if (path === 'admin/testimonials/reject') {
+      const password = request.headers.get('x-admin-password');
+      
+      if (password !== process.env.ADMIN_PASSWORD) {
+        return corsResponse({ error: 'Unauthorized' }, 401);
+      }
+
+      const { id } = body;
+      const success = await Testimonial.reject(id);
+      
+      if (!success) {
+        return corsResponse({ error: 'Testimonial not found' }, 404);
+      }
+
+      return corsResponse({ message: 'Testimonial rejected and deleted' });
+    }
+
+    // Admin: Update settings
+    if (path === 'admin/settings') {
+      const password = request.headers.get('x-admin-password');
+      
+      if (password !== process.env.ADMIN_PASSWORD) {
+        return corsResponse({ error: 'Unauthorized' }, 401);
+      }
+
+      for (const [key, value] of Object.entries(body)) {
+        await SiteSettings.set(key, value);
+      }
+
+      return corsResponse({ message: 'Settings updated' });
+    }
 
     // Create event
     if (path === 'admin/events') {
@@ -280,7 +565,6 @@ export async function POST(request) {
         return corsResponse({ error: 'Missing required fields' }, 400);
       }
 
-      // Create order
       const order = await Order.create({
         eventId,
         email,
@@ -291,7 +575,6 @@ export async function POST(request) {
         status: 'pending'
       });
 
-      // Create tickets
       const tickets = [];
       for (let i = 0; i < quantity; i++) {
         const ticket = await Ticket.create({
@@ -310,7 +593,7 @@ export async function POST(request) {
       }, 201);
     }
 
-    // Confirm order (after Stripe payment)
+    // Confirm order (after payment)
     if (path === 'orders/confirm') {
       const { orderId, paymentIntentId } = body;
 
@@ -327,8 +610,6 @@ export async function POST(request) {
       await Order.updateStatus(orderId, 'completed');
       
       const tickets = await Ticket.findByOrderId(orderId);
-
-      // TODO: Send email with tickets
       
       return corsResponse({ 
         order, 
