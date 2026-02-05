@@ -273,29 +273,8 @@ export default function HomePage() {
         )}
       </section>
 
-      {/* Dynamic Stats Banner */}
-      <section className="py-16 bg-gradient-to-r from-pink-500 via-purple-500 to-orange-500">
-        <div className="container">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-white">
-            <div className="space-y-2">
-              <div className="text-5xl md:text-6xl font-black">{stats.totalEvents}+</div>
-              <div className="text-lg md:text-xl font-semibold opacity-90">Amazing Events</div>
-            </div>
-            <div className="space-y-2">
-              <div className="text-5xl md:text-6xl font-black">{stats.totalAttendees >= 1000 ? `${Math.floor(stats.totalAttendees/1000)}K+` : stats.totalAttendees}+</div>
-              <div className="text-lg md:text-xl font-semibold opacity-90">Happy Attendees</div>
-            </div>
-            <div className="space-y-2">
-              <div className="text-5xl md:text-6xl font-black">{stats.totalCities}</div>
-              <div className="text-lg md:text-xl font-semibold opacity-90">Cities</div>
-            </div>
-            <div className="space-y-2">
-              <div className="text-5xl md:text-6xl font-black">{stats.averageRating.toFixed(1)}★</div>
-              <div className="text-lg md:text-xl font-semibold opacity-90">Average Rating</div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Dynamic Stats Banner - Using shared StatsBar component */}
+      <StatsBar variant="gradient" showReviewCount={false} />
 
       {/* Event Categories Section */}
       <section className="py-20 bg-white">
