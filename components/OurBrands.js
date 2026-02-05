@@ -49,10 +49,10 @@ export default function OurBrands({ variant = 'full' }) {
           {brands.map((brand) => (
             <Card 
               key={brand.id} 
-              className="overflow-hidden border-2 hover:border-pink-500 transition-all hover:scale-105 group cursor-pointer"
+              className="overflow-hidden border-2 hover:border-pink-500 transition-all hover:scale-105 group"
             >
-              <Link href={`/brands/${brand.slug}`}>
-                <CardContent className="p-8">
+              <CardContent className="p-8">
+                <Link href={`/brands/${brand.slug}`} className="block">
                   <div className="relative h-32 mb-6 flex items-center justify-center">
                     <div className={`absolute inset-0 bg-gradient-to-br ${brand.color} opacity-10 rounded-lg`} />
                     <div className="relative w-24 h-24">
@@ -69,29 +69,30 @@ export default function OurBrands({ variant = 'full' }) {
                   <p className="text-sm text-gray-600 text-center mb-4 min-h-[40px]">
                     {brand.description}
                   </p>
-                  
-                  <div className="flex gap-2">
-                    <Button 
-                      asChild
-                      className={`flex-1 bg-gradient-to-r ${brand.color} text-white hover:opacity-90`}
-                      size="sm"
-                    >
-                      <span>View Brand</span>
-                    </Button>
-                    <Button
-                      asChild
-                      variant="outline"
-                      size="sm"
-                      className="border-2"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <Link href={brand.instagram} target="_blank">
-                        <Instagram className="h-4 w-4" />
-                      </Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Link>
+                </Link>
+                
+                <div className="flex gap-2">
+                  <Button 
+                    asChild
+                    className={`flex-1 bg-gradient-to-r ${brand.color} text-white hover:opacity-90`}
+                    size="sm"
+                  >
+                    <Link href={`/brands/${brand.slug}`}>
+                      View Brand
+                    </Link>
+                  </Button>
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className="border-2"
+                  >
+                    <Link href={brand.instagram} target="_blank">
+                      <Instagram className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                </div>
+              </CardContent>
             </Card>
           ))}
         </div>
