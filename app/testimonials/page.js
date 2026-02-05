@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Star, Send, CheckCircle, AlertCircle, ArrowLeft } from 'lucide-react';
+import { Star, Send, CheckCircle, AlertCircle, ArrowLeft, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -15,6 +15,41 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
 import { toast } from 'sonner';
+import { siteConfig } from '@/config/site';
+
+// Nudge messages based on star rating
+const ratingNudges = {
+  1: {
+    message: "We're sorry to hear that. Please share what went wrong so we can improve. If you'd like a quick resolution, contact us on WhatsApp.",
+    color: 'text-red-600',
+    bgColor: 'bg-red-50',
+    showWhatsApp: true
+  },
+  2: {
+    message: "Thanks for the feedback. Tell us what we could do better. If our team resolves it, you can always update your rating later.",
+    color: 'text-orange-600',
+    bgColor: 'bg-orange-50',
+    showWhatsApp: false
+  },
+  3: {
+    message: "Appreciate it. What would have made it a 5-star experience for you?",
+    color: 'text-yellow-600',
+    bgColor: 'bg-yellow-50',
+    showWhatsApp: false
+  },
+  4: {
+    message: "So close to perfect. What was missing for a 5-star experience?",
+    color: 'text-blue-600',
+    bgColor: 'bg-blue-50',
+    showWhatsApp: false
+  },
+  5: {
+    message: "Thank you! We're happy you loved it. Your review helps the community.",
+    color: 'text-green-600',
+    bgColor: 'bg-green-50',
+    showWhatsApp: false
+  }
+};
 
 export default function TestimonialsPage() {
   const [testimonials, setTestimonials] = useState([]);
@@ -26,8 +61,9 @@ export default function TestimonialsPage() {
     email: '',
     city: '',
     eventAttended: '',
-    rating: 5,
-    testimonial: ''
+    rating: 0, // Start with 0 (no selection)
+    testimonial: '',
+    website: '' // Honeypot field
   });
 
   useEffect(() => {
@@ -60,10 +96,8 @@ export default function TestimonialsPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (formData.rating !== 5) {
-      toast.error('Only 5-star ratings are accepted', {
-        description: 'We appreciate your feedback! However, only 5-star ratings are displayed on our website.'
-      });
+    if (formData.rating === 0) {
+      toast.error('Please select a rating');
       return;
     }
 
@@ -92,9 +126,12 @@ export default function TestimonialsPage() {
           email: '',
           city: '',
           eventAttended: '',
-          rating: 5,
-          testimonial: ''
+          rating: 0,
+          testimonial: '',
+          website: ''
         });
+        // Refresh testimonials
+        fetchTestimonials();
       } else {
         toast.error(data.error || 'Failed to submit review', {
           description: data.message
@@ -108,6 +145,8 @@ export default function TestimonialsPage() {
   };
 
   const cities = ['Berlin', 'Munich', 'Frankfurt', 'Hamburg', 'Cologne', 'Leipzig', 'Stuttgart', 'Düsseldorf', 'Other'];
+
+  const currentNudge = formData.rating > 0 ? ratingNudges[formData.rating] : null;
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-yellow-50 via-white to-orange-50">
@@ -141,11 +180,24 @@ export default function TestimonialsPage() {
               <CardHeader className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-t-lg">
                 <CardTitle className="text-2xl">Submit Your Review</CardTitle>
                 <CardDescription className="text-yellow-100">
-                  Share your experience with the community
+                  Share your experience with the community (1-5 stars)
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-6">
                 <form onSubmit={handleSubmit} className="space-y-6">
+                  {/* Honeypot field - hidden from users, visible to bots */}
+                  <div className="hidden" aria-hidden="true">
+                    <Label htmlFor="website">Website</Label>
+                    <Input
+                      id="website"
+                      name="website"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={formData.website}
+                      onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                    />
+                  </div>
+
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="name">Your Name *</Label>
@@ -200,7 +252,8 @@ export default function TestimonialsPage() {
                     </div>
                   </div>
 
-                  <div className="space-y-2">
+                  {/* Rating with Nudge Messages */}
+                  <div className="space-y-3">
                     <Label>Rating *</Label>
                     <div className="flex items-center gap-2">
                       {[1, 2, 3, 4, 5].map((star) => (
@@ -211,19 +264,36 @@ export default function TestimonialsPage() {
                           className="focus:outline-none transition-transform hover:scale-110"
                         >
                           <Star
-                            className={`h-10 w-10 ${
+                            className={`h-10 w-10 transition-colors ${
                               star <= formData.rating
                                 ? 'fill-yellow-400 text-yellow-400'
-                                : 'text-gray-300'
+                                : 'text-gray-300 hover:text-yellow-200'
                             }`}
                           />
                         </button>
                       ))}
                     </div>
-                    <p className="text-sm text-muted-foreground flex items-center gap-2 mt-2">
-                      <AlertCircle className="h-4 w-4" />
-                      Only 5-star ratings are accepted and displayed
-                    </p>
+                    
+                    {/* Dynamic Nudge Message */}
+                    {currentNudge && (
+                      <div className={`p-4 rounded-lg ${currentNudge.bgColor} ${currentNudge.color} text-sm`}>
+                        <p className="font-medium">{currentNudge.message}</p>
+                        {currentNudge.showWhatsApp && (
+                          <Button 
+                            type="button" 
+                            variant="outline" 
+                            size="sm" 
+                            className="mt-3 border-current"
+                            asChild
+                          >
+                            <Link href={`https://wa.me/${siteConfig.contact.whatsapp.replace(/[^0-9]/g, '')}`} target="_blank">
+                              <MessageCircle className="h-4 w-4 mr-2" />
+                              Contact on WhatsApp
+                            </Link>
+                          </Button>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -242,7 +312,7 @@ export default function TestimonialsPage() {
                     type="submit" 
                     size="lg" 
                     className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
-                    disabled={submitting || formData.rating !== 5}
+                    disabled={submitting || formData.rating === 0}
                   >
                     {submitting ? (
                       <>
@@ -257,9 +327,9 @@ export default function TestimonialsPage() {
                     )}
                   </Button>
 
-                  {formData.rating !== 5 && (
-                    <p className="text-sm text-red-500 text-center">
-                      Please select 5 stars to submit your review
+                  {formData.rating === 0 && (
+                    <p className="text-sm text-muted-foreground text-center">
+                      Please select a star rating to submit your review
                     </p>
                   )}
                 </form>
@@ -282,7 +352,14 @@ export default function TestimonialsPage() {
                     <CardContent className="p-6">
                       <div className="flex gap-1 mb-3">
                         {[...Array(5)].map((_, i) => (
-                          <Star key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+                          <Star 
+                            key={i} 
+                            className={`h-5 w-5 ${
+                              i < testimonial.rating 
+                                ? 'fill-yellow-400 text-yellow-400' 
+                                : 'text-gray-200'
+                            }`} 
+                          />
                         ))}
                       </div>
                       <p className="text-gray-700 mb-4">"{testimonial.testimonial}"</p>
