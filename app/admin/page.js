@@ -775,11 +775,13 @@ export default function AdminPage() {
 
       <div className="container py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="mb-8">
+          <TabsList className="mb-8 flex-wrap">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="events">Events</TabsTrigger>
+            <TabsTrigger value="gallery">Gallery</TabsTrigger>
             <TabsTrigger value="team">Team</TabsTrigger>
             <TabsTrigger value="testimonials">Reviews {stats.pendingTestimonials > 0 && <Badge className="ml-2 bg-red-500">{stats.pendingTestimonials}</Badge>}</TabsTrigger>
+            <TabsTrigger value="newsletter">Newsletter <Badge className="ml-2" variant="secondary">{newsletterSubscribers.length}</Badge></TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
