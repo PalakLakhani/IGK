@@ -815,15 +815,31 @@ export default function AdminPage() {
                     )}
                   </div>
 
-                  {/* Description */}
-                  <div>
+                  {/* Description with Excerpt Preview */}
+                  <div className="space-y-2">
                     <Label>Description</Label>
                     <Textarea 
                       value={eventForm.description} 
                       onChange={(e) => setEventForm({ ...eventForm, description: e.target.value })} 
-                      rows={3} 
-                      placeholder="Event description..."
+                      rows={4} 
+                      placeholder="Event description... (this will appear on the event detail page)"
                     />
+                    
+                    {/* Excerpt Preview */}
+                    {eventForm.description && (
+                      <div className="bg-gray-50 border rounded-lg p-3 mt-2">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Eye className="h-4 w-4 text-gray-500" />
+                          <span className="text-xs font-semibold text-gray-500 uppercase">Card Excerpt Preview</span>
+                        </div>
+                        <p className="text-sm text-gray-700 leading-relaxed">
+                          {generateExcerpt(eventForm.description, 140)}
+                        </p>
+                        <p className="text-xs text-gray-400 mt-2">
+                          {generateExcerpt(eventForm.description, 140).length} / 140 characters (shown on homepage & events page cards)
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   {/* Ticket Platform URLs */}
