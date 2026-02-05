@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Calendar, MapPin, Clock, Users, ExternalLink, Download, Share2, ChevronRight } from 'lucide-react';
+import { Calendar, MapPin, Clock, Users, ExternalLink, Download, Share2, ChevronRight, Ticket } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -59,13 +59,14 @@ export default function EventDetailPage() {
   };
 
   const downloadICS = () => {
+    const eventDate = new Date(event.startDateTime || event.date);
     const ics = `BEGIN:VCALENDAR
 VERSION:2.0
 BEGIN:VEVENT
-DTSTART:${format(new Date(event.date), "yyyyMMdd'T'HHmmss")}
+DTSTART:${format(eventDate, "yyyyMMdd'T'HHmmss")}
 SUMMARY:${event.title}
 LOCATION:${event.venue}, ${event.city}
-DESCRIPTION:${event.description}
+DESCRIPTION:${event.description?.replace(/\n/g, '\\n') || ''}
 END:VEVENT
 END:VCALENDAR`;
     
@@ -89,8 +90,13 @@ END:VCALENDAR`;
     return null;
   }
 
-  const eventDate = new Date(event.date);
-  const isPast = eventDate < new Date();
+  const eventDate = new Date(event.startDateTime || event.date);
+  const isPast = event.classification === 'past' || eventDate < new Date();
+  
+  // Get ticket URLs from multiple possible locations
+  const desipassUrl = event.desipassUrl || event.ticketPlatforms?.desipassUrl || event.externalLinks?.desipass;
+  const eventbriteUrl = event.eventbriteUrl || event.ticketPlatforms?.eventbriteUrl || event.externalLinks?.eventbrite;
+  const hasTicketLinks = desipassUrl || eventbriteUrl;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -99,7 +105,7 @@ END:VCALENDAR`;
       {/* Event Hero */}
       <section className="relative h-[400px] overflow-hidden">
         <Image
-          src={event.poster}
+          src={event.coverImagePath || event.poster || event.coverImageUrl || 'https://images.unsplash.com/photo-1603228254119-e6a4d095dc59?w=1200'}
           alt={event.title}
           fill
           className="object-cover"
@@ -118,7 +124,7 @@ END:VCALENDAR`;
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="h-5 w-5" />
-                <span>{format(eventDate, 'HH:mm')} - {event.endTime}</span>
+                <span>{format(eventDate, 'HH:mm')} {event.endTime ? `- ${event.endTime}` : 'Uhr'}</span>
               </div>
               <div className="flex items-center gap-2">
                 <MapPin className="h-5 w-5" />
@@ -133,7 +139,7 @@ END:VCALENDAR`;
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Description */}
+            {/* Description - Shows full description from admin */}
             <Card>
               <CardHeader>
                 <CardTitle>About This Event</CardTitle>
@@ -207,70 +213,52 @@ END:VCALENDAR`;
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Ticket Booking Card */}
+            {/* Ticket Booking Card - EXTERNAL PLATFORMS ONLY */}
             <Card className="sticky top-20">
               <CardHeader>
-                <CardTitle>Get Your Tickets</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <Ticket className="h-5 w-5" />
+                  Get Your Tickets
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 {!isPast ? (
                   <>
-                    {/* Our Site Tickets */}
-                    <div className="space-y-3">
-                      <div className="font-semibold">Option 1: Buy on Our Site</div>
-                      {event.ticketTypes && event.ticketTypes.map(ticket => (
-                        <div key={ticket.id} className="border rounded-lg p-4">
-                          <div className="flex justify-between items-start mb-2">
-                            <div>
-                              <div className="font-semibold">{ticket.name}</div>
-                              <div className="text-sm text-muted-foreground">{ticket.description}</div>
-                            </div>
-                            <div className="text-right">
-                              <div className="text-2xl font-bold">€{ticket.price}</div>
-                            </div>
-                          </div>
-                          {ticket.available ? (
-                            <Button className="w-full mt-2" variant="default">
-                              Select
-                            </Button>
-                          ) : (
-                            <Button className="w-full mt-2" variant="outline" disabled>
-                              Sold Out
-                            </Button>
-                          )}
-                        </div>
-                      ))}
-                      <p className="text-xs text-muted-foreground">
-                        Secure payment via Stripe. Instant QR code tickets via email.
-                        <br />
-                        <span className="text-amber-600 font-semibold">Note: Stripe integration pending - use external links below</span>
-                      </p>
-                    </div>
+                    {hasTicketLinks ? (
+                      <div className="space-y-3">
+                        {desipassUrl && (
+                          <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" asChild>
+                            <Link href={desipassUrl} target="_blank">
+                              <span className="truncate">Tickets on DesiPass</span>
+                              <ExternalLink className="ml-2 h-4 w-4 flex-shrink-0" />
+                            </Link>
+                          </Button>
+                        )}
 
-                    <Separator />
-
-                    {/* External Tickets */}
-                    <div className="space-y-3">
-                      <div className="font-semibold">Option 2 & 3: External Platforms</div>
-                      
-                      {event.externalLinks?.desipass && (
-                        <Button className="w-full" variant="outline" asChild>
-                          <Link href={event.externalLinks.desipass} target="_blank">
-                            Buy on DesiPass
-                            <ExternalLink className="ml-2 h-4 w-4" />
+                        {eventbriteUrl && (
+                          <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white" asChild>
+                            <Link href={eventbriteUrl} target="_blank">
+                              <span className="truncate">Tickets on Eventbrite</span>
+                              <ExternalLink className="ml-2 h-4 w-4 flex-shrink-0" />
+                            </Link>
+                          </Button>
+                        )}
+                        
+                        <p className="text-xs text-muted-foreground text-center">
+                          Secure payment & instant QR code tickets
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="text-center py-4">
+                        <Badge variant="secondary" className="mb-2">Coming Soon</Badge>
+                        <p className="text-sm text-muted-foreground">Tickets will be available soon.</p>
+                        <Button className="w-full mt-4" variant="outline" asChild>
+                          <Link href={`https://wa.me/${siteConfig.contact.whatsapp.replace(/[^0-9]/g, '')}?text=Hi! I'm interested in tickets for ${event.title}`} target="_blank">
+                            Notify Me
                           </Link>
                         </Button>
-                      )}
-
-                      {event.externalLinks?.eventbrite && (
-                        <Button className="w-full" variant="outline" asChild>
-                          <Link href={event.externalLinks.eventbrite} target="_blank">
-                            Buy on Eventbrite
-                            <ExternalLink className="ml-2 h-4 w-4" />
-                          </Link>
-                        </Button>
-                      )}
-                    </div>
+                      </div>
+                    )}
                   </>
                 ) : (
                   <div className="text-center py-4">
@@ -288,15 +276,19 @@ END:VCALENDAR`;
               </CardHeader>
               <CardContent className="space-y-3">
                 <div>
-                  <div className="font-semibold">{event.venue}</div>
-                  <div className="text-sm text-muted-foreground">{event.venueAddress}</div>
+                  <div className="font-semibold">{event.venue || 'Venue TBA'}</div>
+                  {event.venueAddress && (
+                    <div className="text-sm text-muted-foreground">{event.venueAddress}</div>
+                  )}
                 </div>
-                <Button className="w-full" variant="outline" asChild>
-                  <Link href={event.googleMapsUrl} target="_blank">
-                    <MapPin className="mr-2 h-4 w-4" />
-                    View on Google Maps
-                  </Link>
-                </Button>
+                {event.googleMapsUrl && (
+                  <Button className="w-full" variant="outline" asChild>
+                    <Link href={event.googleMapsUrl} target="_blank">
+                      <MapPin className="mr-2 h-4 w-4" />
+                      View on Google Maps
+                    </Link>
+                  </Button>
+                )}
               </CardContent>
             </Card>
 
