@@ -376,6 +376,7 @@ export default function AdminPage() {
   const resetTeamForm = () => {
     setEditingMember(null);
     setTeamForm({ name: '', designation: '', role: '', image: '', linkedin: '', instagram: '', bio: '', city: '', type: 'city', order: 0 });
+    if (teamFileInputRef.current) teamFileInputRef.current.value = '';
   };
 
   // Testimonial handlers
