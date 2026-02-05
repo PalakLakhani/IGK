@@ -1728,7 +1728,7 @@ export default function AdminPage() {
                       </p>
                       <div className="flex items-center gap-2 mt-1">
                         <Badge variant="outline" className="text-xs">
-                          <Image className="h-3 w-3 mr-1" />
+                          <ImageIcon className="h-3 w-3 mr-1" />
                           {event.gallery?.length || 0} photos
                         </Badge>
                         <Badge variant={event.classification === 'upcoming' ? 'default' : 'secondary'} className="text-xs">
