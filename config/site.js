@@ -1,7 +1,7 @@
 export const siteConfig = {
   name: process.env.NEXT_PUBLIC_BRAND_NAME || 'IGK Events',
   description: 'Premium Indian cultural events across Germany - Holi, Bollywood Nights, Garba, and more',
-  logo: 'https://customer-assets.emergentagent.com/job_0e9453d3-b628-4be1-8a9d-95c6b0eeae8b/artifacts/qljlkiei_Original%20PNG.png',
+  logo: 'https://customer-assets.emergentagent.com/job_0e9453d3-b628-4be1-8a9d-95c6b0eeae8b/artifacts/tm4ajjcn_IGK.jpg',
   
   contact: {
     email: 'info@igkevents.com',
