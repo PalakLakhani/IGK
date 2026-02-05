@@ -593,6 +593,105 @@ export default function AdminPage() {
     } catch (err) { toast.error('Error seeding team'); }
   };
 
+  // Gallery handlers
+  const handleOpenGalleryManager = (event) => {
+    setSelectedEventForGallery(event);
+    setShowGalleryManager(true);
+  };
+
+  const handleGalleryUpload = async (e) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setGalleryUploading(true);
+    const uploadedPaths = [];
+
+    try {
+      // Upload each file
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('type', 'gallery');
+
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          headers: { 'x-admin-password': password },
+          body: formData
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          uploadedPaths.push(data.path);
+        } else {
+          toast.error(`Failed to upload ${file.name}`);
+        }
+      }
+
+      if (uploadedPaths.length > 0) {
+        // Update event gallery
+        const updatedGallery = [...(selectedEventForGallery.gallery || []), ...uploadedPaths];
+        
+        const res = await fetch(`/api/admin/events/${selectedEventForGallery.id}`, {
+          method: 'PUT',
+          headers: { 
+            'Content-Type': 'application/json', 
+            'x-admin-password': password 
+          },
+          body: JSON.stringify({ 
+            ...selectedEventForGallery,
+            gallery: updatedGallery 
+          })
+        });
+
+        if (res.ok) {
+          toast.success(`${uploadedPaths.length} photo(s) added to gallery!`);
+          // Update local state
+          setSelectedEventForGallery({
+            ...selectedEventForGallery,
+            gallery: updatedGallery
+          });
+          fetchAllData(password);
+        }
+      }
+    } catch (err) {
+      toast.error('Error uploading photos');
+    } finally {
+      setGalleryUploading(false);
+      if (galleryInputRef.current) galleryInputRef.current.value = '';
+    }
+  };
+
+  const handleRemoveFromGallery = async (photoPath) => {
+    if (!confirm('Remove this photo from gallery?')) return;
+    
+    const updatedGallery = selectedEventForGallery.gallery.filter(p => p !== photoPath);
+    
+    try {
+      const res = await fetch(`/api/admin/events/${selectedEventForGallery.id}`, {
+        method: 'PUT',
+        headers: { 
+          'Content-Type': 'application/json', 
+          'x-admin-password': password 
+        },
+        body: JSON.stringify({ 
+          ...selectedEventForGallery,
+          gallery: updatedGallery 
+        })
+      });
+
+      if (res.ok) {
+        toast.success('Photo removed from gallery');
+        setSelectedEventForGallery({
+          ...selectedEventForGallery,
+          gallery: updatedGallery
+        });
+        fetchAllData(password);
+      }
+    } catch (err) {
+      toast.error('Error removing photo');
+    }
+  };
+
   // Migrate events to new schema
   const handleMigrateEvents = async () => {
     try {
