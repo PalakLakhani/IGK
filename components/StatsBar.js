@@ -7,6 +7,7 @@ import { siteConfig } from '@/config/site';
 function useCountUp(end, duration = 2000, startOnView = true) {
   const [count, setCount] = useState(0);
   const [hasStarted, setHasStarted] = useState(false);
+  const [isComplete, setIsComplete] = useState(false);
   const ref = useRef(null);
 
   useEffect(() => {
@@ -46,6 +47,10 @@ function useCountUp(end, duration = 2000, startOnView = true) {
 
       if (progress < 1) {
         animationFrame = requestAnimationFrame(animate);
+      } else {
+        // Ensure we hit the exact end value
+        setCount(end);
+        setIsComplete(true);
       }
     };
 
@@ -53,7 +58,7 @@ function useCountUp(end, duration = 2000, startOnView = true) {
     return () => cancelAnimationFrame(animationFrame);
   }, [end, duration, hasStarted]);
 
-  return { count, ref };
+  return { count: isComplete ? end : count, ref, isComplete };
 }
 
 export default function StatsBar({ 
@@ -65,12 +70,12 @@ export default function StatsBar({
   const [isLoaded, setIsLoaded] = useState(false);
 
   // Get fixed stats from siteConfig
-  const { eventsOrganized, happyAttendees, citiesCovered } = siteConfig.stats;
+  const { eventsOrganized, citiesCovered } = siteConfig.stats;
 
-  // Animated counters
-  const eventsCounter = useCountUp(eventsOrganized, 2000);
-  const attendeesCounter = useCountUp(25, 2500); // Fixed at 25 for "25K+"
-  const citiesCounter = useCountUp(citiesCovered, 1500);
+  // Animated counters - hardcoded to exact display values
+  const eventsCounter = useCountUp(50, 2000);      // "50+"
+  const attendeesCounter = useCountUp(25, 2500);   // "25K+"
+  const citiesCounter = useCountUp(8, 1500);       // "8"
   const ratingCounter = useCountUp(Math.round(ratingData.averageRating * 10), 2000);
 
   // Fetch dynamic rating from API
