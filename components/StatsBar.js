@@ -69,7 +69,7 @@ export default function StatsBar({
 
   // Animated counters
   const eventsCounter = useCountUp(eventsOrganized, 2000);
-  const attendeesCounter = useCountUp(Math.floor(happyAttendees / 1000), 2500);
+  const attendeesCounter = useCountUp(25, 2500); // Fixed at 25 for "25K+"
   const citiesCounter = useCountUp(citiesCovered, 1500);
   const ratingCounter = useCountUp(Math.round(ratingData.averageRating * 10), 2000);
 
