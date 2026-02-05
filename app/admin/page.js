@@ -168,6 +168,37 @@ export default function AdminPage() {
     }
   };
 
+  // Team photo upload handler
+  const handleTeamPhotoUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingTeamPhoto(true);
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('type', 'team');
+
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'x-admin-password': password },
+        body: formData
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setTeamForm({ ...teamForm, image: data.path });
+        toast.success('Photo uploaded successfully');
+      } else {
+        toast.error(data.error || 'Upload failed');
+      }
+    } catch (err) {
+      toast.error('Upload failed');
+    } finally {
+      setUploadingTeamPhoto(false);
+    }
+  };
+
   // Event handlers
   const handleSaveEvent = async () => {
     if (!eventForm.title || !eventForm.startDate || !eventForm.city) {
