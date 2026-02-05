@@ -367,29 +367,43 @@ export default function AdminPage() {
     const eventData = {
       title: eventForm.title,
       slug,
-      description: eventForm.description,
+      // Content fields
+      heroTagline: eventForm.heroTagline || '',
+      shortSummary: eventForm.shortSummary || '',
+      description: eventForm.description || '',
+      // Location
       city: eventForm.city,
-      venue: eventForm.venue,
+      venue: eventForm.venue || '',
+      venueAddress: eventForm.venueAddress || '',
+      googleMapsUrl: eventForm.googleMapsUrl || '',
       category: eventForm.category,
       brand: eventForm.brand,
+      // Date/Time
       startDateTime: startDateTime.toISOString(),
       endDateTime: endDateTime ? endDateTime.toISOString() : null,
-      date: startDateTime.toISOString(), // Legacy field
+      date: startDateTime.toISOString(),
       time: eventForm.startTime,
       endTime: eventForm.endTime,
+      // Media
       poster: eventForm.poster || eventForm.coverImagePath,
       coverImagePath: eventForm.coverImagePath,
       coverImageUrl: eventForm.poster,
+      // Ticketing
       desipassUrl: eventForm.desipassUrl,
       eventbriteUrl: eventForm.eventbriteUrl,
       ticketPlatforms: {
         desipassUrl: eventForm.desipassUrl,
         eventbriteUrl: eventForm.eventbriteUrl
       },
+      // Status
       status: eventForm.status,
       statusOverride: eventForm.statusOverride,
       attendeesCount: eventForm.attendeesCount,
-      featured: eventForm.featured
+      featured: eventForm.featured,
+      // Optional sections
+      rules: eventForm.rules || [],
+      schedule: eventForm.schedule || [],
+      faqs: eventForm.faqs || []
     };
 
     try {
