@@ -87,7 +87,7 @@ export async function GET(request) {
       const category = searchParams.get('category');
       const city = searchParams.get('city');
       const status = searchParams.get('status') || 'published';
-      const type = searchParams.get('type'); // upcoming, past, all
+      const type = searchParams.get('type'); // upcoming, past, all, classified
 
       let events;
       
@@ -95,6 +95,10 @@ export async function GET(request) {
         events = await Event.getUpcoming(100);
       } else if (type === 'past') {
         events = await Event.getPast(100);
+      } else if (type === 'classified') {
+        // Return events split by classification
+        const classified = await Event.getAllClassified();
+        return corsResponse(classified);
       } else {
         const filters = { status };
         if (category) filters.category = category;
@@ -105,8 +109,18 @@ export async function GET(request) {
       return corsResponse({ events });
     }
 
+    // Migrate events to new schema
+    if (path === 'events/migrate') {
+      try {
+        const result = await Event.migrateToNewSchema();
+        return corsResponse({ message: 'Migration complete', ...result });
+      } catch (error) {
+        return corsResponse({ error: 'Migration failed', details: error.message }, 500);
+      }
+    }
+
     // Get single event by slug
-    if (path.startsWith('events/')) {
+    if (path.startsWith('events/') && !path.includes('migrate')) {
       const slug = path.replace('events/', '');
       const event = await Event.findBySlug(slug);
       
@@ -114,7 +128,9 @@ export async function GET(request) {
         return corsResponse({ error: 'Event not found' }, 404);
       }
 
-      return corsResponse({ event });
+      // Add classification
+      const classification = Event.classifyEvent(event);
+      return corsResponse({ event: { ...event, classification } });
     }
 
     // Get testimonials
