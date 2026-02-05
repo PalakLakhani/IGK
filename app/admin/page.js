@@ -1526,6 +1526,232 @@ export default function AdminPage() {
               </Card>
             </div>
           </TabsContent>
+
+          {/* Newsletter Subscribers */}
+          <TabsContent value="newsletter">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h2 className="text-2xl font-bold">Newsletter Subscribers</h2>
+                <p className="text-muted-foreground">{newsletterSubscribers.length} total subscribers</p>
+              </div>
+              <Button 
+                variant="outline"
+                onClick={() => {
+                  // Export to CSV
+                  const csv = ['Email,Subscribed At'];
+                  newsletterSubscribers.forEach(sub => {
+                    csv.push(`${sub.email},${new Date(sub.subscribedAt).toLocaleDateString()}`);
+                  });
+                  const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `igk-newsletter-subscribers-${new Date().toISOString().split('T')[0]}.csv`;
+                  a.click();
+                  URL.revokeObjectURL(url);
+                  toast.success('CSV exported!');
+                }}
+              >
+                <Download className="mr-2 h-4 w-4" />
+                Export CSV
+              </Button>
+            </div>
+
+            {newsletterSubscribers.length > 0 ? (
+              <Card>
+                <CardContent className="p-0">
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-muted">
+                        <tr>
+                          <th className="text-left p-4 font-medium">#</th>
+                          <th className="text-left p-4 font-medium">Email</th>
+                          <th className="text-left p-4 font-medium">Subscribed At</th>
+                          <th className="text-left p-4 font-medium">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {newsletterSubscribers.map((subscriber, index) => (
+                          <tr key={subscriber.id || index} className="border-t hover:bg-muted/50">
+                            <td className="p-4 text-muted-foreground">{index + 1}</td>
+                            <td className="p-4">
+                              <div className="flex items-center gap-2">
+                                <Mail className="h-4 w-4 text-muted-foreground" />
+                                <span className="font-medium">{subscriber.email}</span>
+                              </div>
+                            </td>
+                            <td className="p-4 text-muted-foreground">
+                              {subscriber.subscribedAt ? new Date(subscriber.subscribedAt).toLocaleDateString('en-DE', {
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              }) : 'N/A'}
+                            </td>
+                            <td className="p-4">
+                              <Badge variant={subscriber.active !== false ? 'default' : 'secondary'}>
+                                {subscriber.active !== false ? 'Active' : 'Unsubscribed'}
+                              </Badge>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card>
+                <CardContent className="py-12 text-center">
+                  <Mail className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">No newsletter subscribers yet.</p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Users can subscribe from the footer on the homepage.
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          {/* Gallery */}
+          <TabsContent value="gallery">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h2 className="text-2xl font-bold">Event Gallery</h2>
+                <p className="text-muted-foreground">Manage photos for each event</p>
+              </div>
+            </div>
+
+            {/* Gallery Manager Dialog */}
+            <Dialog open={showGalleryManager} onOpenChange={setShowGalleryManager}>
+              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <Image className="h-5 w-5" />
+                    {selectedEventForGallery?.title} - Gallery
+                  </DialogTitle>
+                  <DialogDescription>
+                    Upload multiple photos at once. Supported formats: JPG, PNG, WebP
+                  </DialogDescription>
+                </DialogHeader>
+
+                <div className="space-y-6">
+                  {/* Upload Area */}
+                  <div className="border-2 border-dashed rounded-lg p-8 text-center hover:border-pink-500 transition-colors">
+                    <Input
+                      ref={galleryInputRef}
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleGalleryUpload}
+                      disabled={galleryUploading}
+                      className="hidden"
+                      id="gallery-upload"
+                    />
+                    <label htmlFor="gallery-upload" className="cursor-pointer">
+                      {galleryUploading ? (
+                        <div className="flex flex-col items-center gap-2 text-pink-600">
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-600"></div>
+                          <p>Uploading photos...</p>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          <ImagePlus className="h-12 w-12 mx-auto text-gray-400" />
+                          <p className="text-lg font-medium text-gray-600">Click to upload photos</p>
+                          <p className="text-sm text-gray-400">Select multiple files at once</p>
+                          <p className="text-xs text-gray-400">Max 5MB per file</p>
+                        </div>
+                      )}
+                    </label>
+                  </div>
+
+                  {/* Current Gallery */}
+                  <div>
+                    <h4 className="font-semibold mb-3">
+                      Current Photos ({selectedEventForGallery?.gallery?.length || 0})
+                    </h4>
+                    {selectedEventForGallery?.gallery?.length > 0 ? (
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        {selectedEventForGallery.gallery.map((photo, index) => (
+                          <div key={index} className="relative group">
+                            <div className="relative aspect-square rounded-lg overflow-hidden border">
+                              <img 
+                                src={photo} 
+                                alt={`Gallery ${index + 1}`} 
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            <button
+                              onClick={() => handleRemoveFromGallery(photo)}
+                              className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                            >
+                              <X className="h-4 w-4" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-muted-foreground text-center py-8">
+                        No photos in gallery yet. Upload some above!
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setShowGalleryManager(false)}>
+                    Close
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+            {/* Events List with Gallery Management */}
+            <div className="space-y-4">
+              {events.map(event => (
+                <Card key={event.id}>
+                  <CardContent className="p-4 flex items-center gap-4">
+                    {(event.poster || event.coverImagePath) && (
+                      <div className="relative w-24 h-16 rounded overflow-hidden flex-shrink-0">
+                        <img 
+                          src={event.coverImagePath || event.poster} 
+                          alt="" 
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                    <div className="flex-1">
+                      <h3 className="font-bold">{event.title}</h3>
+                      <p className="text-sm text-muted-foreground">
+                        {event.city} • {event.category}
+                      </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Badge variant="outline" className="text-xs">
+                          <Image className="h-3 w-3 mr-1" />
+                          {event.gallery?.length || 0} photos
+                        </Badge>
+                        <Badge variant={event.classification === 'upcoming' ? 'default' : 'secondary'} className="text-xs">
+                          {event.classification}
+                        </Badge>
+                      </div>
+                    </div>
+                    <Button onClick={() => handleOpenGalleryManager(event)}>
+                      <ImagePlus className="mr-2 h-4 w-4" />
+                      Manage Gallery
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+              {events.length === 0 && (
+                <Card>
+                  <CardContent className="py-12 text-center text-muted-foreground">
+                    No events yet. Create an event first to add gallery photos.
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          </TabsContent>
         </Tabs>
       </div>
     </div>
