@@ -12,6 +12,8 @@ import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
 import EventCard from '@/components/EventCard';
 import NewsletterSubscribe from '@/components/NewsletterSubscribe';
+import OurBrands from '@/components/OurBrands';
+import MascotAssistant from '@/components/MascotAssistant';
 import { siteConfig } from '@/config/site';
 import { format } from 'date-fns';
 
