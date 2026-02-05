@@ -118,10 +118,10 @@ export default function EventCard({ event }) {
           </div>
         </div>
         
-        {/* Description Excerpt - derived from event.description */}
-        {excerpt && (
+        {/* Card Summary - from shortSummary or auto-excerpt */}
+        {cardSummary && (
           <p className="mt-4 text-gray-600 line-clamp-2 leading-relaxed text-sm">
-            {excerpt}
+            {cardSummary}
           </p>
         )}
       </CardContent>
