@@ -756,6 +756,19 @@ export async function PUT(request) {
       return corsResponse({ event, message: 'Event updated successfully' });
     }
 
+    // Update team member
+    if (path.startsWith('admin/team/')) {
+      const memberId = path.replace('admin/team/', '');
+      const success = await TeamMember.update(memberId, body);
+      
+      if (!success) {
+        return corsResponse({ error: 'Team member not found' }, 404);
+      }
+
+      const member = await TeamMember.findById(memberId);
+      return corsResponse({ member, message: 'Team member updated successfully' });
+    }
+
     return corsResponse({ error: 'Endpoint not found' }, 404);
 
   } catch (error) {
