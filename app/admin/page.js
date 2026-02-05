@@ -1004,7 +1004,7 @@ export default function AdminPage() {
                         ref={teamFileInputRef}
                         type="file" 
                         accept="image/*"
-                        onChange={handleTeamPhotoUpload}
+                        onChange={handleTeamPhotoSelect}
                         disabled={uploadingTeamPhoto}
                         className="hidden"
                         id="team-photo-upload"
@@ -1062,6 +1062,81 @@ export default function AdminPage() {
                 <DialogFooter>
                   <Button variant="outline" onClick={() => setShowTeamForm(false)}>Cancel</Button>
                   <Button onClick={handleSaveTeamMember}><Save className="mr-2 h-4 w-4" />{editingMember ? 'Update' : 'Add'}</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+            {/* Photo Cropper Dialog */}
+            <Dialog open={showCropper} onOpenChange={(open) => !open && handleCancelCrop()}>
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <Move className="h-5 w-5" />
+                    Adjust Photo
+                  </DialogTitle>
+                  <DialogDescription>
+                    Drag to reposition, use slider to zoom in/out
+                  </DialogDescription>
+                </DialogHeader>
+                
+                <div className="space-y-4">
+                  {/* Cropper Area */}
+                  <div className="relative h-80 bg-gray-900 rounded-lg overflow-hidden">
+                    {cropImage && (
+                      <Cropper
+                        image={cropImage}
+                        crop={crop}
+                        zoom={zoom}
+                        aspect={1}
+                        cropShape="round"
+                        showGrid={false}
+                        onCropChange={setCrop}
+                        onCropComplete={onCropComplete}
+                        onZoomChange={setZoom}
+                      />
+                    )}
+                  </div>
+
+                  {/* Zoom Control */}
+                  <div className="flex items-center gap-4 px-4">
+                    <ZoomOut className="h-5 w-5 text-gray-500" />
+                    <Slider
+                      value={[zoom]}
+                      min={1}
+                      max={3}
+                      step={0.1}
+                      onValueChange={(value) => setZoom(value[0])}
+                      className="flex-1"
+                    />
+                    <ZoomIn className="h-5 w-5 text-gray-500" />
+                  </div>
+
+                  <p className="text-sm text-center text-muted-foreground">
+                    Tip: Drag the image to center your face in the circle
+                  </p>
+                </div>
+
+                <DialogFooter className="gap-2">
+                  <Button variant="outline" onClick={handleCancelCrop}>
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={handleSaveCroppedImage} 
+                    disabled={uploadingTeamPhoto}
+                    className="bg-pink-600 hover:bg-pink-700"
+                  >
+                    {uploadingTeamPhoto ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="h-4 w-4 mr-2" />
+                        Save Photo
+                      </>
+                    )}
+                  </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
