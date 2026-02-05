@@ -4,13 +4,11 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Calendar, MapPin, Clock, Users, ExternalLink, Download, Share2, ChevronRight, Ticket } from 'lucide-react';
+import { Calendar, MapPin, Clock, ExternalLink, Download, Share2, ChevronRight, Ticket } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Separator } from '@/components/ui/separator';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
@@ -65,7 +63,7 @@ VERSION:2.0
 BEGIN:VEVENT
 DTSTART:${format(eventDate, "yyyyMMdd'T'HHmmss")}
 SUMMARY:${event.title}
-LOCATION:${event.venue}, ${event.city}
+LOCATION:${event.venue ? `${event.venue}, ` : ''}${event.city}
 DESCRIPTION:${event.description?.replace(/\n/g, '\\n') || ''}
 END:VEVENT
 END:VCALENDAR`;
@@ -93,10 +91,18 @@ END:VCALENDAR`;
   const eventDate = new Date(event.startDateTime || event.date);
   const isPast = event.classification === 'past' || eventDate < new Date();
   
-  // Get ticket URLs from multiple possible locations
-  const desipassUrl = event.desipassUrl || event.ticketPlatforms?.desipassUrl || event.externalLinks?.desipass;
-  const eventbriteUrl = event.eventbriteUrl || event.ticketPlatforms?.eventbriteUrl || event.externalLinks?.eventbrite;
+  // Get ticket URLs - only from event data, NO fallbacks
+  const desipassUrl = event.desipassUrl || event.ticketPlatforms?.desipassUrl;
+  const eventbriteUrl = event.eventbriteUrl || event.ticketPlatforms?.eventbriteUrl;
   const hasTicketLinks = desipassUrl || eventbriteUrl;
+
+  // Check if sections have content - hide if empty
+  const hasDescription = event.description && event.description.trim().length > 0;
+  const hasSchedule = event.schedule && Array.isArray(event.schedule) && event.schedule.length > 0;
+  const hasRules = event.rules && Array.isArray(event.rules) && event.rules.length > 0;
+  const hasFaqs = event.faqs && Array.isArray(event.faqs) && event.faqs.length > 0;
+  const hasVenue = event.venue && event.venue.trim().length > 0;
+  const hasVenueAddress = event.venueAddress && event.venueAddress.trim().length > 0;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -115,7 +121,9 @@ END:VCALENDAR`;
         
         <div className="relative container h-full flex items-end pb-8">
           <div className="text-white space-y-4 max-w-3xl">
-            <Badge className="bg-amber-500 text-white">{event.category}</Badge>
+            {event.category && (
+              <Badge className="bg-amber-500 text-white">{event.category}</Badge>
+            )}
             <h1 className="text-4xl md:text-5xl font-bold">{event.title}</h1>
             <div className="flex flex-wrap gap-6 text-lg">
               <div className="flex items-center gap-2">
@@ -126,10 +134,12 @@ END:VCALENDAR`;
                 <Clock className="h-5 w-5" />
                 <span>{format(eventDate, 'HH:mm')} {event.endTime ? `- ${event.endTime}` : 'Uhr'}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <MapPin className="h-5 w-5" />
-                <span>{event.city}</span>
-              </div>
+              {event.city && (
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-5 w-5" />
+                  <span>{event.city}</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -139,20 +149,22 @@ END:VCALENDAR`;
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Description - Shows full description from admin */}
-            <Card>
-              <CardHeader>
-                <CardTitle>About This Event</CardTitle>
-              </CardHeader>
-              <CardContent className="prose max-w-none">
-                <p className="text-muted-foreground whitespace-pre-line">
-                  {event.longDescription || event.description}
-                </p>
-              </CardContent>
-            </Card>
+            {/* About This Event - ONLY show if description exists */}
+            {hasDescription && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>About This Event</CardTitle>
+                </CardHeader>
+                <CardContent className="prose max-w-none">
+                  <p className="text-muted-foreground whitespace-pre-line">
+                    {event.description}
+                  </p>
+                </CardContent>
+              </Card>
+            )}
 
-            {/* Schedule */}
-            {event.schedule && event.schedule.length > 0 && (
+            {/* Schedule - ONLY show if schedule array has items */}
+            {hasSchedule && (
               <Card>
                 <CardHeader>
                   <CardTitle>Event Schedule</CardTitle>
@@ -172,8 +184,8 @@ END:VCALENDAR`;
               </Card>
             )}
 
-            {/* Rules & Safety */}
-            {event.rules && event.rules.length > 0 && (
+            {/* Rules - ONLY show if rules array has items */}
+            {hasRules && (
               <Card>
                 <CardHeader>
                   <CardTitle>Rules & Safety Guidelines</CardTitle>
@@ -191,8 +203,8 @@ END:VCALENDAR`;
               </Card>
             )}
 
-            {/* FAQs */}
-            {event.faqs && event.faqs.length > 0 && (
+            {/* FAQs - ONLY show if faqs array has items */}
+            {hasFaqs && (
               <Card>
                 <CardHeader>
                   <CardTitle>Frequently Asked Questions</CardTitle>
@@ -213,7 +225,7 @@ END:VCALENDAR`;
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Ticket Booking Card - EXTERNAL PLATFORMS ONLY */}
+            {/* Ticket Booking Card */}
             <Card className="sticky top-20">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -269,28 +281,38 @@ END:VCALENDAR`;
               </CardContent>
             </Card>
 
-            {/* Venue Card */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Venue Details</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div>
-                  <div className="font-semibold">{event.venue || 'Venue TBA'}</div>
-                  {event.venueAddress && (
-                    <div className="text-sm text-muted-foreground">{event.venueAddress}</div>
+            {/* Venue Card - ONLY show if venue or city exists */}
+            {(hasVenue || event.city) && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Venue Details</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div>
+                    {hasVenue && (
+                      <div className="font-semibold">{event.venue}</div>
+                    )}
+                    {hasVenueAddress && (
+                      <div className="text-sm text-muted-foreground">{event.venueAddress}</div>
+                    )}
+                    {event.city && !hasVenue && (
+                      <div className="font-semibold">{event.city}</div>
+                    )}
+                    {event.city && hasVenue && (
+                      <div className="text-sm text-muted-foreground">{event.city}</div>
+                    )}
+                  </div>
+                  {event.googleMapsUrl && (
+                    <Button className="w-full" variant="outline" asChild>
+                      <Link href={event.googleMapsUrl} target="_blank">
+                        <MapPin className="mr-2 h-4 w-4" />
+                        View on Google Maps
+                      </Link>
+                    </Button>
                   )}
-                </div>
-                {event.googleMapsUrl && (
-                  <Button className="w-full" variant="outline" asChild>
-                    <Link href={event.googleMapsUrl} target="_blank">
-                      <MapPin className="mr-2 h-4 w-4" />
-                      View on Google Maps
-                    </Link>
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Share & Calendar */}
             <Card>
