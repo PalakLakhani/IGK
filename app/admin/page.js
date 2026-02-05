@@ -7,7 +7,8 @@ import Cropper from 'react-easy-crop';
 import { 
   Calendar, Users, DollarSign, BarChart3, Eye, Lock, Plus, Edit2, Trash2, 
   Star, CheckCircle, XCircle, Settings, RefreshCw, Ticket, Save, UserPlus,
-  Upload, Clock, MapPin, ExternalLink, AlertCircle, ZoomIn, ZoomOut, Move
+  Upload, Clock, MapPin, ExternalLink, AlertCircle, ZoomIn, ZoomOut, Move,
+  Mail, Image, Download, X, ImagePlus
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
