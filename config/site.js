@@ -4,6 +4,14 @@ export const siteConfig = {
   description: 'Curated events & experiences across Germany - Holi, Bollywood Nights, Garba, Weddings, and more',
   logo: 'https://customer-assets.emergentagent.com/job_0e9453d3-b628-4be1-8a9d-95c6b0eeae8b/artifacts/snpr9tbt_Original%20PNG.png',
   
+  // Fixed stats - Single source of truth for the entire site
+  stats: {
+    eventsOrganized: 50,      // Display as "50+"
+    happyAttendees: 25000,    // Display as "25K+"
+    citiesCovered: 8,         // Display as "8"
+    // averageRating is computed dynamically from reviews
+  },
+
   contact: {
     email: 'igkonnekt@gmail.com',
     whatsapp: '+4917657722110',
