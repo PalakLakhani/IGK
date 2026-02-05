@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { 
   Calendar, Users, DollarSign, BarChart3, Eye, Lock, Plus, Edit2, Trash2, 
-  Star, CheckCircle, XCircle, Settings, RefreshCw, Ticket, Save, UserPlus
+  Star, CheckCircle, XCircle, Settings, RefreshCw, Ticket, Save, UserPlus,
+  Upload, Clock, MapPin, ExternalLink, AlertCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,11 +18,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { siteConfig } from '@/config/site';
 import { toast } from 'sonner';
+import { format, parseISO } from 'date-fns';
 
 export default function AdminPage() {
   const router = useRouter();
+  const fileInputRef = useRef(null);
   const [password, setPassword] = useState('');
   const [authenticated, setAuthenticated] = useState(false);
   const [events, setEvents] = useState([]);
@@ -30,16 +34,33 @@ export default function AdminPage() {
   const [teamMembers, setTeamMembers] = useState([]);
   const [settings, setSettings] = useState({});
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('overview');
   
-  // Event form state
+  // Event form state - Updated schema
   const [showEventForm, setShowEventForm] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
   const [eventForm, setEventForm] = useState({
-    title: '', slug: '', date: '', time: '19:00', city: '', venue: '', category: '',
-    description: '', poster: '', ticketTypes: [], desipassUrl: '', eventbriteUrl: '',
-    status: 'published', attendeesCount: 0
+    title: '',
+    slug: '',
+    startDate: '', // YYYY-MM-DD
+    startTime: '19:00', // HH:MM
+    endDate: '', // Optional
+    endTime: '', // Optional
+    city: '',
+    venue: '',
+    category: '',
+    brand: 'IGK',
+    description: '',
+    poster: '', // URL or uploaded path
+    coverImagePath: '', // Uploaded file path
+    desipassUrl: '',
+    eventbriteUrl: '',
+    status: 'published',
+    statusOverride: 'auto',
+    attendeesCount: 0,
+    featured: false
   });
 
   // Team member form state
@@ -75,7 +96,7 @@ export default function AdminPage() {
     setLoading(true);
     try {
       const [eventsRes, ordersRes, testimonialsRes, settingsRes, teamRes] = await Promise.all([
-        fetch('/api/events'),
+        fetch('/api/events?type=classified'),
         fetch('/api/admin/orders', { headers: { 'x-admin-password': pwd } }),
         fetch('/api/admin/testimonials', { headers: { 'x-admin-password': pwd } }),
         fetch('/api/admin/settings', { headers: { 'x-admin-password': pwd } }),
@@ -88,7 +109,9 @@ export default function AdminPage() {
       const settingsData = await settingsRes.json();
       const teamData = await teamRes.json();
 
-      setEvents(eventsData.events || []);
+      // Combine upcoming and past events
+      const allEvents = [...(eventsData.upcoming || []), ...(eventsData.past || [])];
+      setEvents(allEvents);
       setOrders(ordersData.orders || []);
       setTestimonials(testimonialsData.testimonials || []);
       setSettings(settingsData.settings || {});
@@ -108,18 +131,100 @@ export default function AdminPage() {
 
   const generateSlug = (title) => title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
+  // File upload handler
+  const handleFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('type', 'events');
+
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'x-admin-password': password },
+        body: formData
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setEventForm({ 
+          ...eventForm, 
+          poster: data.path,
+          coverImagePath: data.path 
+        });
+        toast.success('Image uploaded successfully');
+      } else {
+        toast.error(data.error || 'Upload failed');
+      }
+    } catch (err) {
+      toast.error('Upload failed');
+    } finally {
+      setUploading(false);
+    }
+  };
+
   // Event handlers
   const handleSaveEvent = async () => {
-    if (!eventForm.title || !eventForm.date || !eventForm.city) {
-      toast.error('Please fill in required fields');
+    if (!eventForm.title || !eventForm.startDate || !eventForm.city) {
+      toast.error('Please fill in required fields (Title, Start Date, City)');
       return;
     }
+
     const slug = eventForm.slug || generateSlug(eventForm.title);
-    const eventData = { ...eventForm, slug };
+    
+    // Build startDateTime
+    const startDateTime = new Date(`${eventForm.startDate}T${eventForm.startTime || '19:00'}:00`);
+    
+    // Build endDateTime if provided
+    let endDateTime = null;
+    if (eventForm.endDate) {
+      endDateTime = new Date(`${eventForm.endDate}T${eventForm.endTime || '23:59'}:00`);
+    }
+
+    const eventData = {
+      title: eventForm.title,
+      slug,
+      description: eventForm.description,
+      city: eventForm.city,
+      venue: eventForm.venue,
+      category: eventForm.category,
+      brand: eventForm.brand,
+      startDateTime: startDateTime.toISOString(),
+      endDateTime: endDateTime ? endDateTime.toISOString() : null,
+      date: startDateTime.toISOString(), // Legacy field
+      time: eventForm.startTime,
+      endTime: eventForm.endTime,
+      poster: eventForm.poster || eventForm.coverImagePath,
+      coverImagePath: eventForm.coverImagePath,
+      coverImageUrl: eventForm.poster,
+      desipassUrl: eventForm.desipassUrl,
+      eventbriteUrl: eventForm.eventbriteUrl,
+      ticketPlatforms: {
+        desipassUrl: eventForm.desipassUrl,
+        eventbriteUrl: eventForm.eventbriteUrl
+      },
+      status: eventForm.status,
+      statusOverride: eventForm.statusOverride,
+      attendeesCount: eventForm.attendeesCount,
+      featured: eventForm.featured
+    };
+
     try {
       const res = editingEvent
-        ? await fetch(`/api/admin/events/${editingEvent.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'x-admin-password': password }, body: JSON.stringify(eventData) })
-        : await fetch('/api/admin/events', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-admin-password': password }, body: JSON.stringify(eventData) });
+        ? await fetch(`/api/admin/events/${editingEvent.id}`, { 
+            method: 'PUT', 
+            headers: { 'Content-Type': 'application/json', 'x-admin-password': password }, 
+            body: JSON.stringify(eventData) 
+          })
+        : await fetch('/api/admin/events', { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json', 'x-admin-password': password }, 
+            body: JSON.stringify(eventData) 
+          });
+
       if (res.ok) {
         toast.success(editingEvent ? 'Event updated!' : 'Event created!');
         setShowEventForm(false);
@@ -129,7 +234,9 @@ export default function AdminPage() {
         const data = await res.json();
         toast.error(data.error || 'Failed to save');
       }
-    } catch (err) { toast.error('Error saving event'); }
+    } catch (err) { 
+      toast.error('Error saving event'); 
+    }
   };
 
   const handleDeleteEvent = async (eventId) => {
@@ -142,21 +249,58 @@ export default function AdminPage() {
 
   const handleEditEvent = (event) => {
     setEditingEvent(event);
+    
+    // Parse dates
+    let startDate = '';
+    let startTime = '19:00';
+    let endDate = '';
+    let endTime = '';
+    
+    if (event.startDateTime || event.date) {
+      const dt = new Date(event.startDateTime || event.date);
+      startDate = dt.toISOString().split('T')[0];
+      startTime = dt.toTimeString().slice(0, 5);
+    }
+    
+    if (event.endDateTime) {
+      const dt = new Date(event.endDateTime);
+      endDate = dt.toISOString().split('T')[0];
+      endTime = dt.toTimeString().slice(0, 5);
+    }
+
     setEventForm({
-      title: event.title || '', slug: event.slug || '',
-      date: event.date ? new Date(event.date).toISOString().split('T')[0] : '',
-      time: event.time || '19:00', city: event.city || '', venue: event.venue || '',
-      category: event.category || '', description: event.description || '',
-      poster: event.poster || '', ticketTypes: event.ticketTypes || [],
-      desipassUrl: event.desipassUrl || '', eventbriteUrl: event.eventbriteUrl || '',
-      status: event.status || 'published', attendeesCount: event.attendeesCount || 0
+      title: event.title || '',
+      slug: event.slug || '',
+      startDate,
+      startTime,
+      endDate,
+      endTime,
+      city: event.city || '',
+      venue: event.venue || '',
+      category: event.category || '',
+      brand: event.brand || 'IGK',
+      description: event.description || '',
+      poster: event.poster || event.coverImageUrl || '',
+      coverImagePath: event.coverImagePath || '',
+      desipassUrl: event.desipassUrl || event.ticketPlatforms?.desipassUrl || '',
+      eventbriteUrl: event.eventbriteUrl || event.ticketPlatforms?.eventbriteUrl || '',
+      status: event.status || 'published',
+      statusOverride: event.statusOverride || 'auto',
+      attendeesCount: event.attendeesCount || 0,
+      featured: event.featured || false
     });
     setShowEventForm(true);
   };
 
   const resetEventForm = () => {
     setEditingEvent(null);
-    setEventForm({ title: '', slug: '', date: '', time: '19:00', city: '', venue: '', category: '', description: '', poster: '', ticketTypes: [], desipassUrl: '', eventbriteUrl: '', status: 'published', attendeesCount: 0 });
+    setEventForm({
+      title: '', slug: '', startDate: '', startTime: '19:00', endDate: '', endTime: '',
+      city: '', venue: '', category: '', brand: 'IGK', description: '', poster: '',
+      coverImagePath: '', desipassUrl: '', eventbriteUrl: '', status: 'published',
+      statusOverride: 'auto', attendeesCount: 0, featured: false
+    });
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   // Team handlers
@@ -224,7 +368,6 @@ export default function AdminPage() {
     } catch (err) { toast.error('Error'); }
   };
 
-  // Seed team
   const handleSeedTeam = async () => {
     try {
       const res = await fetch('/api/seed-team');
@@ -232,6 +375,16 @@ export default function AdminPage() {
       toast.success(data.message);
       fetchAllData(password);
     } catch (err) { toast.error('Error seeding team'); }
+  };
+
+  // Migrate events to new schema
+  const handleMigrateEvents = async () => {
+    try {
+      const res = await fetch('/api/events/migrate');
+      const data = await res.json();
+      toast.success(`Migration complete: ${data.migrated} events updated`);
+      fetchAllData(password);
+    } catch (err) { toast.error('Migration failed'); }
   };
 
   if (!authenticated) {
@@ -261,9 +414,14 @@ export default function AdminPage() {
     );
   }
 
+  // Calculate stats with proper classification
+  const upcomingEvents = events.filter(e => e.classification === 'upcoming');
+  const pastEvents = events.filter(e => e.classification === 'past');
+  
   const stats = {
     totalEvents: events.length,
-    upcomingEvents: events.filter(e => new Date(e.date) > new Date()).length,
+    upcomingEvents: upcomingEvents.length,
+    pastEvents: pastEvents.length,
     totalOrders: orders.length,
     totalRevenue: orders.filter(o => o.status === 'completed').reduce((sum, o) => sum + (o.totalAmount || 0), 0),
     pendingTestimonials: testimonials.filter(t => !t.approved).length,
@@ -272,6 +430,17 @@ export default function AdminPage() {
 
   const categories = ['Bollywood Night', 'Concert', 'Holi', 'Garba', 'Navratri', 'Wedding', 'Corporate', 'Cultural', 'Other'];
   const cities = ['Berlin', 'Munich', 'Frankfurt', 'Hamburg', 'Cologne', 'Leipzig', 'Stuttgart', 'Düsseldorf'];
+  const brands = ['IGK', 'BIG', 'Holi Bash Europe', 'Navaratri Fiesta Europe'];
+
+  // Helper to format event date for display
+  const formatEventDate = (event) => {
+    try {
+      const date = new Date(event.startDateTime || event.date);
+      return format(date, 'MMM dd, yyyy HH:mm');
+    } catch {
+      return 'Invalid date';
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -302,14 +471,24 @@ export default function AdminPage() {
 
           {/* Overview */}
           <TabsContent value="overview">
-            <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
-              <Card><CardContent className="pt-6"><p className="text-sm text-muted-foreground">Events</p><p className="text-3xl font-bold">{stats.totalEvents}</p></CardContent></Card>
-              <Card><CardContent className="pt-6"><p className="text-sm text-muted-foreground">Upcoming</p><p className="text-3xl font-bold">{stats.upcomingEvents}</p></CardContent></Card>
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8">
+              <Card><CardContent className="pt-6"><p className="text-sm text-muted-foreground">Total Events</p><p className="text-3xl font-bold">{stats.totalEvents}</p></CardContent></Card>
+              <Card className="border-green-200"><CardContent className="pt-6"><p className="text-sm text-green-600">Upcoming</p><p className="text-3xl font-bold text-green-600">{stats.upcomingEvents}</p></CardContent></Card>
+              <Card className="border-gray-200"><CardContent className="pt-6"><p className="text-sm text-gray-500">Past</p><p className="text-3xl font-bold text-gray-500">{stats.pastEvents}</p></CardContent></Card>
               <Card><CardContent className="pt-6"><p className="text-sm text-muted-foreground">Orders</p><p className="text-3xl font-bold">{stats.totalOrders}</p></CardContent></Card>
               <Card><CardContent className="pt-6"><p className="text-sm text-muted-foreground">Revenue</p><p className="text-3xl font-bold">€{stats.totalRevenue}</p></CardContent></Card>
               <Card><CardContent className="pt-6"><p className="text-sm text-muted-foreground">Pending Reviews</p><p className="text-3xl font-bold">{stats.pendingTestimonials}</p></CardContent></Card>
               <Card><CardContent className="pt-6"><p className="text-sm text-muted-foreground">Team Members</p><p className="text-3xl font-bold">{stats.totalTeamMembers}</p></CardContent></Card>
             </div>
+
+            {/* Quick Actions */}
+            <Card className="mb-8">
+              <CardHeader><CardTitle>Quick Actions</CardTitle></CardHeader>
+              <CardContent className="flex gap-4">
+                <Button onClick={() => { resetEventForm(); setShowEventForm(true); }}><Plus className="mr-2 h-4 w-4" />Add Event</Button>
+                <Button variant="outline" onClick={handleMigrateEvents}>Migrate Events to New Schema</Button>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* Events */}
@@ -319,36 +498,231 @@ export default function AdminPage() {
               <Button onClick={() => { resetEventForm(); setShowEventForm(true); }}><Plus className="mr-2 h-4 w-4" />Add Event</Button>
             </div>
 
+            {/* Event Form Dialog */}
             <Dialog open={showEventForm} onOpenChange={setShowEventForm}>
-              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>{editingEvent ? 'Edit Event' : 'Create Event'}</DialogTitle>
+                  <DialogDescription>All times are in Europe/Berlin timezone</DialogDescription>
                 </DialogHeader>
+                
                 <div className="grid gap-4 py-4">
+                  {/* Title & Slug */}
                   <div className="grid grid-cols-2 gap-4">
-                    <div><Label>Title *</Label><Input value={eventForm.title} onChange={(e) => setEventForm({ ...eventForm, title: e.target.value, slug: generateSlug(e.target.value) })} placeholder="Event title" /></div>
-                    <div><Label>Slug</Label><Input value={eventForm.slug} onChange={(e) => setEventForm({ ...eventForm, slug: e.target.value })} /></div>
+                    <div>
+                      <Label>Title *</Label>
+                      <Input 
+                        value={eventForm.title} 
+                        onChange={(e) => setEventForm({ ...eventForm, title: e.target.value, slug: generateSlug(e.target.value) })} 
+                        placeholder="Event title" 
+                      />
+                    </div>
+                    <div>
+                      <Label>Slug</Label>
+                      <Input value={eventForm.slug} onChange={(e) => setEventForm({ ...eventForm, slug: e.target.value })} />
+                    </div>
                   </div>
+
+                  {/* Date & Time - Start */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4" />
+                        Start Date * <span className="text-xs text-muted-foreground">(Europe/Berlin)</span>
+                      </Label>
+                      <Input 
+                        type="date" 
+                        value={eventForm.startDate} 
+                        onChange={(e) => setEventForm({ ...eventForm, startDate: e.target.value })} 
+                      />
+                    </div>
+                    <div>
+                      <Label className="flex items-center gap-2">
+                        <Clock className="h-4 w-4" />
+                        Start Time
+                      </Label>
+                      <Input 
+                        type="time" 
+                        value={eventForm.startTime} 
+                        onChange={(e) => setEventForm({ ...eventForm, startTime: e.target.value })} 
+                      />
+                    </div>
+                  </div>
+
+                  {/* Date & Time - End (Optional) */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label className="flex items-center gap-2">
+                        End Date <span className="text-xs text-muted-foreground">(Optional)</span>
+                      </Label>
+                      <Input 
+                        type="date" 
+                        value={eventForm.endDate} 
+                        onChange={(e) => setEventForm({ ...eventForm, endDate: e.target.value })} 
+                      />
+                    </div>
+                    <div>
+                      <Label>End Time</Label>
+                      <Input 
+                        type="time" 
+                        value={eventForm.endTime} 
+                        onChange={(e) => setEventForm({ ...eventForm, endTime: e.target.value })} 
+                      />
+                    </div>
+                  </div>
+
+                  {/* Location */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>City *</Label>
+                      <Select value={eventForm.city} onValueChange={(v) => setEventForm({ ...eventForm, city: v })}>
+                        <SelectTrigger><SelectValue placeholder="Select city" /></SelectTrigger>
+                        <SelectContent>{cities.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Venue</Label>
+                      <Input value={eventForm.venue} onChange={(e) => setEventForm({ ...eventForm, venue: e.target.value })} placeholder="Venue name" />
+                    </div>
+                  </div>
+
+                  {/* Category & Brand */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>Category</Label>
+                      <Select value={eventForm.category} onValueChange={(v) => setEventForm({ ...eventForm, category: v })}>
+                        <SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger>
+                        <SelectContent>{categories.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Brand</Label>
+                      <Select value={eventForm.brand} onValueChange={(v) => setEventForm({ ...eventForm, brand: v })}>
+                        <SelectTrigger><SelectValue placeholder="Select brand" /></SelectTrigger>
+                        <SelectContent>{brands.map(b => <SelectItem key={b} value={b}>{b}</SelectItem>)}</SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {/* Cover Image Upload */}
+                  <div>
+                    <Label className="flex items-center gap-2 mb-2">
+                      <Upload className="h-4 w-4" />
+                      Cover Image
+                    </Label>
+                    <div className="flex gap-4">
+                      <div className="flex-1">
+                        <Input 
+                          ref={fileInputRef}
+                          type="file" 
+                          accept="image/*"
+                          onChange={handleFileUpload}
+                          disabled={uploading}
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">Upload from computer (max 5MB)</p>
+                      </div>
+                      <div className="flex-1">
+                        <Input 
+                          value={eventForm.poster} 
+                          onChange={(e) => setEventForm({ ...eventForm, poster: e.target.value })} 
+                          placeholder="Or paste image URL"
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">Or use external URL</p>
+                      </div>
+                    </div>
+                    {uploading && <p className="text-sm text-blue-600 mt-2">Uploading...</p>}
+                    {(eventForm.poster || eventForm.coverImagePath) && (
+                      <div className="relative h-40 mt-3 rounded overflow-hidden border">
+                        <Image 
+                          src={eventForm.coverImagePath || eventForm.poster} 
+                          alt="Preview" 
+                          fill 
+                          className="object-cover" 
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Description */}
+                  <div>
+                    <Label>Description</Label>
+                    <Textarea 
+                      value={eventForm.description} 
+                      onChange={(e) => setEventForm({ ...eventForm, description: e.target.value })} 
+                      rows={3} 
+                      placeholder="Event description..."
+                    />
+                  </div>
+
+                  {/* Ticket Platform URLs */}
+                  <div className="border rounded-lg p-4 bg-blue-50">
+                    <Label className="flex items-center gap-2 mb-3 text-blue-800">
+                      <ExternalLink className="h-4 w-4" />
+                      Ticket Platform Links
+                    </Label>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-sm">DesiPass URL</Label>
+                        <Input 
+                          value={eventForm.desipassUrl} 
+                          onChange={(e) => setEventForm({ ...eventForm, desipassUrl: e.target.value })} 
+                          placeholder="https://desipass.com/..."
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-sm">Eventbrite URL</Label>
+                        <Input 
+                          value={eventForm.eventbriteUrl} 
+                          onChange={(e) => setEventForm({ ...eventForm, eventbriteUrl: e.target.value })} 
+                          placeholder="https://eventbrite.com/..."
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Status & Settings */}
                   <div className="grid grid-cols-3 gap-4">
-                    <div><Label>Date *</Label><Input type="date" value={eventForm.date} onChange={(e) => setEventForm({ ...eventForm, date: e.target.value })} /></div>
-                    <div><Label>Time</Label><Input type="time" value={eventForm.time} onChange={(e) => setEventForm({ ...eventForm, time: e.target.value })} /></div>
-                    <div><Label>City *</Label><Select value={eventForm.city} onValueChange={(v) => setEventForm({ ...eventForm, city: v })}><SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger><SelectContent>{cities.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent></Select></div>
+                    <div>
+                      <Label>Status</Label>
+                      <Select value={eventForm.status} onValueChange={(v) => setEventForm({ ...eventForm, status: v })}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="published">Published</SelectItem>
+                          <SelectItem value="draft">Draft</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Classification Override</Label>
+                      <Select value={eventForm.statusOverride} onValueChange={(v) => setEventForm({ ...eventForm, statusOverride: v })}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="auto">Auto (Based on Date)</SelectItem>
+                          <SelectItem value="upcoming">Force Upcoming</SelectItem>
+                          <SelectItem value="past">Force Past</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Attendees Count</Label>
+                      <Input 
+                        type="number" 
+                        value={eventForm.attendeesCount} 
+                        onChange={(e) => setEventForm({ ...eventForm, attendeesCount: parseInt(e.target.value) || 0 })} 
+                      />
+                    </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div><Label>Venue</Label><Input value={eventForm.venue} onChange={(e) => setEventForm({ ...eventForm, venue: e.target.value })} /></div>
-                    <div><Label>Category</Label><Select value={eventForm.category} onValueChange={(v) => setEventForm({ ...eventForm, category: v })}><SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger><SelectContent>{categories.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent></Select></div>
-                  </div>
-                  <div><Label>Poster URL</Label><Input value={eventForm.poster} onChange={(e) => setEventForm({ ...eventForm, poster: e.target.value })} placeholder="https://..." />{eventForm.poster && <div className="relative h-32 mt-2 rounded overflow-hidden"><Image src={eventForm.poster} alt="Preview" fill className="object-cover" /></div>}</div>
-                  <div><Label>Description</Label><Textarea value={eventForm.description} onChange={(e) => setEventForm({ ...eventForm, description: e.target.value })} rows={3} /></div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div><Label>DesiPass URL</Label><Input value={eventForm.desipassUrl} onChange={(e) => setEventForm({ ...eventForm, desipassUrl: e.target.value })} /></div>
-                    <div><Label>Eventbrite URL</Label><Input value={eventForm.eventbriteUrl} onChange={(e) => setEventForm({ ...eventForm, eventbriteUrl: e.target.value })} /></div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div><Label>Status</Label><Select value={eventForm.status} onValueChange={(v) => setEventForm({ ...eventForm, status: v })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="published">Published</SelectItem><SelectItem value="draft">Draft</SelectItem></SelectContent></Select></div>
-                    <div><Label>Attendees</Label><Input type="number" value={eventForm.attendeesCount} onChange={(e) => setEventForm({ ...eventForm, attendeesCount: parseInt(e.target.value) || 0 })} /></div>
+
+                  {/* Featured */}
+                  <div className="flex items-center gap-2">
+                    <Switch 
+                      checked={eventForm.featured} 
+                      onCheckedChange={(checked) => setEventForm({ ...eventForm, featured: checked })} 
+                    />
+                    <Label>Featured Event (shows in homepage hero)</Label>
                   </div>
                 </div>
+
                 <DialogFooter>
                   <Button variant="outline" onClick={() => setShowEventForm(false)}>Cancel</Button>
                   <Button onClick={handleSaveEvent}><Save className="mr-2 h-4 w-4" />{editingEvent ? 'Update' : 'Create'}</Button>
@@ -356,23 +730,89 @@ export default function AdminPage() {
               </DialogContent>
             </Dialog>
 
-            <div className="space-y-4">
-              {events.map(event => (
-                <Card key={event.id}>
-                  <CardContent className="p-4 flex items-center gap-4">
-                    {event.poster && <div className="relative w-20 h-14 rounded overflow-hidden flex-shrink-0"><Image src={event.poster} alt="" fill className="object-cover" /></div>}
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2"><h3 className="font-bold">{event.title}</h3><Badge variant={event.status === 'published' ? 'default' : 'secondary'}>{event.status}</Badge></div>
-                      <p className="text-sm text-muted-foreground">{new Date(event.date).toLocaleDateString()} • {event.city} • {event.category}</p>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button size="sm" variant="outline" onClick={() => handleEditEvent(event)}><Edit2 className="h-4 w-4" /></Button>
-                      <Button size="sm" variant="outline" onClick={() => handleDeleteEvent(event.id)}><Trash2 className="h-4 w-4 text-red-500" /></Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-              {events.length === 0 && <Card><CardContent className="py-12 text-center text-muted-foreground">No events yet</CardContent></Card>}
+            {/* Events List - Split by classification */}
+            <div className="space-y-8">
+              {/* Upcoming Events */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <Badge className="bg-green-500">Upcoming</Badge>
+                  <span className="text-muted-foreground">({upcomingEvents.length})</span>
+                </h3>
+                <div className="space-y-3">
+                  {upcomingEvents.map(event => (
+                    <Card key={event.id} className="border-l-4 border-l-green-500">
+                      <CardContent className="p-4 flex items-center gap-4">
+                        {(event.poster || event.coverImagePath) && (
+                          <div className="relative w-24 h-16 rounded overflow-hidden flex-shrink-0">
+                            <Image src={event.coverImagePath || event.poster} alt="" fill className="object-cover" />
+                          </div>
+                        )}
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-bold">{event.title}</h3>
+                            <Badge variant={event.status === 'published' ? 'default' : 'secondary'}>{event.status}</Badge>
+                            {event.featured && <Badge className="bg-yellow-500">Featured</Badge>}
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {formatEventDate(event)} • {event.city} • {event.category}
+                          </p>
+                          {(event.desipassUrl || event.eventbriteUrl) && (
+                            <div className="flex gap-2 mt-1">
+                              {event.desipassUrl && <Badge variant="outline" className="text-xs">DesiPass</Badge>}
+                              {event.eventbriteUrl && <Badge variant="outline" className="text-xs">Eventbrite</Badge>}
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex gap-2">
+                          <Button size="sm" variant="outline" onClick={() => handleEditEvent(event)}><Edit2 className="h-4 w-4" /></Button>
+                          <Button size="sm" variant="outline" onClick={() => handleDeleteEvent(event.id)}><Trash2 className="h-4 w-4 text-red-500" /></Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                  {upcomingEvents.length === 0 && (
+                    <Card className="border-dashed">
+                      <CardContent className="py-8 text-center text-muted-foreground">
+                        No upcoming events. Create one to get started!
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
+              </div>
+
+              {/* Past Events */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <Badge variant="secondary">Past</Badge>
+                  <span className="text-muted-foreground">({pastEvents.length})</span>
+                </h3>
+                <div className="space-y-3">
+                  {pastEvents.slice(0, 10).map(event => (
+                    <Card key={event.id} className="border-l-4 border-l-gray-300 opacity-75">
+                      <CardContent className="p-4 flex items-center gap-4">
+                        {(event.poster || event.coverImagePath) && (
+                          <div className="relative w-20 h-14 rounded overflow-hidden flex-shrink-0 grayscale">
+                            <Image src={event.coverImagePath || event.poster} alt="" fill className="object-cover" />
+                          </div>
+                        )}
+                        <div className="flex-1">
+                          <h3 className="font-bold">{event.title}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {formatEventDate(event)} • {event.city}
+                          </p>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button size="sm" variant="outline" onClick={() => handleEditEvent(event)}><Edit2 className="h-4 w-4" /></Button>
+                          <Button size="sm" variant="outline" onClick={() => handleDeleteEvent(event.id)}><Trash2 className="h-4 w-4 text-red-500" /></Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                  {pastEvents.length === 0 && (
+                    <p className="text-muted-foreground text-center py-4">No past events</p>
+                  )}
+                </div>
+              </div>
             </div>
           </TabsContent>
 
@@ -467,7 +907,11 @@ export default function AdminPage() {
                 <Card key={t.id} className={!t.approved ? 'border-orange-300' : ''}>
                   <CardContent className="p-4 flex items-start justify-between">
                     <div className="flex-1">
-                      <div className="flex gap-1 mb-2">{[...Array(5)].map((_, i) => <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />)}</div>
+                      <div className="flex gap-1 mb-2">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className={`h-4 w-4 ${i < t.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-200'}`} />
+                        ))}
+                      </div>
                       <p className="text-gray-700 mb-2">"{t.testimonial}"</p>
                       <p className="text-sm text-muted-foreground">— {t.name} • {t.eventAttended}</p>
                     </div>
@@ -526,6 +970,17 @@ export default function AdminPage() {
                     <Input type="number" value={settings.totalAttendeesManual || 25000} onChange={(e) => setSettings({ ...settings, totalAttendeesManual: parseInt(e.target.value) || 0 })} className="max-w-[200px]" />
                     <Button onClick={() => handleUpdateSettings('totalAttendeesManual', settings.totalAttendeesManual)}>Save</Button>
                   </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader><CardTitle>Data Migration</CardTitle></CardHeader>
+                <CardContent>
+                  <Button variant="outline" onClick={handleMigrateEvents}>
+                    Migrate Events to New Schema
+                  </Button>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Updates all events to use the new unified schema with proper date/time handling.
+                  </p>
                 </CardContent>
               </Card>
             </div>
