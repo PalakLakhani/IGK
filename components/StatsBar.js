@@ -13,22 +13,25 @@ function useCountUp(end, duration = 2000, startOnView = true) {
   useEffect(() => {
     if (!startOnView) {
       setHasStarted(true);
+      return;
     }
-  }, [startOnView]);
-
-  useEffect(() => {
-    if (startOnView && ref.current) {
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting && !hasStarted) {
-            setHasStarted(true);
-          }
-        },
-        { threshold: 0.3 }
-      );
+    
+    // Start immediately for better UX, or use intersection observer
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasStarted) {
+          setHasStarted(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1, rootMargin: '50px' }
+    );
+    
+    if (ref.current) {
       observer.observe(ref.current);
-      return () => observer.disconnect();
     }
+    
+    return () => observer.disconnect();
   }, [startOnView, hasStarted]);
 
   useEffect(() => {
@@ -43,7 +46,8 @@ function useCountUp(end, duration = 2000, startOnView = true) {
       
       // Ease out cubic for smooth deceleration
       const easeOut = 1 - Math.pow(1 - progress, 3);
-      setCount(Math.floor(easeOut * end));
+      const currentValue = Math.floor(easeOut * end);
+      setCount(currentValue);
 
       if (progress < 1) {
         animationFrame = requestAnimationFrame(animate);
@@ -55,7 +59,9 @@ function useCountUp(end, duration = 2000, startOnView = true) {
     };
 
     animationFrame = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(animationFrame);
+    return () => {
+      if (animationFrame) cancelAnimationFrame(animationFrame);
+    };
   }, [end, duration, hasStarted]);
 
   return { count: isComplete ? end : count, ref, isComplete };
