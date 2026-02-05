@@ -5,6 +5,7 @@ import { Ticket } from '@/lib/models/Ticket';
 import { Testimonial } from '@/lib/models/Testimonial';
 import { SiteSettings } from '@/lib/models/SiteSettings';
 import { TeamMember } from '@/lib/models/TeamMember';
+import { getDatabase } from '@/lib/mongodb';
 import { sampleEvents } from '@/lib/seed-events';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
