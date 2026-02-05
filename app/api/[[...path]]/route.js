@@ -52,25 +52,18 @@ export async function GET(request) {
       }
     }
 
-    // Get site statistics (dynamic)
+    // Get site statistics (fixed values + dynamic rating)
     if (path === 'stats') {
       try {
-        const events = await Event.findAll({ status: 'published' });
-        const cities = [...new Set(events.map(e => e.city))];
-        
-        // Get total attendees (manual + aggregated)
-        const manualAttendees = await SiteSettings.get('totalAttendeesManual') || 25000;
-        const eventAttendees = events.reduce((sum, e) => sum + (e.attendeesCount || 0), 0);
-        const totalAttendees = manualAttendees + eventAttendees;
-        
-        // Get average rating from testimonials
+        // Get average rating from testimonials (this is computed dynamically)
         const ratingData = await Testimonial.getAverageRating();
         
+        // Return fixed stats from siteConfig + dynamic rating
         return corsResponse({
           stats: {
-            totalEvents: events.length,
-            totalCities: cities.length,
-            totalAttendees,
+            totalEvents: 50,       // Fixed: "50+"
+            totalCities: 8,        // Fixed: "8"
+            totalAttendees: 25000, // Fixed: "25K+"
             averageRating: ratingData.averageRating,
             totalRatings: ratingData.totalRatings
           }
