@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Calendar, MapPin, Users, Shield, Music, Utensils, ArrowRight, CheckCircle, Star, Sparkles, Heart, PartyPopper, Mail } from 'lucide-react';
+import { Calendar, MapPin, Users, Shield, Music, Utensils, ArrowRight, CheckCircle, Star, Sparkles, Heart, PartyPopper, Mail, Leaf, Wine, Baby, ExternalLink, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -19,11 +19,20 @@ import { format } from 'date-fns';
 
 export default function HomePage() {
   const [upcomingEvents, setUpcomingEvents] = useState([]);
+  const [testimonials, setTestimonials] = useState([]);
+  const [stats, setStats] = useState({
+    totalEvents: 50,
+    totalCities: 8,
+    totalAttendees: 25000,
+    averageRating: 5.0
+  });
   const [loading, setLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
     fetchUpcomingEvents();
+    fetchStats();
+    fetchTestimonials();
   }, []);
 
   const fetchUpcomingEvents = async () => {
@@ -38,6 +47,28 @@ export default function HomePage() {
     }
   };
 
+  const fetchStats = async () => {
+    try {
+      const res = await fetch('/api/stats');
+      const data = await res.json();
+      if (data.stats) {
+        setStats(data.stats);
+      }
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    }
+  };
+
+  const fetchTestimonials = async () => {
+    try {
+      const res = await fetch('/api/testimonials?limit=6');
+      const data = await res.json();
+      setTestimonials(data.testimonials || []);
+    } catch (error) {
+      console.error('Error fetching testimonials:', error);
+    }
+  };
+
   useEffect(() => {
     if (upcomingEvents.length > 1) {
       const interval = setInterval(() => {
@@ -49,43 +80,77 @@ export default function HomePage() {
 
   const heroEvents = upcomingEvents.slice(0, 3);
 
-  // Event Types - Like Zeppelin's Artists Section
+  // Updated Event Categories (as per requirements)
   const eventTypes = [
     {
-      title: 'Open Air Holi',
-      description: 'Celebrate colors in outdoor venues',
-      image: 'https://images.unsplash.com/photo-1603228254119-e6a4d095dc59',
-      gradient: 'from-pink-500 to-purple-500'
+      title: 'Bollywood DJ Nights & Club Events',
+      emoji: '🎧',
+      description: 'Dance to the hottest Bollywood beats all night',
+      image: 'https://images.unsplash.com/photo-1571266028243-e4733b0f0bb0?w=800',
+      gradient: 'from-purple-600 to-pink-600'
     },
     {
-      title: 'Bollywood DJ Nights',
-      description: 'Dance to the hottest Bollywood beats',
-      image: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3',
-      gradient: 'from-blue-500 to-purple-500'
+      title: 'Concerts & Live Performances',
+      emoji: '🎤',
+      description: 'Experience live music from top artists on stage',
+      image: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800',
+      gradient: 'from-red-600 to-orange-500'
     },
     {
-      title: 'Navratri Garba',
-      description: 'Traditional Garba & Dandiya celebrations',
-      image: 'https://images.unsplash.com/photo-1599420186946-7b6fb4e297f0',
-      gradient: 'from-orange-500 to-red-500'
+      title: 'Indian Cultural Events',
+      emoji: '🌸',
+      description: 'Garba, Dandiya, Holi & traditional celebrations',
+      image: 'https://images.unsplash.com/photo-1583089892943-e02e5b017b6a?w=800',
+      gradient: 'from-orange-500 to-yellow-500'
     },
     {
-      title: 'Bhajan Clubbing',
-      description: 'Devotional music meets club atmosphere',
-      image: 'https://images.unsplash.com/photo-1585607344893-43a4bd91169a',
-      gradient: 'from-yellow-500 to-orange-500'
+      title: 'Weddings & Private Celebrations',
+      emoji: '💍',
+      description: 'Stunning Indian wedding setups and private events',
+      image: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=800',
+      gradient: 'from-pink-500 to-rose-500'
     },
     {
-      title: 'Diwali Celebrations',
-      description: 'Festival of lights spectacular events',
-      image: 'https://images.unsplash.com/photo-1640966437076-faa93627b354',
-      gradient: 'from-indigo-500 to-pink-500'
+      title: 'Corporate Events & Brand Activations',
+      emoji: '🏢',
+      description: 'Professional corporate gatherings and activations',
+      image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800',
+      gradient: 'from-blue-600 to-indigo-600'
     },
     {
-      title: 'Cultural Festivals',
-      description: 'Authentic Indian cultural experiences',
-      image: 'https://images.unsplash.com/photo-1763733594231-57cb22b7e1ad',
-      gradient: 'from-green-500 to-teal-500'
+      title: 'Trend-led Experiences',
+      emoji: '🔥',
+      description: 'Fake Shaadi, Speed Dating & unique concepts',
+      image: 'https://images.unsplash.com/photo-1529543544277-c91de6e7e5a9?w=800',
+      gradient: 'from-amber-500 to-red-500'
+    }
+  ];
+
+  // Default testimonials if none from API
+  const displayTestimonials = testimonials.length > 0 ? testimonials : [
+    {
+      id: '1',
+      name: 'Priya S.',
+      city: 'Berlin',
+      rating: 5,
+      testimonial: "Best Holi celebration I've attended in Germany! The organization was perfect, colors were safe, and the energy was amazing.",
+      eventAttended: 'Holi Bash Berlin 2024'
+    },
+    {
+      id: '2',
+      name: 'Rahul K.',
+      city: 'Munich',
+      rating: 5,
+      testimonial: "The Bollywood night was incredible! Great music, amazing crowd, and such a fun way to meet new people from the community.",
+      eventAttended: 'BIG Bollywood Night'
+    },
+    {
+      id: '3',
+      name: 'Anjali M.',
+      city: 'Frankfurt',
+      rating: 5,
+      testimonial: "Felt like home! The Garba night brought back so many memories. Professional setup and family-friendly environment.",
+      eventAttended: 'Navaratri Fiesta 2024'
     }
   ];
 
@@ -93,7 +158,7 @@ export default function HomePage() {
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-pink-50 via-white to-purple-50">
       <Header />
       
-      {/* Hero Slider - Vibrant and Colorful */}
+      {/* Hero Section with Video */}
       <section className="relative h-[700px] overflow-hidden">
         {heroEvents.length > 0 ? (
           <>
@@ -132,7 +197,7 @@ export default function HomePage() {
                 <div className="flex flex-wrap gap-6 text-xl font-semibold">
                   <div className="flex items-center gap-3 bg-white/20 backdrop-blur px-5 py-3 rounded-full">
                     <Calendar className="h-6 w-6" />
-                    <span>{format(new Date(heroEvents[currentSlide]?.date), 'MMM dd, yyyy')}</span>
+                    <span>{heroEvents[currentSlide]?.date ? format(new Date(heroEvents[currentSlide]?.date), 'MMM dd, yyyy') : ''}</span>
                   </div>
                   <div className="flex items-center gap-3 bg-white/20 backdrop-blur px-5 py-3 rounded-full">
                     <MapPin className="h-6 w-6" />
@@ -174,54 +239,60 @@ export default function HomePage() {
             )}
           </>
         ) : (
-          <div className="relative container h-full flex items-center justify-center text-white">
-            <Image
-              src="https://images.unsplash.com/photo-1761503390713-a1fd8b8bb6c5?w=1920&h=1080&fit=crop"
-              alt="Colorful celebration"
-              fill
-              className="object-cover"
-              priority
-            />
+          /* Hero with Video Background */
+          <div className="relative h-full w-full">
+            <video
+              autoPlay
+              muted
+              loop
+              playsInline
+              poster={siteConfig.heroVideo?.poster}
+              className="absolute inset-0 w-full h-full object-cover"
+            >
+              <source src={siteConfig.heroVideo?.url} type="video/mp4" />
+            </video>
             <div className="absolute inset-0 bg-gradient-to-r from-pink-600/90 via-purple-600/80 to-orange-500/70" />
-            <div className="relative text-center space-y-6 animate-in fade-in zoom-in duration-700">
-              <h1 className="text-7xl md:text-8xl font-black mb-6 drop-shadow-2xl">Welcome to {siteConfig.name}</h1>
-              <p className="text-3xl mb-8 font-semibold">Premium Indian Cultural Events Across Germany</p>
-              <Button size="lg" asChild className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold text-xl px-10 py-8 rounded-full shadow-2xl">
-                <Link href="/events">
-                  <Sparkles className="mr-2 h-6 w-6" />
-                  Explore Events
-                </Link>
-              </Button>
+            <div className="relative container h-full flex items-center justify-center text-white">
+              <div className="text-center space-y-6 animate-in fade-in zoom-in duration-700">
+                <h1 className="text-7xl md:text-8xl font-black mb-6 drop-shadow-2xl">Welcome to IGK</h1>
+                <p className="text-3xl mb-8 font-semibold">Curated Events & Experiences Across Germany</p>
+                <Button size="lg" asChild className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold text-xl px-10 py-8 rounded-full shadow-2xl">
+                  <Link href="/events">
+                    <Sparkles className="mr-2 h-6 w-6" />
+                    Explore Events
+                  </Link>
+                </Button>
+              </div>
             </div>
           </div>
         )}
       </section>
 
-      {/* Colorful Stats Banner */}
+      {/* Dynamic Stats Banner */}
       <section className="py-16 bg-gradient-to-r from-pink-500 via-purple-500 to-orange-500">
         <div className="container">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-white">
             <div className="space-y-2">
-              <div className="text-5xl md:text-6xl font-black">50+</div>
+              <div className="text-5xl md:text-6xl font-black">{stats.totalEvents}+</div>
               <div className="text-lg md:text-xl font-semibold opacity-90">Amazing Events</div>
             </div>
             <div className="space-y-2">
-              <div className="text-5xl md:text-6xl font-black">25K+</div>
+              <div className="text-5xl md:text-6xl font-black">{stats.totalAttendees >= 1000 ? `${Math.floor(stats.totalAttendees/1000)}K+` : stats.totalAttendees}+</div>
               <div className="text-lg md:text-xl font-semibold opacity-90">Happy Attendees</div>
             </div>
             <div className="space-y-2">
-              <div className="text-5xl md:text-6xl font-black">8</div>
+              <div className="text-5xl md:text-6xl font-black">{stats.totalCities}</div>
               <div className="text-lg md:text-xl font-semibold opacity-90">Cities</div>
             </div>
             <div className="space-y-2">
-              <div className="text-5xl md:text-6xl font-black">4.9★</div>
-              <div className="text-lg md:text-xl font-semibold opacity-90">Rating</div>
+              <div className="text-5xl md:text-6xl font-black">{stats.averageRating.toFixed(1)}★</div>
+              <div className="text-lg md:text-xl font-semibold opacity-90">Average Rating</div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Event Types Section - Like Zeppelin's Artists */}
+      {/* Event Categories Section */}
       <section className="py-20 bg-white">
         <div className="container">
           <div className="text-center mb-16">
@@ -229,10 +300,10 @@ export default function HomePage() {
               Our Events
             </Badge>
             <h2 className="text-5xl font-black mb-6 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-              Event Types
+              Event Categories
             </h2>
             <p className="text-2xl text-gray-600 max-w-2xl mx-auto font-medium">
-              Experience diverse cultural celebrations throughout the year
+              Curated experiences for every occasion
             </p>
           </div>
 
@@ -246,9 +317,10 @@ export default function HomePage() {
                     fill
                     className="object-cover transition-transform group-hover:scale-110"
                   />
-                  <div className={`absolute inset-0 bg-gradient-to-t ${type.gradient}/80 to-transparent group-hover:${type.gradient}/90 transition-all`} />
+                  <div className={`absolute inset-0 bg-gradient-to-t ${type.gradient} opacity-80 group-hover:opacity-90 transition-all`} />
                   <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                    <h3 className="text-3xl font-black mb-2">{type.title}</h3>
+                    <div className="text-4xl mb-2">{type.emoji}</div>
+                    <h3 className="text-2xl font-black mb-2">{type.title}</h3>
                     <p className="text-lg opacity-90">{type.description}</p>
                   </div>
                 </div>
@@ -270,7 +342,7 @@ export default function HomePage() {
               Upcoming Events
             </h2>
             <p className="text-2xl text-gray-600 max-w-2xl mx-auto font-medium">
-              Discover amazing cultural experiences happening across Germany
+              Discover curated experiences happening across Germany
             </p>
           </div>
 
@@ -304,7 +376,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Why Attend Section - Vibrant with Images */}
+      {/* Why Attend Section - Updated */}
       <section className="py-20 bg-white">
         <div className="container">
           <div className="text-center mb-16">
@@ -317,9 +389,10 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Authentic Vibes */}
             <Card className="overflow-hidden border-none shadow-2xl hover:shadow-pink-500/50 transition-all hover:scale-105">
               <div className="relative h-48">
-                <Image src="https://images.unsplash.com/photo-1630663129615-a2331ed88ab6" alt="Music" fill className="object-cover" />
+                <Image src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800" alt="Live Performance" fill className="object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-pink-600/90 to-transparent" />
                 <div className="absolute bottom-4 left-4">
                   <Music className="h-12 w-12 text-white" />
@@ -333,25 +406,27 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
+            {/* Safe & Organised - Updated Image */}
             <Card className="overflow-hidden border-none shadow-2xl hover:shadow-green-500/50 transition-all hover:scale-105">
               <div className="relative h-48">
-                <Image src="https://images.unsplash.com/photo-1468234847176-28606331216a" alt="Safe" fill className="object-cover" />
+                <Image src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800" alt="Professional Event Security" fill className="object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-green-600/90 to-transparent" />
                 <div className="absolute bottom-4 left-4">
                   <Shield className="h-12 w-12 text-white" />
                 </div>
               </div>
               <CardContent className="p-6 bg-gradient-to-br from-green-500 to-green-600 text-white">
-                <h3 className="text-2xl font-bold mb-3">Safe & Organized</h3>
+                <h3 className="text-2xl font-bold mb-3">Safe & Organised</h3>
                 <p className="text-green-100">
-                  Professional event management with strict safety protocols
+                  Professional security, entry management, and strict safety protocols
                 </p>
               </CardContent>
             </Card>
 
+            {/* Community Connection - Updated Image */}
             <Card className="overflow-hidden border-none shadow-2xl hover:shadow-blue-500/50 transition-all hover:scale-105">
               <div className="relative h-48">
-                <Image src="https://images.unsplash.com/photo-1585607344893-43a4bd91169a" alt="Community" fill className="object-cover" />
+                <Image src="https://images.unsplash.com/photo-1529543544277-c91de6e7e5a9?w=800" alt="People Networking" fill className="object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-blue-600/90 to-transparent" />
                 <div className="absolute bottom-4 left-4">
                   <Users className="h-12 w-12 text-white" />
@@ -360,55 +435,58 @@ export default function HomePage() {
               <CardContent className="p-6 bg-gradient-to-br from-blue-500 to-blue-600 text-white">
                 <h3 className="text-2xl font-bold mb-3">Community Connection</h3>
                 <p className="text-blue-100">
-                  Meet and connect with the vibrant Indian community in Germany
+                  Meet and network with the vibrant Indian community in Germany
                 </p>
               </CardContent>
             </Card>
 
+            {/* Pure Vegetarian Food - Updated */}
             <Card className="overflow-hidden border-none shadow-2xl hover:shadow-purple-500/50 transition-all hover:scale-105">
               <div className="relative h-48">
-                <Image src="https://images.pexels.com/photos/3452843/pexels-photo-3452843.jpeg" alt="Food" fill className="object-cover" />
+                <Image src="https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=800" alt="Vegetarian Indian Food" fill className="object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-purple-600/90 to-transparent" />
                 <div className="absolute bottom-4 left-4">
-                  <Utensils className="h-12 w-12 text-white" />
+                  <Leaf className="h-12 w-12 text-white" />
                 </div>
               </div>
               <CardContent className="p-6 bg-gradient-to-br from-purple-500 to-purple-600 text-white">
-                <h3 className="text-2xl font-bold mb-3">Delicious Food</h3>
+                <h3 className="text-2xl font-bold mb-3">Pure Vegetarian Food</h3>
                 <p className="text-purple-100">
-                  Authentic Indian street food, snacks, and traditional delicacies
+                  100% vegetarian Indian cuisine, street food & traditional delicacies
                 </p>
               </CardContent>
             </Card>
 
+            {/* Family Friendly & Non-Alcohol */}
             <Card className="overflow-hidden border-none shadow-2xl hover:shadow-orange-500/50 transition-all hover:scale-105">
               <div className="relative h-48">
-                <Image src="https://images.unsplash.com/photo-1617173315663-a6f63e72634e" alt="Events" fill className="object-cover" />
+                <Image src="https://images.unsplash.com/photo-1511895426328-dc8714191300?w=800" alt="Family Event" fill className="object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-orange-600/90 to-transparent" />
+                <div className="absolute bottom-4 left-4">
+                  <Baby className="h-12 w-12 text-white" />
+                </div>
+              </div>
+              <CardContent className="p-6 bg-gradient-to-br from-orange-500 to-orange-600 text-white">
+                <h3 className="text-2xl font-bold mb-3">Family-Friendly</h3>
+                <p className="text-orange-100">
+                  Non-alcohol events with safe, family-friendly environment for all ages
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Year-Round Events */}
+            <Card className="overflow-hidden border-none shadow-2xl hover:shadow-yellow-500/50 transition-all hover:scale-105">
+              <div className="relative h-48">
+                <Image src="https://images.unsplash.com/photo-1603228254119-e6a4d095dc59?w=800" alt="Seasonal Events" fill className="object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-yellow-600/90 to-transparent" />
                 <div className="absolute bottom-4 left-4">
                   <Calendar className="h-12 w-12 text-white" />
                 </div>
               </div>
-              <CardContent className="p-6 bg-gradient-to-br from-orange-500 to-orange-600 text-white">
-                <h3 className="text-2xl font-bold mb-3">Year-Round Events</h3>
-                <p className="text-orange-100">
-                  Regular events celebrating all major Indian festivals and occasions
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="overflow-hidden border-none shadow-2xl hover:shadow-yellow-500/50 transition-all hover:scale-105">
-              <div className="relative h-48">
-                <Image src="https://images.unsplash.com/photo-1640966437076-faa93627b354" alt="Premium" fill className="object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-yellow-600/90 to-transparent" />
-                <div className="absolute bottom-4 left-4">
-                  <Star className="h-12 w-12 text-white" />
-                </div>
-              </div>
               <CardContent className="p-6 bg-gradient-to-br from-yellow-500 to-yellow-600 text-white">
-                <h3 className="text-2xl font-bold mb-3">Premium Experience</h3>
+                <h3 className="text-2xl font-bold mb-3">Year-Round Events</h3>
                 <p className="text-yellow-100">
-                  High-quality production, professional staff, and unforgettable memories
+                  Regular events celebrating all major Indian festivals and occasions
                 </p>
               </CardContent>
             </Card>
@@ -416,50 +494,28 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Ticketing Platforms - Fixed Section */}
+      {/* Ticketing Platforms - Updated (Only DesiPass & Eventbrite) */}
       <section className="py-20 bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
         <div className="container">
           <div className="text-center mb-16">
             <h2 className="text-5xl font-black mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Multiple Ticketing Platforms
+              Get Your Tickets
             </h2>
             <p className="text-2xl text-gray-600 max-w-3xl mx-auto font-medium">
-              Choose your preferred platform - all provide instant digital tickets with QR codes
+              Choose your preferred ticketing platform - instant digital tickets with QR codes
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            <Card className="relative overflow-hidden border-none shadow-xl bg-gradient-to-br from-pink-500 to-pink-600 text-white hover:scale-105 transition-transform">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-bl-full" />
-              <CardContent className="pt-10 pb-10 relative">
-                <div className="text-7xl font-black mb-6 text-white/90">01</div>
-                <h3 className="text-3xl font-bold mb-4">Our Website</h3>
-                <ul className="space-y-3 text-pink-50 text-lg">
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="h-6 w-6 flex-shrink-0 mt-1" />
-                    <span>Secure Stripe payment</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="h-6 w-6 flex-shrink-0 mt-1" />
-                    <span>Instant QR code tickets</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle className="h-6 w-6 flex-shrink-0 mt-1" />
-                    <span>Direct email delivery</span>
-                  </li>
-                </ul>
-              </CardContent>
-            </Card>
-
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* DesiPass */}
             <Card className="relative overflow-hidden border-none shadow-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white hover:scale-105 transition-transform">
               <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-bl-full" />
               <CardContent className="pt-10 pb-10 relative">
-                <div className="text-7xl font-black mb-6 text-white/90">02</div>
-                <h3 className="text-3xl font-bold mb-4">DesiPass</h3>
-                <ul className="space-y-3 text-blue-50 text-lg">
+                <h3 className="text-4xl font-bold mb-6">DesiPass</h3>
+                <ul className="space-y-3 text-blue-50 text-lg mb-6">
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-6 w-6 flex-shrink-0 mt-1" />
-                    <span>Instant QR tickets</span>
+                    <span>Instant QR code tickets</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-6 w-6 flex-shrink-0 mt-1" />
@@ -467,31 +523,43 @@ export default function HomePage() {
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-6 w-6 flex-shrink-0 mt-1" />
-                    <span>Trusted platform</span>
+                    <span>Trusted Indian events platform</span>
                   </li>
                 </ul>
+                <Button asChild size="lg" className="w-full bg-white text-blue-600 hover:bg-blue-50 font-bold">
+                  <Link href="https://desipass.com" target="_blank">
+                    Visit DesiPass
+                    <ExternalLink className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
               </CardContent>
             </Card>
 
-            <Card className="relative overflow-hidden border-none shadow-xl bg-gradient-to-br from-green-500 to-green-600 text-white hover:scale-105 transition-transform">
+            {/* Eventbrite */}
+            <Card className="relative overflow-hidden border-none shadow-xl bg-gradient-to-br from-orange-500 to-red-500 text-white hover:scale-105 transition-transform">
               <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-bl-full" />
               <CardContent className="pt-10 pb-10 relative">
-                <div className="text-7xl font-black mb-6 text-white/90">03</div>
-                <h3 className="text-3xl font-bold mb-4">Eventbrite</h3>
-                <ul className="space-y-3 text-green-50 text-lg">
+                <h3 className="text-4xl font-bold mb-6">Eventbrite</h3>
+                <ul className="space-y-3 text-orange-50 text-lg mb-6">
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-6 w-6 flex-shrink-0 mt-1" />
-                    <span>Instant QR tickets</span>
+                    <span>Instant QR code tickets</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-6 w-6 flex-shrink-0 mt-1" />
-                    <span>Global reach</span>
+                    <span>Global reach & recognition</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle className="h-6 w-6 flex-shrink-0 mt-1" />
-                    <span>Buyer protection</span>
+                    <span>Buyer protection included</span>
                   </li>
                 </ul>
+                <Button asChild size="lg" className="w-full bg-white text-orange-600 hover:bg-orange-50 font-bold">
+                  <Link href="https://eventbrite.com" target="_blank">
+                    Visit Eventbrite
+                    <ExternalLink className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
               </CardContent>
             </Card>
           </div>
@@ -515,10 +583,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Community CTA */}
+      {/* Community CTA - WhatsApp Button Always Visible */}
       <section className="relative py-24 overflow-hidden">
         <Image
-          src="https://images.unsplash.com/photo-1763733594231-57cb22b7e1ad"
+          src="https://images.unsplash.com/photo-1529543544277-c91de6e7e5a9?w=1920"
           alt="Community"
           fill
           className="object-cover"
@@ -538,8 +606,10 @@ export default function HomePage() {
                 <ArrowRight className="ml-2 h-6 w-6" />
               </Link>
             </Button>
-            <Button size="lg" asChild variant="outline" className="text-white border-2 border-white hover:bg-white hover:text-purple-600 font-bold text-xl px-10 py-8 rounded-full backdrop-blur">
+            {/* WhatsApp Button - Always Visible */}
+            <Button size="lg" asChild className="bg-green-500 hover:bg-green-600 text-white font-bold text-xl px-10 py-8 rounded-full shadow-2xl">
               <Link href={`https://wa.me/${siteConfig.contact.whatsapp.replace(/[^0-9]/g, '')}`} target="_blank">
+                <MessageCircle className="mr-2 h-6 w-6" />
                 WhatsApp Us
               </Link>
             </Button>
@@ -550,7 +620,7 @@ export default function HomePage() {
       {/* Our Brands Section */}
       <OurBrands />
 
-      {/* Testimonials */}
+      {/* Testimonials - Dynamic */}
       <section className="py-20 bg-gradient-to-br from-yellow-50 via-orange-50 to-pink-50">
         <div className="container">
           <div className="text-center mb-16">
@@ -558,74 +628,36 @@ export default function HomePage() {
               What People Say
             </h2>
             <p className="text-2xl text-gray-600 font-medium">Hear from our community</p>
+            <Link href="/testimonials" className="inline-flex items-center gap-2 mt-4 text-pink-600 hover:text-pink-700 font-semibold">
+              Share your experience
+              <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            <Card className="border-none shadow-xl hover:shadow-2xl transition-all hover:scale-105">
-              <CardContent className="p-8">
-                <div className="flex gap-1 mb-6">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-6 w-6 fill-yellow-400 text-yellow-400" />
-                  ))}
-                </div>
-                <p className="text-gray-700 mb-6 text-lg leading-relaxed">
-                  "Best Holi celebration I've attended in Germany! The organization was perfect, colors were safe, and the energy was amazing."
-                </p>
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-full bg-gradient-to-br from-pink-400 to-purple-400 flex items-center justify-center text-white font-bold text-xl">
-                    P
+            {displayTestimonials.slice(0, 3).map((testimonial, index) => (
+              <Card key={testimonial.id || index} className="border-none shadow-xl hover:shadow-2xl transition-all hover:scale-105">
+                <CardContent className="p-8">
+                  <div className="flex gap-1 mb-6">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="h-6 w-6 fill-yellow-400 text-yellow-400" />
+                    ))}
                   </div>
-                  <div>
-                    <div className="font-bold text-lg">Priya S.</div>
-                    <div className="text-gray-500">Berlin</div>
+                  <p className="text-gray-700 mb-6 text-lg leading-relaxed">
+                    "{testimonial.testimonial}"
+                  </p>
+                  <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-full bg-gradient-to-br from-pink-400 to-purple-400 flex items-center justify-center text-white font-bold text-xl">
+                      {testimonial.name?.charAt(0) || 'A'}
+                    </div>
+                    <div>
+                      <div className="font-bold text-lg">{testimonial.name}</div>
+                      <div className="text-gray-500">{testimonial.city}</div>
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-none shadow-xl hover:shadow-2xl transition-all hover:scale-105">
-              <CardContent className="p-8">
-                <div className="flex gap-1 mb-6">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-6 w-6 fill-yellow-400 text-yellow-400" />
-                  ))}
-                </div>
-                <p className="text-gray-700 mb-6 text-lg leading-relaxed">
-                  "The Bollywood night was incredible! Great music, amazing crowd, and such a fun way to meet new people from the community."
-                </p>
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-400 flex items-center justify-center text-white font-bold text-xl">
-                    R
-                  </div>
-                  <div>
-                    <div className="font-bold text-lg">Rahul K.</div>
-                    <div className="text-gray-500">Munich</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-none shadow-xl hover:shadow-2xl transition-all hover:scale-105">
-              <CardContent className="p-8">
-                <div className="flex gap-1 mb-6">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-6 w-6 fill-yellow-400 text-yellow-400" />
-                  ))}
-                </div>
-                <p className="text-gray-700 mb-6 text-lg leading-relaxed">
-                  "Felt like home! The Garba night brought back so many memories. Professional setup and family-friendly environment."
-                </p>
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-full bg-gradient-to-br from-green-400 to-teal-400 flex items-center justify-center text-white font-bold text-xl">
-                    A
-                  </div>
-                  <div>
-                    <div className="font-bold text-lg">Anjali M.</div>
-                    <div className="text-gray-500">Frankfurt</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
