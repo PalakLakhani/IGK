@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Instagram, ArrowRight } from 'lucide-react';
+import { Instagram, ArrowRight, ExternalLink } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -13,15 +13,24 @@ export default function OurBrands({ variant = 'full' }) {
     return (
       <div>
         <h3 className="font-semibold mb-4">Our Brands</h3>
-        <ul className="space-y-2 text-sm">
+        <ul className="space-y-3 text-sm">
           {brands.map(brand => (
             <li key={brand.id}>
               <Link 
-                href={`/brands/${brand.slug}`}
-                className="text-muted-foreground hover:text-primary flex items-center gap-2"
+                href={brand.instagram}
+                target="_blank"
+                className="text-muted-foreground hover:text-pink-500 flex items-center gap-2 transition-colors"
               >
-                <ArrowRight className="h-3 w-3" />
+                <div className="w-6 h-6 relative">
+                  <Image
+                    src={brand.logo}
+                    alt={brand.name}
+                    fill
+                    className="object-contain rounded"
+                  />
+                </div>
                 {brand.name}
+                <ExternalLink className="h-3 w-3 opacity-50" />
               </Link>
             </li>
           ))}
@@ -45,16 +54,18 @@ export default function OurBrands({ variant = 'full' }) {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
           {brands.map((brand) => (
-            <Card 
-              key={brand.id} 
-              className="overflow-hidden border-2 hover:border-pink-500 transition-all hover:scale-105 group"
+            <Link 
+              key={brand.id}
+              href={brand.instagram}
+              target="_blank"
+              className="block"
             >
-              <CardContent className="p-8">
-                <Link href={`/brands/${brand.slug}`} className="block">
+              <Card className="overflow-hidden border-2 hover:border-pink-500 transition-all hover:scale-105 group cursor-pointer h-full">
+                <CardContent className="p-8">
                   <div className="relative h-32 mb-6 flex items-center justify-center">
-                    <div className={`absolute inset-0 bg-gradient-to-br ${brand.color} opacity-10 rounded-lg`} />
+                    <div className={`absolute inset-0 bg-gradient-to-br ${brand.color} opacity-10 rounded-lg group-hover:opacity-20 transition-opacity`} />
                     <div className="relative w-24 h-24">
                       <Image
                         src={brand.logo}
@@ -66,34 +77,18 @@ export default function OurBrands({ variant = 'full' }) {
                   </div>
                   
                   <h3 className="font-black text-2xl mb-2 text-center">{brand.name}</h3>
-                  <p className="text-sm text-gray-600 text-center mb-4 min-h-[40px]">
+                  <p className="text-sm text-gray-600 text-center mb-6 min-h-[40px]">
                     {brand.description}
                   </p>
-                </Link>
-                
-                <div className="flex gap-2">
-                  <Button 
-                    asChild
-                    className={`flex-1 bg-gradient-to-r ${brand.color} text-white hover:opacity-90`}
-                    size="sm"
-                  >
-                    <Link href={`/brands/${brand.slug}`}>
-                      View Brand
-                    </Link>
-                  </Button>
-                  <Button
-                    asChild
-                    variant="outline"
-                    size="sm"
-                    className="border-2"
-                  >
-                    <Link href={brand.instagram} target="_blank">
-                      <Instagram className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+                  
+                  <div className="flex items-center justify-center gap-2 text-pink-500 font-semibold group-hover:text-pink-600 transition-colors">
+                    <Instagram className="h-5 w-5" />
+                    Follow on Instagram
+                    <ExternalLink className="h-4 w-4" />
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
       </div>
