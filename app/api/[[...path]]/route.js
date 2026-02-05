@@ -162,6 +162,45 @@ export async function GET(request) {
       return corsResponse({ settings });
     }
 
+    // Get team members (public)
+    if (path === 'team') {
+      const type = searchParams.get('type'); // 'leadership' or 'city'
+      const city = searchParams.get('city');
+      
+      if (type === 'leadership') {
+        const members = await TeamMember.getLeadershipTeam();
+        return corsResponse({ members });
+      } else if (type === 'city' && city) {
+        const members = await TeamMember.getCityTeam(city);
+        return corsResponse({ members });
+      } else if (type === 'city') {
+        const cityTeams = await TeamMember.getAllCityTeams();
+        return corsResponse({ cityTeams });
+      } else {
+        const leadership = await TeamMember.getLeadershipTeam();
+        const cityTeams = await TeamMember.getAllCityTeams();
+        return corsResponse({ leadership, cityTeams });
+      }
+    }
+
+    // Seed team members
+    if (path === 'seed-team') {
+      const result = await TeamMember.seedDefaultTeam();
+      return corsResponse(result);
+    }
+
+    // Admin: Get all team members
+    if (path === 'admin/team') {
+      const password = request.headers.get('x-admin-password');
+      
+      if (password !== process.env.ADMIN_PASSWORD) {
+        return corsResponse({ error: 'Unauthorized' }, 401);
+      }
+
+      const members = await TeamMember.findAll();
+      return corsResponse({ members });
+    }
+
     // Get order by orderId and email
     if (path === 'orders/lookup') {
       const orderId = searchParams.get('orderId');
