@@ -848,31 +848,103 @@ export default function AdminPage() {
                     )}
                   </div>
 
-                  {/* Description with Excerpt Preview */}
-                  <div className="space-y-2">
-                    <Label>Description</Label>
-                    <Textarea 
-                      value={eventForm.description} 
-                      onChange={(e) => setEventForm({ ...eventForm, description: e.target.value })} 
-                      rows={4} 
-                      placeholder="Event description... (this will appear on the event detail page)"
-                    />
+                  {/* CONTENT FIELDS SECTION */}
+                  <div className="border rounded-lg p-4 bg-purple-50 space-y-4">
+                    <Label className="flex items-center gap-2 text-purple-800 font-semibold">
+                      <Edit2 className="h-4 w-4" />
+                      Event Content (Where each field appears)
+                    </Label>
                     
-                    {/* Excerpt Preview */}
-                    {eventForm.description && (
-                      <div className="bg-gray-50 border rounded-lg p-3 mt-2">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Eye className="h-4 w-4 text-gray-500" />
-                          <span className="text-xs font-semibold text-gray-500 uppercase">Card Excerpt Preview</span>
-                        </div>
-                        <p className="text-sm text-gray-700 leading-relaxed">
-                          {generateExcerpt(eventForm.description, 140)}
-                        </p>
-                        <p className="text-xs text-gray-400 mt-2">
-                          {generateExcerpt(eventForm.description, 140).length} / 140 characters (shown on homepage & events page cards)
-                        </p>
+                    {/* Hero Tagline - Homepage hero only */}
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <Label className="text-sm">Hero Tagline <span className="text-purple-600">(Homepage hero only)</span></Label>
+                        <span className={`text-xs ${eventForm.heroTagline.length > 140 ? 'text-red-500' : 'text-gray-500'}`}>
+                          {eventForm.heroTagline.length}/140
+                        </span>
                       </div>
-                    )}
+                      <Input 
+                        value={eventForm.heroTagline} 
+                        onChange={(e) => setEventForm({ ...eventForm, heroTagline: e.target.value.slice(0, 140) })} 
+                        placeholder="One catchy line for the homepage banner..."
+                        maxLength={140}
+                      />
+                      <p className="text-xs text-gray-500">
+                        💡 If empty, will show: "Don't miss this event in {'{city}'}."
+                      </p>
+                    </div>
+
+                    {/* Short Summary - Event cards */}
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <Label className="text-sm">Short Summary <span className="text-purple-600">(Event cards)</span></Label>
+                        <span className={`text-xs ${eventForm.shortSummary.length > 220 ? 'text-red-500' : 'text-gray-500'}`}>
+                          {eventForm.shortSummary.length}/220
+                        </span>
+                      </div>
+                      <Textarea 
+                        value={eventForm.shortSummary} 
+                        onChange={(e) => setEventForm({ ...eventForm, shortSummary: e.target.value.slice(0, 220) })} 
+                        rows={2}
+                        placeholder="Brief description for event cards on homepage and events page..."
+                        maxLength={220}
+                      />
+                      <p className="text-xs text-gray-500">
+                        💡 If empty, auto-generates from first 180 chars of description.
+                      </p>
+                    </div>
+
+                    {/* Full Description - Event detail page only */}
+                    <div className="space-y-2">
+                      <Label className="text-sm">Full Description <span className="text-purple-600">(Event detail page only)</span></Label>
+                      <Textarea 
+                        value={eventForm.description} 
+                        onChange={(e) => setEventForm({ ...eventForm, description: e.target.value })} 
+                        rows={5} 
+                        placeholder="Full event description with all details, schedule info, what to expect..."
+                      />
+                      
+                      {/* Auto-suggest button */}
+                      {eventForm.description && !eventForm.heroTagline && (
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            // Extract first sentence for heroTagline
+                            const firstSentence = eventForm.description.split(/[.!?]/)[0]?.trim();
+                            if (firstSentence) {
+                              setEventForm({ 
+                                ...eventForm, 
+                                heroTagline: firstSentence.slice(0, 140)
+                              });
+                            }
+                          }}
+                        >
+                          Auto-fill Hero Tagline from first sentence
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Venue Address */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>Venue Address</Label>
+                      <Input 
+                        value={eventForm.venueAddress} 
+                        onChange={(e) => setEventForm({ ...eventForm, venueAddress: e.target.value })} 
+                        placeholder="Street address..."
+                      />
+                    </div>
+                    <div>
+                      <Label>Google Maps URL</Label>
+                      <Input 
+                        value={eventForm.googleMapsUrl} 
+                        onChange={(e) => setEventForm({ ...eventForm, googleMapsUrl: e.target.value })} 
+                        placeholder="https://maps.google.com/..."
+                      />
+                    </div>
                   </div>
 
                   {/* Ticket Platform URLs */}
