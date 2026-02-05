@@ -597,6 +597,18 @@ export async function POST(request) {
       return corsResponse({ event, message: 'Event created successfully' }, 201);
     }
 
+    // Create team member
+    if (path === 'admin/team') {
+      const password = request.headers.get('x-admin-password');
+      
+      if (password !== process.env.ADMIN_PASSWORD) {
+        return corsResponse({ error: 'Unauthorized' }, 401);
+      }
+
+      const member = await TeamMember.create(body);
+      return corsResponse({ member, message: 'Team member added successfully' }, 201);
+    }
+
     // Create order (ticket purchase)
     if (path === 'orders') {
       const { eventId, email, name, ticketType, quantity, totalAmount } = body;
