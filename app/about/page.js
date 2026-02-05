@@ -1,8 +1,11 @@
+'use client';
+
 import { Users, Heart, Award, Target } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
+import StatsBar from '@/components/StatsBar';
 import { siteConfig } from '@/config/site';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -100,29 +103,8 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Stats */}
-      <section className="py-20 bg-gradient-to-br from-amber-500 to-orange-600 text-white">
-        <div className="container">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div>
-              <div className="text-5xl font-bold mb-2">50+</div>
-              <div className="text-lg opacity-90">Events Organized</div>
-            </div>
-            <div>
-              <div className="text-5xl font-bold mb-2">25K+</div>
-              <div className="text-lg opacity-90">Happy Attendees</div>
-            </div>
-            <div>
-              <div className="text-5xl font-bold mb-2">8</div>
-              <div className="text-lg opacity-90">Cities Covered</div>
-            </div>
-            <div>
-              <div className="text-5xl font-bold mb-2">4.8</div>
-              <div className="text-lg opacity-90">Average Rating</div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Stats - Using shared StatsBar component */}
+      <StatsBar variant="amber" showReviewCount={true} />
 
       {/* CTA */}
       <section className="py-20 bg-background">
