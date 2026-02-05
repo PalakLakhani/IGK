@@ -81,12 +81,16 @@ export default function HomePage() {
   const heroEvents = upcomingEvents.slice(0, 3);
 
   // Updated Event Categories (as per requirements)
+  // Images sourced from Unsplash - stored locally for optimization
+  // - bollywood-dj-events.jpg: Photo by Unsplash (JErmY3TtMog) - DJ mixing music
+  // - trend-led-experiences.jpg: Photo by Unsplash (qHyzRjy0ywU) - people socializing
+  // - indian-cultural-events.jpg: Photo by Unsplash (j-s3Xs34xRs) - Diwali celebration
   const eventTypes = [
     {
       title: 'Bollywood DJ Nights & Club Events',
       emoji: '🎧',
       description: 'Dance to the hottest Bollywood beats all night',
-      image: 'https://images.unsplash.com/photo-1571266028243-e4733b0f0bb0?w=800',
+      image: '/images/categories/bollywood-dj-events.jpg',
       gradient: 'from-purple-600 to-pink-600'
     },
     {
@@ -100,7 +104,7 @@ export default function HomePage() {
       title: 'Indian Cultural Events',
       emoji: '🌸',
       description: 'Garba, Dandiya, Holi & traditional celebrations',
-      image: 'https://images.unsplash.com/photo-1583089892943-e02e5b017b6a?w=800',
+      image: '/images/categories/indian-cultural-events.jpg',
       gradient: 'from-orange-500 to-yellow-500'
     },
     {
@@ -121,7 +125,7 @@ export default function HomePage() {
       title: 'Trend-led Experiences',
       emoji: '🔥',
       description: 'Fake Shaadi, Speed Dating & unique concepts',
-      image: 'https://images.unsplash.com/photo-1529543544277-c91de6e7e5a9?w=800',
+      image: '/images/categories/trend-led-experiences.jpg',
       gradient: 'from-amber-500 to-red-500'
     }
   ];
