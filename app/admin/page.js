@@ -101,6 +101,7 @@ export default function AdminPage() {
   const [testimonials, setTestimonials] = useState([]);
   const [teamMembers, setTeamMembers] = useState([]);
   const [settings, setSettings] = useState({});
+  const [newsletterSubscribers, setNewsletterSubscribers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadingTeamPhoto, setUploadingTeamPhoto] = useState(false);
