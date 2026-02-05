@@ -15,7 +15,92 @@ import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
 import { format } from 'date-fns';
 
-// Unified Event Card Component
+// Helper function to generate excerpt from description
+// Strips emojis and HTML, returns first 150 chars + "..."
+function generateExcerpt(description, maxLength = 150) {
+  if (!description) return '';
+  
+  // Strip HTML tags
+  let text = description.replace(/<[^>]*>/g, '');
+  
+  // Strip emojis (unicode emoji ranges)
+  text = text.replace(/[\u{1F600}-\u{1F64F}]/gu, '') // Emoticons
+    .replace(/[\u{1F300}-\u{1F5FF}]/gu, '') // Misc Symbols
+    .replace(/[\u{1F680}-\u{1F6FF}]/gu, '') // Transport
+    .replace(/[\u{1F1E0}-\u{1F1FF}]/gu, '') // Flags
+    .replace(/[\u{2600}-\u{26FF}]/gu, '') // Misc symbols
+    .replace(/[\u{2700}-\u{27BF}]/gu, '') // Dingbats
+    .replace(/[\u{FE00}-\u{FE0F}]/gu, '') // Variation Selectors
+    .replace(/[\u{1F900}-\u{1F9FF}]/gu, '') // Supplemental Symbols
+    .replace(/[\u{1FA00}-\u{1FA6F}]/gu, '') // Chess Symbols
+    .replace(/[\u{1FA70}-\u{1FAFF}]/gu, '') // Symbols Extended-A
+    .replace(/[\u{231A}-\u{231B}]/gu, '') // Watch, Hourglass
+    .replace(/[\u{23E9}-\u{23F3}]/gu, '') // Media control
+    .replace(/[\u{23F8}-\u{23FA}]/gu, '') // Media control
+    .replace(/[\u{25AA}-\u{25AB}]/gu, '') // Squares
+    .replace(/[\u{25B6}]/gu, '') // Play button
+    .replace(/[\u{25C0}]/gu, '') // Reverse button
+    .replace(/[\u{25FB}-\u{25FE}]/gu, '') // Squares
+    .replace(/[\u{2614}-\u{2615}]/gu, '') // Umbrella, Hot beverage
+    .replace(/[\u{2648}-\u{2653}]/gu, '') // Zodiac
+    .replace(/[\u{267F}]/gu, '') // Wheelchair
+    .replace(/[\u{2693}]/gu, '') // Anchor
+    .replace(/[\u{26A1}]/gu, '') // High voltage
+    .replace(/[\u{26AA}-\u{26AB}]/gu, '') // Circles
+    .replace(/[\u{26BD}-\u{26BE}]/gu, '') // Sports
+    .replace(/[\u{26C4}-\u{26C5}]/gu, '') // Weather
+    .replace(/[\u{26CE}]/gu, '') // Ophiuchus
+    .replace(/[\u{26D4}]/gu, '') // No entry
+    .replace(/[\u{26EA}]/gu, '') // Church
+    .replace(/[\u{26F2}-\u{26F3}]/gu, '') // Fountain, Golf
+    .replace(/[\u{26F5}]/gu, '') // Sailboat
+    .replace(/[\u{26FA}]/gu, '') // Tent
+    .replace(/[\u{26FD}]/gu, '') // Fuel pump
+    .replace(/[\u{2702}]/gu, '') // Scissors
+    .replace(/[\u{2705}]/gu, '') // Check mark
+    .replace(/[\u{2708}-\u{270D}]/gu, '') // Airplane to Writing hand
+    .replace(/[\u{270F}]/gu, '') // Pencil
+    .replace(/[\u{2712}]/gu, '') // Black nib
+    .replace(/[\u{2714}]/gu, '') // Check mark
+    .replace(/[\u{2716}]/gu, '') // X mark
+    .replace(/[\u{271D}]/gu, '') // Latin cross
+    .replace(/[\u{2721}]/gu, '') // Star of David
+    .replace(/[\u{2728}]/gu, '') // Sparkles
+    .replace(/[\u{2733}-\u{2734}]/gu, '') // Eight spoked asterisk
+    .replace(/[\u{2744}]/gu, '') // Snowflake
+    .replace(/[\u{2747}]/gu, '') // Sparkle
+    .replace(/[\u{274C}]/gu, '') // Cross mark
+    .replace(/[\u{274E}]/gu, '') // Cross mark
+    .replace(/[\u{2753}-\u{2755}]/gu, '') // Question marks
+    .replace(/[\u{2757}]/gu, '') // Exclamation mark
+    .replace(/[\u{2763}-\u{2764}]/gu, '') // Heart
+    .replace(/[\u{2795}-\u{2797}]/gu, '') // Plus, Minus, Division
+    .replace(/[\u{27A1}]/gu, '') // Right arrow
+    .replace(/[\u{27B0}]/gu, '') // Curly loop
+    .replace(/[\u{27BF}]/gu, '') // Double curly loop
+    .replace(/[\u{2934}-\u{2935}]/gu, '') // Arrows
+    .replace(/[\u{2B05}-\u{2B07}]/gu, '') // Arrows
+    .replace(/[\u{2B1B}-\u{2B1C}]/gu, '') // Squares
+    .replace(/[\u{2B50}]/gu, '') // Star
+    .replace(/[\u{2B55}]/gu, '') // Circle
+    .replace(/[\u{3030}]/gu, '') // Wavy dash
+    .replace(/[\u{303D}]/gu, '') // Part alternation mark
+    .replace(/[\u{3297}]/gu, '') // Circled Ideograph Congratulation
+    .replace(/[\u{3299}]/gu, ''); // Circled Ideograph Secret
+  
+  // Clean up multiple spaces
+  text = text.replace(/\s+/g, ' ').trim();
+  
+  // Truncate
+  if (text.length <= maxLength) return text;
+  
+  // Cut at word boundary
+  const truncated = text.substring(0, maxLength);
+  const lastSpace = truncated.lastIndexOf(' ');
+  return (lastSpace > 0 ? truncated.substring(0, lastSpace) : truncated) + '...';
+}
+
+// Unified Event Card Component with overflow fixes
 function UnifiedEventCard({ event, isPast = false }) {
   const eventDate = new Date(event.startDateTime || event.date);
   const hasDesipass = event.desipassUrl || event.ticketPlatforms?.desipassUrl;
@@ -28,10 +113,14 @@ function UnifiedEventCard({ event, isPast = false }) {
     'Garba': 'from-orange-500 to-red-500',
     'Concert': 'from-red-500 to-pink-500',
     'Navratri': 'from-orange-500 to-yellow-500',
+    'Cultural': 'from-amber-500 to-orange-500',
     'default': 'from-purple-500 to-pink-500'
   };
 
   const gradientClass = categoryColors[event.category] || categoryColors.default;
+  
+  // Generate excerpt from description (single source of truth)
+  const excerpt = generateExcerpt(event.description, 150);
 
   return (
     <Card className={`overflow-hidden border-none shadow-2xl hover:shadow-pink-500/50 transition-all hover:scale-105 transform bg-white ${isPast ? 'opacity-75' : ''}`}>
@@ -44,28 +133,31 @@ function UnifiedEventCard({ event, isPast = false }) {
         />
         <div className={`absolute inset-0 bg-gradient-to-t ${gradientClass}/40 to-transparent`} />
         
-        {/* Badges */}
-        <div className="absolute top-4 right-4 flex flex-col gap-2">
+        {/* Badges Container - Fixed overflow with flex-wrap and max-width */}
+        <div className="absolute top-3 left-3 right-3 flex flex-wrap gap-1.5 overflow-hidden">
           {event.featured && !isPast && (
-            <Badge className="bg-yellow-400 text-black font-bold shadow-lg">
-              <Sparkles className="h-4 w-4 mr-1" />
+            <Badge className="bg-yellow-400 text-black font-bold shadow-lg text-xs px-2 py-0.5 flex-shrink-0">
+              <Sparkles className="h-3 w-3 mr-1" />
               FEATURED
             </Badge>
           )}
           {isPast && (
-            <Badge variant="secondary" className="bg-gray-700 text-white">
-              Past Event
+            <Badge variant="secondary" className="bg-gray-700 text-white text-xs px-2 py-0.5 flex-shrink-0">
+              Past
+            </Badge>
+          )}
+          {/* Ticket platform badges - constrained width */}
+          {hasDesipass && (
+            <Badge className="bg-blue-600 text-white text-xs px-2 py-0.5 flex-shrink-0 max-w-[100px] truncate">
+              DesiPass
+            </Badge>
+          )}
+          {hasEventbrite && (
+            <Badge className="bg-orange-600 text-white text-xs px-2 py-0.5 flex-shrink-0 max-w-[100px] truncate">
+              Eventbrite
             </Badge>
           )}
         </div>
-
-        {/* Ticket platform badges */}
-        {hasTickets && (
-          <div className="absolute top-4 left-4 flex gap-1">
-            {hasDesipass && <Badge className="bg-blue-600 text-white text-xs">DesiPass</Badge>}
-            {hasEventbrite && <Badge className="bg-orange-600 text-white text-xs">Eventbrite</Badge>}
-          </div>
-        )}
 
         <div className="absolute bottom-4 left-4 right-4">
           <Badge className={`bg-gradient-to-r ${gradientClass} text-white font-bold text-sm px-4 py-2 shadow-lg`}>
@@ -78,48 +170,50 @@ function UnifiedEventCard({ event, isPast = false }) {
         <h3 className="font-black text-2xl mb-4 line-clamp-2 text-gray-900">{event.title}</h3>
         <div className="space-y-3 text-base">
           <div className="flex items-center gap-3 text-gray-600">
-            <div className="flex items-center justify-center h-10 w-10 rounded-full bg-pink-100 text-pink-600">
+            <div className="flex items-center justify-center h-10 w-10 rounded-full bg-pink-100 text-pink-600 flex-shrink-0">
               <Calendar className="h-5 w-5" />
             </div>
             <span className="font-semibold">{format(eventDate, 'EEE, MMM dd, yyyy')}</span>
           </div>
           <div className="flex items-center gap-3 text-gray-600">
-            <div className="flex items-center justify-center h-10 w-10 rounded-full bg-purple-100 text-purple-600">
+            <div className="flex items-center justify-center h-10 w-10 rounded-full bg-purple-100 text-purple-600 flex-shrink-0">
               <Clock className="h-5 w-5" />
             </div>
             <span className="font-semibold">{format(eventDate, 'HH:mm')} Uhr</span>
           </div>
           <div className="flex items-center gap-3 text-gray-600">
-            <div className="flex items-center justify-center h-10 w-10 rounded-full bg-blue-100 text-blue-600">
+            <div className="flex items-center justify-center h-10 w-10 rounded-full bg-blue-100 text-blue-600 flex-shrink-0">
               <MapPin className="h-5 w-5" />
             </div>
-            <span className="font-semibold">{event.city}{event.venue ? ` • ${event.venue}` : ''}</span>
+            <span className="font-semibold truncate">{event.city}{event.venue ? ` • ${event.venue}` : ''}</span>
           </div>
         </div>
-        {event.description && (
-          <p className="mt-4 text-gray-600 line-clamp-2 leading-relaxed">
-            {event.description}
+        
+        {/* Description Excerpt - derived from event.description */}
+        {excerpt && (
+          <p className="mt-4 text-gray-600 line-clamp-2 leading-relaxed text-sm">
+            {excerpt}
           </p>
         )}
       </CardContent>
 
       <CardFooter className="p-6 pt-0 flex flex-col gap-3">
-        {/* Ticket Buttons */}
+        {/* Ticket Buttons - Responsive: stacked on mobile, row on desktop */}
         {!isPast && hasTickets ? (
-          <div className="flex gap-2 w-full">
+          <div className="flex flex-col sm:flex-row gap-2 w-full">
             {hasDesipass && (
-              <Button asChild className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold">
-                <Link href={event.desipassUrl || event.ticketPlatforms?.desipassUrl} target="_blank">
-                  Tickets on DesiPass
-                  <ExternalLink className="ml-2 h-4 w-4" />
+              <Button asChild className="flex-1 min-w-0 bg-blue-600 hover:bg-blue-700 text-white font-bold">
+                <Link href={event.desipassUrl || event.ticketPlatforms?.desipassUrl} target="_blank" className="truncate">
+                  <span className="truncate">DesiPass</span>
+                  <ExternalLink className="ml-2 h-4 w-4 flex-shrink-0" />
                 </Link>
               </Button>
             )}
             {hasEventbrite && (
-              <Button asChild className="flex-1 bg-orange-600 hover:bg-orange-700 text-white font-bold">
-                <Link href={event.eventbriteUrl || event.ticketPlatforms?.eventbriteUrl} target="_blank">
-                  Tickets on Eventbrite
-                  <ExternalLink className="ml-2 h-4 w-4" />
+              <Button asChild className="flex-1 min-w-0 bg-orange-600 hover:bg-orange-700 text-white font-bold">
+                <Link href={event.eventbriteUrl || event.ticketPlatforms?.eventbriteUrl} target="_blank" className="truncate">
+                  <span className="truncate">Eventbrite</span>
+                  <ExternalLink className="ml-2 h-4 w-4 flex-shrink-0" />
                 </Link>
               </Button>
             )}
@@ -156,7 +250,7 @@ export default function EventsPage() {
 
   const fetchEvents = async () => {
     try {
-      // Fetch classified events (upcoming + past in one call)
+      // Fetch classified events from DB (single source of truth)
       const res = await fetch('/api/events?type=classified');
       const data = await res.json();
       
