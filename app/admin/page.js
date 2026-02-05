@@ -219,7 +219,72 @@ export default function AdminPage() {
     }
   };
 
-  // Team photo upload handler
+  // Team photo select handler - opens cropper
+  const handleTeamPhotoSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Create a URL for the selected image
+    const imageUrl = URL.createObjectURL(file);
+    setCropImage(imageUrl);
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
+    setShowCropper(true);
+  };
+
+  // Cropper callback
+  const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  }, []);
+
+  // Save cropped image
+  const handleSaveCroppedImage = async () => {
+    if (!cropImage || !croppedAreaPixels) return;
+
+    setUploadingTeamPhoto(true);
+    try {
+      const croppedBlob = await getCroppedImg(cropImage, croppedAreaPixels);
+      if (!croppedBlob) {
+        toast.error('Failed to crop image');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', croppedBlob, 'profile.jpg');
+      formData.append('type', 'team');
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'x-admin-password': password },
+        body: formData
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setTeamForm({ ...teamForm, image: data.path });
+        toast.success('Photo cropped and uploaded!');
+        setShowCropper(false);
+        setCropImage(null);
+      } else {
+        toast.error(data.error || 'Upload failed');
+      }
+    } catch (err) {
+      toast.error('Failed to save cropped image');
+    } finally {
+      setUploadingTeamPhoto(false);
+    }
+  };
+
+  // Cancel cropping
+  const handleCancelCrop = () => {
+    setShowCropper(false);
+    setCropImage(null);
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
+    if (teamFileInputRef.current) teamFileInputRef.current.value = '';
+  };
+
+  // Legacy team photo upload handler (direct upload without crop)
   const handleTeamPhotoUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
