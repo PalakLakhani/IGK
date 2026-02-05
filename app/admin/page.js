@@ -67,6 +67,28 @@ async function getCroppedImg(imageSrc, pixelCrop) {
   });
 }
 
+// Helper function to generate excerpt from description (same as used in EventCard)
+function generateExcerpt(description, maxLength = 140) {
+  if (!description) return '';
+  
+  // Strip HTML tags
+  let text = description.replace(/<[^>]*>/g, '');
+  
+  // Strip common emojis
+  text = text.replace(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]|[\u{1F000}-\u{1F02F}]|[\u{1F0A0}-\u{1F0FF}]/gu, '');
+  
+  // Clean up multiple spaces
+  text = text.replace(/\s+/g, ' ').trim();
+  
+  // Truncate
+  if (text.length <= maxLength) return text;
+  
+  // Cut at word boundary
+  const truncated = text.substring(0, maxLength);
+  const lastSpace = truncated.lastIndexOf(' ');
+  return (lastSpace > 0 ? truncated.substring(0, lastSpace) : truncated) + '...';
+}
+
 export default function AdminPage() {
   const router = useRouter();
   const fileInputRef = useRef(null);
