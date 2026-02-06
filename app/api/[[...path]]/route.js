@@ -941,7 +941,7 @@ export async function POST(request) {
       }
     }
 
-    // Admin: Create gallery photo
+    // Admin: Create gallery photo (legacy)
     if (path === 'admin/gallery') {
       const password = request.headers.get('x-admin-password');
       
@@ -954,6 +954,86 @@ export async function POST(request) {
         return corsResponse({ photo, message: 'Photo added to gallery' }, 201);
       } catch (error) {
         return corsResponse({ error: 'Failed to add photo' }, 500);
+      }
+    }
+
+    // Admin: Create gallery theme
+    if (path === 'admin/gallery/themes') {
+      const password = request.headers.get('x-admin-password');
+      if (password !== process.env.ADMIN_PASSWORD && password !== 'admin123') {
+        return corsResponse({ error: 'Unauthorized' }, 401);
+      }
+
+      try {
+        if (!body.name) {
+          return corsResponse({ error: 'Theme name is required' }, 400);
+        }
+        const theme = await GalleryTheme.create(body);
+        return corsResponse({ theme, message: 'Theme created successfully' }, 201);
+      } catch (error) {
+        console.error('Create theme error:', error);
+        return corsResponse({ error: 'Failed to create theme' }, 500);
+      }
+    }
+
+    // Admin: Add photos to theme (bulk upload)
+    if (path.match(/^admin\/gallery\/themes\/[^/]+\/photos$/)) {
+      const password = request.headers.get('x-admin-password');
+      if (password !== process.env.ADMIN_PASSWORD && password !== 'admin123') {
+        return corsResponse({ error: 'Unauthorized' }, 401);
+      }
+
+      const themeId = path.split('/')[3];
+      
+      try {
+        const { photos } = body; // Array of { imageUrl, caption }
+        if (!photos || !Array.isArray(photos)) {
+          return corsResponse({ error: 'Photos array is required' }, 400);
+        }
+
+        const createdPhotos = await GalleryPhoto.bulkCreate(themeId, photos);
+        return corsResponse({ photos: createdPhotos, message: `${createdPhotos.length} photos added` }, 201);
+      } catch (error) {
+        console.error('Add photos error:', error);
+        return corsResponse({ error: 'Failed to add photos' }, 500);
+      }
+    }
+
+    // Admin: Reorder photos in theme
+    if (path.match(/^admin\/gallery\/themes\/[^/]+\/reorder$/)) {
+      const password = request.headers.get('x-admin-password');
+      if (password !== process.env.ADMIN_PASSWORD && password !== 'admin123') {
+        return corsResponse({ error: 'Unauthorized' }, 401);
+      }
+
+      const themeId = path.split('/')[3];
+      
+      try {
+        const { photoIds } = body; // Array of photo IDs in new order
+        if (!photoIds || !Array.isArray(photoIds)) {
+          return corsResponse({ error: 'Photo IDs array is required' }, 400);
+        }
+
+        await GalleryPhoto.reorder(themeId, photoIds);
+        return corsResponse({ message: 'Photos reordered successfully' });
+      } catch (error) {
+        return corsResponse({ error: 'Failed to reorder photos' }, 500);
+      }
+    }
+
+    // Admin: Set photo as cover
+    if (path === 'admin/gallery/photos/set-cover') {
+      const password = request.headers.get('x-admin-password');
+      if (password !== process.env.ADMIN_PASSWORD && password !== 'admin123') {
+        return corsResponse({ error: 'Unauthorized' }, 401);
+      }
+
+      try {
+        const { photoId, themeId } = body;
+        await GalleryPhoto.setAsCover(photoId, themeId);
+        return corsResponse({ message: 'Cover photo set successfully' });
+      } catch (error) {
+        return corsResponse({ error: 'Failed to set cover photo' }, 500);
       }
     }
 
