@@ -1049,6 +1049,66 @@ export async function DELETE(request) {
       return corsResponse({ message: 'Team member deleted successfully' });
     }
 
+    // Delete partner submission
+    if (path.startsWith('admin/partners/')) {
+      const partnerId = path.replace('admin/partners/', '');
+      const success = await Partner.delete(partnerId);
+      
+      if (!success) {
+        return corsResponse({ error: 'Partner not found' }, 404);
+      }
+
+      return corsResponse({ message: 'Partner submission deleted' });
+    }
+
+    // Delete contact submission
+    if (path.startsWith('admin/contacts/')) {
+      const contactId = path.replace('admin/contacts/', '');
+      const success = await Contact.delete(contactId);
+      
+      if (!success) {
+        return corsResponse({ error: 'Contact not found' }, 404);
+      }
+
+      return corsResponse({ message: 'Contact submission deleted' });
+    }
+
+    // Delete brand
+    if (path.startsWith('admin/brands/')) {
+      const brandId = path.replace('admin/brands/', '');
+      const success = await Brand.delete(brandId);
+      
+      if (!success) {
+        return corsResponse({ error: 'Brand not found' }, 404);
+      }
+
+      return corsResponse({ message: 'Brand deleted successfully' });
+    }
+
+    // Delete gallery photo
+    if (path.startsWith('admin/gallery/')) {
+      const photoId = path.replace('admin/gallery/', '');
+      const success = await Gallery.delete(photoId);
+      
+      if (!success) {
+        return corsResponse({ error: 'Photo not found' }, 404);
+      }
+
+      return corsResponse({ message: 'Photo deleted from gallery' });
+    }
+
+    // Delete newsletter subscriber
+    if (path.startsWith('admin/newsletter/')) {
+      const subscriberId = path.replace('admin/newsletter/', '');
+      const success = await Newsletter.delete(subscriberId);
+      
+      if (!success) {
+        return corsResponse({ error: 'Subscriber not found' }, 404);
+      }
+
+      return corsResponse({ message: 'Subscriber deleted' });
+    }
+
     return corsResponse({ error: 'Endpoint not found' }, 404);
 
   } catch (error) {
