@@ -79,7 +79,7 @@ export default function TeamPage() {
         icon={UsersIcon}
         title="Meet Our Team"
         subtitle="Passionate individuals bringing joy through cultural celebrations"
-        backgroundImage="https://images.unsplash.com/photo-1529543544277-c91de6e7e5a9?w=1920"
+        backgroundImage="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920"
         gradient="from-indigo-600/95 via-purple-600/90 to-pink-500/85"
       />
 
