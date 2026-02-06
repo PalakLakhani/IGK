@@ -1909,8 +1909,8 @@ export default function AdminPage() {
                 <h2 className="text-2xl font-bold">Gallery</h2>
                 <p className="text-muted-foreground">{galleryPhotos.length} photos</p>
               </div>
-              <div>
-                <Input
+              <div className="flex gap-2">
+                <input
                   ref={galleryInputRef}
                   type="file"
                   accept="image/*"
@@ -1920,20 +1920,22 @@ export default function AdminPage() {
                   className="hidden"
                   id="gallery-upload-main"
                 />
-                <label htmlFor="gallery-upload-main">
-                  <Button asChild disabled={galleryUploading}>
-                    <span className="cursor-pointer">
-                      {galleryUploading ? (
-                        <>Uploading...</>
-                      ) : (
-                        <>
-                          <ImagePlus className="mr-2 h-4 w-4" />
-                          Upload Photos
-                        </>
-                      )}
-                    </span>
-                  </Button>
-                </label>
+                <Button 
+                  onClick={() => galleryInputRef.current?.click()}
+                  disabled={galleryUploading}
+                >
+                  {galleryUploading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Uploading...
+                    </>
+                  ) : (
+                    <>
+                      <ImagePlus className="mr-2 h-4 w-4" />
+                      Upload Photos
+                    </>
+                  )}
+                </Button>
               </div>
             </div>
 
