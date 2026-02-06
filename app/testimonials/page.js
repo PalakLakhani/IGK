@@ -154,24 +154,13 @@ export default function TestimonialsPage() {
       <Header />
       
       {/* Hero */}
-      <section className="relative py-24 overflow-hidden">
-        <Image
-          src="https://images.unsplash.com/photo-1529543544277-c91de6e7e5a9?w=1920"
-          alt="Share Your Experience"
-          fill
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-yellow-600/90 to-orange-600/90" />
-        <div className="relative container text-center text-white">
-          <Badge className="bg-white/20 text-white text-lg px-6 py-2 mb-6">
-            Community Voices
-          </Badge>
-          <h1 className="text-6xl font-black mb-6 drop-shadow-2xl">Share Your Experience</h1>
-          <p className="text-2xl max-w-3xl mx-auto opacity-95">
-            Tell us about your experience at our events. Your feedback helps us create better experiences for everyone!
-          </p>
-        </div>
-      </section>
+      <PageHero
+        icon={Star}
+        title="Share Your Experience"
+        subtitle="Tell us about your experience at our events. Your feedback helps us create better experiences for everyone!"
+        backgroundImage="https://images.unsplash.com/photo-1529543544277-c91de6e7e5a9?w=1920"
+        gradient="from-yellow-600/90 to-orange-600/90"
+      />
 
       <div className="container py-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
