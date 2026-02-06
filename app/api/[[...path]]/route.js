@@ -230,6 +230,66 @@ export async function GET(request) {
       return corsResponse({ members });
     }
 
+    // Admin: Get all partner submissions
+    if (path === 'admin/partners') {
+      const password = request.headers.get('x-admin-password');
+      
+      if (password !== process.env.ADMIN_PASSWORD && password !== 'admin123') {
+        return corsResponse({ error: 'Unauthorized' }, 401);
+      }
+
+      const partners = await Partner.getAll();
+      return corsResponse({ partners });
+    }
+
+    // Admin: Get all contact submissions
+    if (path === 'admin/contacts') {
+      const password = request.headers.get('x-admin-password');
+      
+      if (password !== process.env.ADMIN_PASSWORD && password !== 'admin123') {
+        return corsResponse({ error: 'Unauthorized' }, 401);
+      }
+
+      const contacts = await Contact.getAll();
+      return corsResponse({ contacts });
+    }
+
+    // Admin: Get all brands
+    if (path === 'admin/brands') {
+      const password = request.headers.get('x-admin-password');
+      
+      if (password !== process.env.ADMIN_PASSWORD && password !== 'admin123') {
+        return corsResponse({ error: 'Unauthorized' }, 401);
+      }
+
+      const brands = await Brand.getAllAdmin();
+      return corsResponse({ brands });
+    }
+
+    // Public: Get active brands
+    if (path === 'brands') {
+      const brands = await Brand.getAll();
+      return corsResponse({ brands });
+    }
+
+    // Admin: Get all gallery photos
+    if (path === 'admin/gallery') {
+      const password = request.headers.get('x-admin-password');
+      
+      if (password !== process.env.ADMIN_PASSWORD && password !== 'admin123') {
+        return corsResponse({ error: 'Unauthorized' }, 401);
+      }
+
+      const photos = await Gallery.getAllAdmin();
+      return corsResponse({ photos });
+    }
+
+    // Public: Get gallery photos
+    if (path === 'gallery') {
+      const photos = await Gallery.getAll();
+      return corsResponse({ photos });
+    }
+
     // Get order by orderId and email
     if (path === 'orders/lookup') {
       const orderId = searchParams.get('orderId');
