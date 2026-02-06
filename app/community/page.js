@@ -87,7 +87,7 @@ export default function CommunityPage() {
         icon={Users}
         title="Join Our Community"
         subtitle="Connect with thousands of Indian expats across Germany. Join WhatsApp groups, follow us on social media, and stay updated!"
-        backgroundImage="https://images.unsplash.com/photo-1529543544277-c91de6e7e5a9?w=1920"
+        backgroundImage="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=1920"
         gradient="from-purple-600/90 to-pink-600/90"
       />
 
