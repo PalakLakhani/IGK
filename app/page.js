@@ -494,7 +494,7 @@ export default function HomePage() {
                   </li>
                 </ul>
                 <Button asChild size="lg" className="w-full bg-white text-blue-600 hover:bg-blue-50 font-bold">
-                  <Link href="https://desipass.com" target="_blank">
+                  <Link href={siteConfig.externalTicketing.desipass} target="_blank">
                     Visit DesiPass
                     <ExternalLink className="ml-2 h-5 w-5" />
                   </Link>
