@@ -1076,20 +1076,33 @@ export default function AdminPage() {
 
           {/* Overview */}
           <TabsContent value="overview">
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
               <Card><CardContent className="pt-6"><p className="text-sm text-muted-foreground">Total Events</p><p className="text-3xl font-bold">{stats.totalEvents}</p></CardContent></Card>
               <Card className="border-green-200"><CardContent className="pt-6"><p className="text-sm text-green-600">Upcoming</p><p className="text-3xl font-bold text-green-600">{stats.upcomingEvents}</p></CardContent></Card>
               <Card className="border-gray-200"><CardContent className="pt-6"><p className="text-sm text-gray-500">Past</p><p className="text-3xl font-bold text-gray-500">{stats.pastEvents}</p></CardContent></Card>
               <Card><CardContent className="pt-6"><p className="text-sm text-muted-foreground">Pending Reviews</p><p className="text-3xl font-bold">{stats.pendingTestimonials}</p></CardContent></Card>
+              <Card><CardContent className="pt-6"><p className="text-sm text-muted-foreground">Newsletter</p><p className="text-3xl font-bold">{stats.totalNewsletterSubscribers}</p></CardContent></Card>
+              <Card><CardContent className="pt-6"><p className="text-sm text-muted-foreground">Gallery</p><p className="text-3xl font-bold">{stats.totalGalleryPhotos}</p></CardContent></Card>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+              {stats.unrepliedPartners > 0 && (
+                <Card className="border-orange-200 bg-orange-50"><CardContent className="pt-6"><p className="text-sm text-orange-600">Partner Inquiries (New)</p><p className="text-3xl font-bold text-orange-600">{stats.unrepliedPartners}</p></CardContent></Card>
+              )}
+              {stats.unreadContacts > 0 && (
+                <Card className="border-blue-200 bg-blue-50"><CardContent className="pt-6"><p className="text-sm text-blue-600">Messages (Unread)</p><p className="text-3xl font-bold text-blue-600">{stats.unreadContacts}</p></CardContent></Card>
+              )}
               <Card><CardContent className="pt-6"><p className="text-sm text-muted-foreground">Team Members</p><p className="text-3xl font-bold">{stats.totalTeamMembers}</p></CardContent></Card>
+              <Card><CardContent className="pt-6"><p className="text-sm text-muted-foreground">Brands</p><p className="text-3xl font-bold">{stats.totalBrands}</p></CardContent></Card>
             </div>
 
             {/* Quick Actions */}
             <Card className="mb-8">
               <CardHeader><CardTitle>Quick Actions</CardTitle></CardHeader>
-              <CardContent className="flex gap-4">
+              <CardContent className="flex flex-wrap gap-4">
                 <Button onClick={() => { resetEventForm(); setShowEventForm(true); }}><Plus className="mr-2 h-4 w-4" />Add Event</Button>
-                <Button variant="outline" onClick={handleMigrateEvents}>Migrate Events to New Schema</Button>
+                <Button variant="outline" onClick={() => setActiveTab('gallery')}><ImagePlus className="mr-2 h-4 w-4" />Upload to Gallery</Button>
+                <Button variant="outline" onClick={() => setActiveTab('brands')}><Building2 className="mr-2 h-4 w-4" />Add Brand</Button>
               </CardContent>
             </Card>
           </TabsContent>
