@@ -933,7 +933,7 @@ export default function AdminPage() {
                       <Label>Brand</Label>
                       <Select value={eventForm.brand} onValueChange={(v) => setEventForm({ ...eventForm, brand: v })}>
                         <SelectTrigger><SelectValue placeholder="Select brand" /></SelectTrigger>
-                        <SelectContent>{brands.map(b => <SelectItem key={b} value={b}>{b}</SelectItem>)}</SelectContent>
+                        <SelectContent>{brandOptions.map(b => <SelectItem key={b} value={b}>{b}</SelectItem>)}</SelectContent>
                       </Select>
                     </div>
                   </div>
