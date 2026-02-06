@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Calendar, MapPin, Clock, ExternalLink, Download, Share2, ChevronRight, Ticket } from 'lucide-react';
+import { Calendar, MapPin, Clock, ExternalLink, Download, Share2, ChevronRight, Ticket, Instagram, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -14,6 +14,54 @@ import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
 import { format } from 'date-fns';
 import { siteConfig } from '@/config/site';
+
+// Helper function to convert URLs in text to clickable links
+function linkifyText(text) {
+  if (!text) return null;
+  
+  // URL regex pattern
+  const urlPattern = /(https?:\/\/[^\s<]+[^<.,:;"')\]\s])/g;
+  
+  // Split text by URLs and create array of text and link elements
+  const parts = text.split(urlPattern);
+  const matches = text.match(urlPattern) || [];
+  
+  const elements = [];
+  let matchIndex = 0;
+  
+  parts.forEach((part, index) => {
+    if (part) {
+      // Check if this part is a URL
+      if (matches.includes(part)) {
+        // Determine link type for styling
+        const isWhatsApp = part.includes('wa.me') || part.includes('whatsapp');
+        const isInstagram = part.includes('instagram.com') || part.includes('instagr.am');
+        
+        elements.push(
+          <a 
+            key={index} 
+            href={part} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className={`inline-flex items-center gap-1 font-medium hover:underline ${
+              isWhatsApp ? 'text-green-600' : isInstagram ? 'text-pink-600' : 'text-blue-600'
+            }`}
+          >
+            {isWhatsApp && <MessageCircle className="h-4 w-4" />}
+            {isInstagram && <Instagram className="h-4 w-4" />}
+            {isWhatsApp ? 'WhatsApp' : isInstagram ? 'Instagram' : part.length > 40 ? part.substring(0, 40) + '...' : part}
+            <ExternalLink className="h-3 w-3" />
+          </a>
+        );
+        matchIndex++;
+      } else {
+        elements.push(<span key={index}>{part}</span>);
+      }
+    }
+  });
+  
+  return elements;
+}
 
 export default function EventDetailPage() {
   const params = useParams();
