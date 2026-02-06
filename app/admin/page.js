@@ -746,18 +746,25 @@ export default function AdminPage() {
     );
   }
 
-  // Calculate stats with proper classification
+  // Calculate stats with proper classification (removed orders and revenue)
   const upcomingEvents = events.filter(e => e.classification === 'upcoming');
   const pastEvents = events.filter(e => e.classification === 'past');
+  const unrepliedPartners = partners.filter(p => !p.replied).length;
+  const unreadContacts = contacts.filter(c => !c.read).length;
   
   const stats = {
     totalEvents: events.length,
     upcomingEvents: upcomingEvents.length,
     pastEvents: pastEvents.length,
-    totalOrders: orders.length,
-    totalRevenue: orders.filter(o => o.status === 'completed').reduce((sum, o) => sum + (o.totalAmount || 0), 0),
     pendingTestimonials: testimonials.filter(t => !t.approved).length,
-    totalTeamMembers: teamMembers.length
+    totalTeamMembers: teamMembers.length,
+    totalNewsletterSubscribers: newsletterSubscribers.length,
+    totalPartners: partners.length,
+    unrepliedPartners,
+    totalContacts: contacts.length,
+    unreadContacts,
+    totalBrands: brands.length,
+    totalGalleryPhotos: galleryPhotos.length
   };
 
   const categories = ['Bollywood Night', 'Concert', 'Holi', 'Garba', 'Navratri', 'Wedding', 'Corporate', 'Cultural', 'Other'];
