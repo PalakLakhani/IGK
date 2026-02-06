@@ -228,23 +228,20 @@ export default function HomePage() {
             )}
           </>
         ) : (
-          /* Hero with Video Background */
+          /* Hero with Static Image Background (no video) */
           <div className="relative h-full w-full">
-            <video
-              autoPlay
-              muted
-              loop
-              playsInline
-              poster={siteConfig.heroVideo?.poster}
-              className="absolute inset-0 w-full h-full object-cover"
-            >
-              <source src={siteConfig.heroVideo?.url} type="video/mp4" />
-            </video>
+            <Image
+              src={siteConfig.heroImage}
+              alt="IGK Events - Community Celebration"
+              fill
+              priority
+              className="object-cover"
+            />
             <div className="absolute inset-0 bg-gradient-to-r from-pink-600/90 via-purple-600/80 to-orange-500/70" />
             <div className="relative container h-full flex items-center justify-center text-white">
               <div className="text-center space-y-6 animate-in fade-in zoom-in duration-700">
                 <h1 className="text-7xl md:text-8xl font-black mb-6 drop-shadow-2xl">Welcome to IGK</h1>
-                <p className="text-3xl mb-8 font-semibold">Curated Events & Experiences Across Germany</p>
+                <p className="text-3xl mb-8 font-semibold">{siteConfig.tagline}</p>
                 <Button size="lg" asChild className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold text-xl px-10 py-8 rounded-full shadow-2xl">
                   <Link href="/events">
                     <Sparkles className="mr-2 h-6 w-6" />
