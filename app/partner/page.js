@@ -248,8 +248,20 @@ export default function PartnerPage() {
                     />
                   </div>
 
-                  <Button type="submit" size="lg" className="w-full">
-                    {submitted ? 'Submitted!' : 'Submit Partnership Inquiry'}
+                  <Button type="submit" size="lg" className="w-full" disabled={submitting}>
+                    {submitted ? (
+                      <>
+                        <CheckCircle className="mr-2 h-4 w-4" />
+                        Submitted!
+                      </>
+                    ) : submitting ? (
+                      'Submitting...'
+                    ) : (
+                      <>
+                        <Send className="mr-2 h-4 w-4" />
+                        Submit Partnership Inquiry
+                      </>
+                    )}
                   </Button>
                 </form>
 
