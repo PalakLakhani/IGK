@@ -20,9 +20,9 @@ export const siteConfig = {
   },
   
   social: {
-    instagram: process.env.NEXT_PUBLIC_INSTAGRAM_URL || 'https://instagram.com/igkonnekt',
-    facebook: process.env.NEXT_PUBLIC_FACEBOOK_URL || 'https://facebook.com/igkonnekt',
-    linkedin: 'https://linkedin.com/company/igkonnekt',
+    instagram: 'https://www.instagram.com/igkonnekt',
+    facebook: 'https://www.facebook.com/igkonnekt',
+    linkedin: 'https://www.linkedin.com/company/igkonnekt/',
     whatsapp: '+4917657722110',
     linktree: 'https://linktr.ee/igkonnekt'
   },
