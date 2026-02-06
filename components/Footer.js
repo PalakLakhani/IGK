@@ -15,6 +15,7 @@ export default function Footer() {
     { href: '/team', label: 'Team' },
     { href: '/gallery', label: 'Gallery' },
     { href: '/community', label: 'Community' },
+    { href: '/collaborations', label: 'Trusted By' },
     { href: '/partner', label: 'Partners' },
     { href: '/contact', label: 'Contact' },
     { href: '/testimonials', label: 'Share Your Experience' },
@@ -44,9 +45,6 @@ export default function Footer() {
             </div>
             <p className="text-sm font-semibold text-foreground">
               {siteConfig.tagline}
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Curated events & experiences across Germany
             </p>
             
             {/* Contact Details */}
