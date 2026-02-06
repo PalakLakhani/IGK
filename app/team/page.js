@@ -75,23 +75,13 @@ export default function TeamPage() {
       <Header />
 
       {/* Hero Section */}
-      <section className="relative py-24 overflow-hidden">
-        <Image
-          src="https://images.unsplash.com/photo-1529543544277-c91de6e7e5a9?w=1920"
-          alt="Our Team"
-          fill
-          className="object-cover"
-          priority
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/95 via-purple-600/90 to-pink-500/85" />
-        <div className="relative container text-center text-white">
-          <UsersIcon className="h-20 w-20 mx-auto mb-6" />
-          <h1 className="text-6xl md:text-7xl font-black mb-6 drop-shadow-2xl">Meet Our Team</h1>
-          <p className="text-2xl md:text-3xl font-semibold max-w-3xl mx-auto drop-shadow-lg">
-            Passionate individuals bringing joy through cultural celebrations
-          </p>
-        </div>
-      </section>
+      <PageHero
+        icon={UsersIcon}
+        title="Meet Our Team"
+        subtitle="Passionate individuals bringing joy through cultural celebrations"
+        backgroundImage="https://images.unsplash.com/photo-1529543544277-c91de6e7e5a9?w=1920"
+        gradient="from-indigo-600/95 via-purple-600/90 to-pink-500/85"
+      />
 
       {loading ? (
         <div className="py-20 text-center">
