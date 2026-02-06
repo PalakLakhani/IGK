@@ -90,15 +90,13 @@ export default function PartnerPage() {
       <Header />
 
       {/* Hero */}
-      <section className="py-16 bg-gradient-to-br from-purple-900 to-purple-700 text-white">
-        <div className="container text-center">
-          <Handshake className="h-16 w-16 mx-auto mb-6" />
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Partner With Us</h1>
-          <p className="text-xl max-w-2xl mx-auto">
-            Join us in creating unforgettable cultural experiences across Germany. We're always looking for passionate partners.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        icon={Handshake}
+        title="Partner With Us"
+        subtitle="Join us in creating unforgettable cultural experiences across Germany. We're always looking for passionate partners."
+        backgroundImage="https://images.unsplash.com/photo-1552664730-d307ca884978?w=1920"
+        gradient="from-purple-900/95 via-purple-700/90 to-indigo-600/85"
+      />
 
       {/* Partnership Types */}
       <section className="py-20 bg-background">
