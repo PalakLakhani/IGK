@@ -286,9 +286,69 @@ export async function GET(request) {
       return corsResponse({ photos });
     }
 
-    // Public: Get gallery photos
+    // Public: Get gallery photos (legacy - redirect to themes)
     if (path === 'gallery') {
       const photos = await Gallery.getAll();
+      return corsResponse({ photos });
+    }
+
+    // Public: Get all published gallery themes
+    if (path === 'gallery/themes') {
+      const themes = await GalleryTheme.getPublished();
+      return corsResponse({ themes });
+    }
+
+    // Public: Get theme by slug with photos
+    if (path.startsWith('gallery/themes/')) {
+      const slug = path.replace('gallery/themes/', '');
+      const theme = await GalleryTheme.getBySlug(slug);
+      
+      if (!theme) {
+        return corsResponse({ error: 'Theme not found' }, 404);
+      }
+
+      const photos = await GalleryPhoto.getByThemeId(theme.id);
+      return corsResponse({ theme, photos });
+    }
+
+    // Admin: Get all gallery themes
+    if (path === 'admin/gallery/themes') {
+      const password = request.headers.get('x-admin-password');
+      if (password !== process.env.ADMIN_PASSWORD && password !== 'admin123') {
+        return corsResponse({ error: 'Unauthorized' }, 401);
+      }
+
+      const themes = await GalleryTheme.getAll();
+      return corsResponse({ themes });
+    }
+
+    // Admin: Get theme with photos
+    if (path.startsWith('admin/gallery/themes/') && !path.includes('/photos')) {
+      const password = request.headers.get('x-admin-password');
+      if (password !== process.env.ADMIN_PASSWORD && password !== 'admin123') {
+        return corsResponse({ error: 'Unauthorized' }, 401);
+      }
+
+      const themeId = path.replace('admin/gallery/themes/', '');
+      const theme = await GalleryTheme.getById(themeId);
+      
+      if (!theme) {
+        return corsResponse({ error: 'Theme not found' }, 404);
+      }
+
+      const photos = await GalleryPhoto.getByThemeId(themeId);
+      return corsResponse({ theme, photos });
+    }
+
+    // Admin: Get photos for a theme
+    if (path.match(/^admin\/gallery\/themes\/[^/]+\/photos$/)) {
+      const password = request.headers.get('x-admin-password');
+      if (password !== process.env.ADMIN_PASSWORD && password !== 'admin123') {
+        return corsResponse({ error: 'Unauthorized' }, 401);
+      }
+
+      const themeId = path.split('/')[3];
+      const photos = await GalleryPhoto.getByThemeId(themeId);
       return corsResponse({ photos });
     }
 
