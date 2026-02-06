@@ -44,6 +44,19 @@ export async function GET(request) {
       return corsResponse({ status: 'ok', timestamp: new Date().toISOString() });
     }
 
+    // Public settings (for stats on homepage)
+    if (path === 'settings') {
+      await SiteSettings.initializeDefaults();
+      const allSettings = await SiteSettings.getAll();
+      // Only return public stats, not admin-only settings
+      const publicSettings = {
+        eventsOrganized: allSettings.eventsOrganized,
+        happyAttendees: allSettings.happyAttendees,
+        citiesCovered: allSettings.citiesCovered
+      };
+      return corsResponse({ settings: publicSettings });
+    }
+
     // Seed events (for initial setup)
     if (path === 'seed-events') {
       try {
