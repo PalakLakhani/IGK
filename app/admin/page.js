@@ -1756,28 +1756,6 @@ export default function AdminPage() {
             </div>
           </TabsContent>
 
-          {/* Orders */}
-          <TabsContent value="orders">
-            <h2 className="text-2xl font-bold mb-6">Orders</h2>
-            {orders.length > 0 ? (
-              <div className="space-y-4">
-                {orders.map(order => (
-                  <Card key={order.id}>
-                    <CardContent className="p-4 flex items-center justify-between">
-                      <div>
-                        <p className="font-bold">{order.orderId}</p>
-                        <p className="text-sm">{order.name} • {order.email}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-bold">€{order.totalAmount || 0}</p>
-                        <Badge>{order.status}</Badge>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            ) : <Card><CardContent className="py-12 text-center text-muted-foreground">No orders yet</CardContent></Card>}
-          </TabsContent>
 
           {/* Settings */}
           <TabsContent value="settings">
