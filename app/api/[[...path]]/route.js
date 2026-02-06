@@ -1253,8 +1253,36 @@ export async function DELETE(request) {
       return corsResponse({ message: 'Brand deleted successfully' });
     }
 
-    // Delete gallery photo
-    if (path.startsWith('admin/gallery/')) {
+    // Delete gallery theme
+    if (path.startsWith('admin/gallery/themes/') && !path.includes('/photos')) {
+      const themeId = path.replace('admin/gallery/themes/', '');
+      
+      // Delete all photos in theme first
+      await GalleryPhoto.deleteByThemeId(themeId);
+      
+      const success = await GalleryTheme.delete(themeId);
+      
+      if (!success) {
+        return corsResponse({ error: 'Theme not found' }, 404);
+      }
+
+      return corsResponse({ message: 'Theme and all photos deleted successfully' });
+    }
+
+    // Delete photo from theme
+    if (path.startsWith('admin/gallery/photos/')) {
+      const photoId = path.replace('admin/gallery/photos/', '');
+      const success = await GalleryPhoto.delete(photoId);
+      
+      if (!success) {
+        return corsResponse({ error: 'Photo not found' }, 404);
+      }
+
+      return corsResponse({ message: 'Photo deleted from theme' });
+    }
+
+    // Delete gallery photo (legacy)
+    if (path.startsWith('admin/gallery/') && !path.includes('themes') && !path.includes('photos')) {
       const photoId = path.replace('admin/gallery/', '');
       const success = await Gallery.delete(photoId);
       
