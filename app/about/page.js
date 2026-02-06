@@ -1,11 +1,12 @@
 'use client';
 
-import { Users, Heart, Award, Target, Shield, Sparkles, Building2, Calendar } from 'lucide-react';
+import { Users, Heart, Award, Target, Shield, Sparkles, Building2, Calendar, Info } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
 import StatsBar from '@/components/StatsBar';
+import PageHero from '@/components/PageHero';
 import { siteConfig } from '@/config/site';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -16,14 +17,13 @@ export default function AboutPage() {
       <Header />
 
       {/* Hero */}
-      <section className="py-16 bg-gradient-to-br from-indigo-900 to-indigo-700 text-white">
-        <div className="container text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">About {siteConfig.name}</h1>
-          <p className="text-xl max-w-2xl mx-auto">
-            {siteConfig.tagline}
-          </p>
-        </div>
-      </section>
+      <PageHero
+        icon={Info}
+        title={`About ${siteConfig.name}`}
+        subtitle={siteConfig.tagline}
+        backgroundImage="https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=1920"
+        gradient="from-indigo-900/95 via-indigo-700/90 to-purple-600/85"
+      />
 
       {/* Our Story */}
       <section className="py-20 bg-background">
