@@ -1251,7 +1251,7 @@ export default function AdminPage() {
                           onChange={handleFileUpload}
                           disabled={uploading}
                         />
-                        <p className="text-xs text-muted-foreground mt-1">Upload from computer (max 5MB)</p>
+                        <p className="text-xs text-muted-foreground mt-1">Upload from computer (max 30MB)</p>
                       </div>
                       <div className="flex-1">
                         <Input 
