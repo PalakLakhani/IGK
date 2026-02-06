@@ -2103,7 +2103,7 @@ export default function AdminPage() {
             <div className="flex justify-between items-center mb-6">
               <div>
                 <h2 className="text-2xl font-bold">Collaborating Brands</h2>
-                <p className="text-muted-foreground">Manage brands shown on the "Trusted By" page</p>
+                <p className="text-muted-foreground">Manage brands shown on the &quot;Trusted By&quot; page</p>
               </div>
               <Button onClick={() => { setEditingBrand(null); setBrandForm({ name: '', logoUrl: '', websiteUrl: '', order: 0 }); setShowBrandForm(true); }}>
                 <Plus className="mr-2 h-4 w-4" />
