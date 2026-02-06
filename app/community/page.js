@@ -83,25 +83,13 @@ export default function CommunityPage() {
       <Header />
       
       {/* Hero */}
-      <section className="relative py-24 overflow-hidden">
-        <Image
-          src="https://images.unsplash.com/photo-1529543544277-c91de6e7e5a9?w=1920"
-          alt="Community"
-          fill
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/90 to-pink-600/90" />
-        <div className="relative container text-center text-white">
-          <Badge className="bg-white/20 text-white text-lg px-6 py-2 mb-6">
-            <Users className="h-5 w-5 mr-2" />
-            Connect & Grow
-          </Badge>
-          <h1 className="text-6xl font-black mb-6 drop-shadow-2xl">Join Our Community</h1>
-          <p className="text-2xl max-w-3xl mx-auto opacity-95">
-            Connect with thousands of Indian expats across Germany. Join WhatsApp groups, follow us on social media, and stay updated!
-          </p>
-        </div>
-      </section>
+      <PageHero
+        icon={Users}
+        title="Join Our Community"
+        subtitle="Connect with thousands of Indian expats across Germany. Join WhatsApp groups, follow us on social media, and stay updated!"
+        backgroundImage="https://images.unsplash.com/photo-1529543544277-c91de6e7e5a9?w=1920"
+        gradient="from-purple-600/90 to-pink-600/90"
+      />
 
       {/* Linktree Source */}
       <section className="py-6 bg-white border-b">
