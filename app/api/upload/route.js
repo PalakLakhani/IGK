@@ -4,6 +4,19 @@ import { existsSync } from 'fs';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
+// Configure max request body size for this route (30MB)
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '30mb',
+    },
+  },
+};
+
+// For App Router - increase body size limit
+export const maxDuration = 60; // seconds
+export const dynamic = 'force-dynamic';
+
 // CORS headers
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
