@@ -1080,8 +1080,6 @@ export default function AdminPage() {
               <Card><CardContent className="pt-6"><p className="text-sm text-muted-foreground">Total Events</p><p className="text-3xl font-bold">{stats.totalEvents}</p></CardContent></Card>
               <Card className="border-green-200"><CardContent className="pt-6"><p className="text-sm text-green-600">Upcoming</p><p className="text-3xl font-bold text-green-600">{stats.upcomingEvents}</p></CardContent></Card>
               <Card className="border-gray-200"><CardContent className="pt-6"><p className="text-sm text-gray-500">Past</p><p className="text-3xl font-bold text-gray-500">{stats.pastEvents}</p></CardContent></Card>
-              <Card><CardContent className="pt-6"><p className="text-sm text-muted-foreground">Orders</p><p className="text-3xl font-bold">{stats.totalOrders}</p></CardContent></Card>
-              <Card><CardContent className="pt-6"><p className="text-sm text-muted-foreground">Revenue</p><p className="text-3xl font-bold">€{stats.totalRevenue}</p></CardContent></Card>
               <Card><CardContent className="pt-6"><p className="text-sm text-muted-foreground">Pending Reviews</p><p className="text-3xl font-bold">{stats.pendingTestimonials}</p></CardContent></Card>
               <Card><CardContent className="pt-6"><p className="text-sm text-muted-foreground">Team Members</p><p className="text-3xl font-bold">{stats.totalTeamMembers}</p></CardContent></Card>
             </div>
