@@ -2150,71 +2150,244 @@ export default function AdminPage() {
             )}
           </TabsContent>
 
-          {/* Gallery - FREE-FLOW (not event-wise) */}
+          {/* Gallery Themes */}
           <TabsContent value="gallery">
             <div className="flex justify-between items-center mb-6">
               <div>
-                <h2 className="text-2xl font-bold">Gallery</h2>
-                <p className="text-muted-foreground">{galleryPhotos.length} photos</p>
+                <h2 className="text-2xl font-bold">Gallery Themes</h2>
+                <p className="text-muted-foreground">{galleryThemes.length} themes, {stats.totalGalleryPhotos} photos total</p>
               </div>
-              <div className="flex gap-2">
-                <input
-                  ref={galleryInputRef}
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handleGalleryPhotoUpload}
-                  disabled={galleryUploading}
-                  className="hidden"
-                  id="gallery-upload-main"
-                />
-                <Button 
-                  onClick={() => galleryInputRef.current?.click()}
-                  disabled={galleryUploading}
-                >
-                  {galleryUploading ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Uploading...
-                    </>
-                  ) : (
-                    <>
-                      <ImagePlus className="mr-2 h-4 w-4" />
-                      Upload Photos
-                    </>
-                  )}
-                </Button>
-              </div>
+              <Button onClick={() => { setEditingTheme(null); setThemeForm({ name: '', description: '', coverImageUrl: '', order: 0, status: 'draft' }); setShowThemeForm(true); }}>
+                <Plus className="mr-2 h-4 w-4" />
+                Create Theme
+              </Button>
             </div>
 
-            {galleryPhotos.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                {galleryPhotos.map((photo) => (
-                  <div key={photo.id} className="relative group">
-                    <div className="relative aspect-square rounded-lg overflow-hidden border">
-                      <img 
-                        src={photo.imageUrl} 
-                        alt={photo.caption || 'Gallery'} 
-                        className="w-full h-full object-cover"
+            {/* Theme Form Dialog */}
+            <Dialog open={showThemeForm} onOpenChange={setShowThemeForm}>
+              <DialogContent className="max-w-lg">
+                <DialogHeader>
+                  <DialogTitle>{editingTheme ? 'Edit Theme' : 'Create New Theme'}</DialogTitle>
+                  <DialogDescription>Organize your gallery photos by theme (e.g., Holi, Bollywood Night, Navratri)</DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div>
+                    <Label>Theme Name *</Label>
+                    <Input 
+                      value={themeForm.name}
+                      onChange={(e) => setThemeForm({ ...themeForm, name: e.target.value })}
+                      placeholder="e.g., Holi 2024, Bollywood Night"
+                    />
+                  </div>
+                  <div>
+                    <Label>Description</Label>
+                    <Textarea 
+                      value={themeForm.description}
+                      onChange={(e) => setThemeForm({ ...themeForm, description: e.target.value })}
+                      placeholder="Short description for this theme"
+                      rows={2}
+                    />
+                  </div>
+                  <div>
+                    <Label>Cover Image</Label>
+                    <div className="flex items-center gap-4">
+                      {themeForm.coverImageUrl && (
+                        <img src={themeForm.coverImageUrl} alt="Cover" className="h-20 w-32 object-cover rounded border" />
+                      )}
+                      <input
+                        ref={themeCoverInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleThemeCoverUpload}
+                        disabled={themeCoverUploading}
+                        className="hidden"
+                        id="theme-cover-upload"
+                      />
+                      <Button 
+                        type="button"
+                        variant="outline" 
+                        onClick={() => themeCoverInputRef.current?.click()}
+                        disabled={themeCoverUploading}
+                      >
+                        {themeCoverUploading ? 'Uploading...' : 'Upload Cover'}
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>Sort Order</Label>
+                      <Input 
+                        type="number"
+                        value={themeForm.order}
+                        onChange={(e) => setThemeForm({ ...themeForm, order: parseInt(e.target.value) || 0 })}
                       />
                     </div>
-                    <button
-                      onClick={() => handleDeleteGalleryPhoto(photo.id)}
-                      className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
+                    <div>
+                      <Label>Status</Label>
+                      <Select value={themeForm.status} onValueChange={(v) => setThemeForm({ ...themeForm, status: v })}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="draft">Draft</SelectItem>
+                          <SelectItem value="published">Published</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setShowThemeForm(false)}>Cancel</Button>
+                  <Button onClick={handleSaveTheme}>
+                    {editingTheme ? 'Update' : 'Create'} Theme
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+            {/* Theme Photos Dialog */}
+            <Dialog open={showThemePhotos} onOpenChange={setShowThemePhotos}>
+              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <ImageIcon className="h-5 w-5" />
+                    {selectedTheme?.name} - Photos
+                  </DialogTitle>
+                  <DialogDescription>
+                    Upload and manage photos for this theme. Max 30MB per photo.
+                  </DialogDescription>
+                </DialogHeader>
+
+                <div className="space-y-6">
+                  {/* Upload Area */}
+                  <div className="border-2 border-dashed rounded-lg p-6 text-center hover:border-pink-500 transition-colors">
+                    <input
+                      ref={themePhotoInputRef}
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleThemePhotosUpload}
+                      disabled={themePhotosUploading}
+                      className="hidden"
+                      id="theme-photos-upload"
+                    />
+                    <label htmlFor="theme-photos-upload" className="cursor-pointer">
+                      {themePhotosUploading ? (
+                        <div className="flex flex-col items-center gap-2 text-pink-600">
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-600"></div>
+                          <p>Uploading photos...</p>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          <ImagePlus className="h-10 w-10 mx-auto text-gray-400" />
+                          <p className="font-medium text-gray-600">Click to upload photos</p>
+                          <p className="text-sm text-gray-400">Select multiple files at once</p>
+                        </div>
+                      )}
+                    </label>
+                  </div>
+
+                  {/* Photos Grid */}
+                  <div>
+                    <h4 className="font-semibold mb-3">Photos ({themePhotos.length})</h4>
+                    {themePhotos.length > 0 ? (
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        {themePhotos.map((photo) => (
+                          <div key={photo.id} className="relative group">
+                            <div className={`relative aspect-square rounded-lg overflow-hidden border-2 ${photo.isCover ? 'border-pink-500' : 'border-transparent'}`}>
+                              <img 
+                                src={photo.imageUrl} 
+                                alt={photo.caption || 'Photo'} 
+                                className="w-full h-full object-cover"
+                              />
+                              {photo.isCover && (
+                                <div className="absolute top-2 left-2 bg-pink-500 text-white text-xs px-2 py-1 rounded">Cover</div>
+                              )}
+                            </div>
+                            <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <button
+                                onClick={() => handleSetCoverPhoto(photo.id)}
+                                className="p-1.5 bg-blue-500 text-white rounded-full hover:bg-blue-600"
+                                title="Set as cover"
+                              >
+                                <Star className="h-3 w-3" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteThemePhoto(photo.id)}
+                                className="p-1.5 bg-red-500 text-white rounded-full hover:bg-red-600"
+                                title="Delete"
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-muted-foreground text-center py-8">No photos yet. Upload some above!</p>
+                    )}
+                  </div>
+                </div>
+
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setShowThemePhotos(false)}>Close</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+            {/* Themes List */}
+            {galleryThemes.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {galleryThemes.map((theme) => (
+                  <Card key={theme.id} className={theme.status === 'draft' ? 'opacity-70' : ''}>
+                    <div className="relative h-40 overflow-hidden rounded-t-lg">
+                      {theme.coverImageUrl ? (
+                        <img src={theme.coverImageUrl} alt={theme.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                          <ImageIcon className="h-12 w-12 text-white/50" />
+                        </div>
+                      )}
+                      <div className="absolute top-2 right-2 flex gap-1">
+                        <Badge variant={theme.status === 'published' ? 'default' : 'secondary'}>
+                          {theme.status}
+                        </Badge>
+                      </div>
+                      <div className="absolute bottom-2 left-2">
+                        <Badge className="bg-black/50">{theme.photoCount || 0} photos</Badge>
+                      </div>
+                    </div>
+                    <CardContent className="p-4">
+                      <h3 className="font-bold text-lg mb-1">{theme.name}</h3>
+                      {theme.description && (
+                        <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{theme.description}</p>
+                      )}
+                      <div className="flex gap-2">
+                        <Button size="sm" onClick={() => openThemePhotos(theme)}>
+                          <ImagePlus className="h-4 w-4 mr-1" />
+                          Photos
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => openEditTheme(theme)}>
+                          <Edit2 className="h-4 w-4" />
+                        </Button>
+                        <Button size="sm" variant="ghost" className="text-red-500" onClick={() => handleDeleteTheme(theme.id)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
                 ))}
               </div>
             ) : (
               <Card>
                 <CardContent className="py-12 text-center">
                   <ImageIcon className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground">No photos in gallery yet.</p>
+                  <p className="text-muted-foreground">No gallery themes yet.</p>
                   <p className="text-sm text-muted-foreground mt-2">
-                    Upload photos to showcase moments from your events.
+                    Create themes like "Holi", "Bollywood Night", etc. to organize your photos.
                   </p>
+                  <Button className="mt-4" onClick={() => { setEditingTheme(null); setThemeForm({ name: '', description: '', coverImageUrl: '', order: 0, status: 'draft' }); setShowThemeForm(true); }}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Create First Theme
+                  </Button>
                 </CardContent>
               </Card>
             )}
