@@ -204,9 +204,9 @@ END:VCALENDAR`;
                   <CardTitle>About This Event</CardTitle>
                 </CardHeader>
                 <CardContent className="prose max-w-none">
-                  <p className="text-muted-foreground whitespace-pre-line">
-                    {event.description}
-                  </p>
+                  <div className="text-muted-foreground whitespace-pre-line">
+                    {linkifyText(event.description)}
+                  </div>
                 </CardContent>
               </Card>
             )}
