@@ -762,7 +762,7 @@ export default function AdminPage() {
 
   const categories = ['Bollywood Night', 'Concert', 'Holi', 'Garba', 'Navratri', 'Wedding', 'Corporate', 'Cultural', 'Other'];
   const cities = ['Berlin', 'Munich', 'Frankfurt', 'Hamburg', 'Cologne', 'Leipzig', 'Stuttgart', 'Düsseldorf'];
-  const brands = ['IGK', 'BIG', 'Holi Bash Europe', 'Navaratri Fiesta Europe'];
+  const brandOptions = ['IGK', 'BIG', 'Holi Bash Europe', 'Navaratri Fiesta Europe'];
 
   // Helper to format event date for display
   const formatEventDate = (event) => {
