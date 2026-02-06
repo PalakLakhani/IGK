@@ -720,6 +720,7 @@ export default function AdminPage() {
 
     setGalleryUploading(true);
     let uploadedCount = 0;
+    let errorCount = 0;
 
     try {
       for (const file of files) {
@@ -734,9 +735,10 @@ export default function AdminPage() {
         });
 
         const uploadData = await uploadRes.json();
-        if (uploadRes.ok) {
+        
+        if (uploadRes.ok && uploadData.path) {
           // Create gallery entry
-          await fetch('/api/admin/gallery', {
+          const galleryRes = await fetch('/api/admin/gallery', {
             method: 'POST',
             headers: { 
               'Content-Type': 'application/json',
@@ -747,7 +749,17 @@ export default function AdminPage() {
               caption: ''
             })
           });
-          uploadedCount++;
+          
+          if (galleryRes.ok) {
+            uploadedCount++;
+          } else {
+            console.error('Gallery entry failed:', await galleryRes.text());
+            errorCount++;
+          }
+        } else {
+          console.error('Upload failed:', uploadData.error || 'Unknown error');
+          toast.error(`Failed to upload ${file.name}: ${uploadData.error || 'Unknown error'}`);
+          errorCount++;
         }
       }
 
@@ -755,8 +767,12 @@ export default function AdminPage() {
         toast.success(`${uploadedCount} photo(s) added to gallery!`);
         fetchAllData(password);
       }
+      if (errorCount > 0 && uploadedCount === 0) {
+        toast.error(`Failed to upload ${errorCount} photo(s)`);
+      }
     } catch (err) {
-      toast.error('Error uploading photos');
+      console.error('Gallery upload error:', err);
+      toast.error('Error uploading photos: ' + err.message);
     } finally {
       setGalleryUploading(false);
       if (galleryInputRef.current) galleryInputRef.current.value = '';
