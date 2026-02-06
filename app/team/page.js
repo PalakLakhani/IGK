@@ -199,6 +199,21 @@ export default function TeamPage() {
                         {activeCity === 'all' && member.city && (
                           <p className="text-xs text-gray-500 mt-1">{member.city}</p>
                         )}
+                        {/* Social Links - only show if at least one exists */}
+                        {(member.linkedin || member.instagram) && (
+                          <div className="flex gap-2 justify-center mt-3">
+                            {member.linkedin && (
+                              <Link href={member.linkedin} target="_blank" className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-100 hover:bg-blue-600 hover:text-white transition-all">
+                                <Linkedin className="h-4 w-4" />
+                              </Link>
+                            )}
+                            {member.instagram && (
+                              <Link href={member.instagram} target="_blank" className="flex items-center justify-center h-8 w-8 rounded-full bg-pink-100 hover:bg-pink-600 hover:text-white transition-all">
+                                <Instagram className="h-4 w-4" />
+                              </Link>
+                            )}
+                          </div>
+                        )}
                       </CardContent>
                     </Card>
                   ))}
