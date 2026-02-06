@@ -293,25 +293,13 @@ export default function EventsPage() {
       <Header />
       
       {/* Hero Section */}
-      <section className="relative py-24 overflow-hidden">
-        <Image
-          src="https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=1920"
-          alt="Events"
-          fill
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-pink-600/90 to-purple-600/90" />
-        <div className="relative container text-center text-white">
-          <Badge className="bg-yellow-400 text-black text-lg px-6 py-2 mb-6">
-            <Sparkles className="h-5 w-5 mr-2" />
-            Curated Events
-          </Badge>
-          <h1 className="text-6xl font-black mb-6 drop-shadow-2xl">Discover Amazing Events</h1>
-          <p className="text-2xl max-w-3xl mx-auto opacity-95">
-            Curated events & experiences across Germany - Holi, Bollywood Nights, Garba, Weddings, and more
-          </p>
-        </div>
-      </section>
+      <PageHero
+        icon={Calendar}
+        title="Discover Amazing Events"
+        subtitle="Curated events & experiences across Germany - Holi, Bollywood Nights, Garba, Weddings, and more"
+        backgroundImage="https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=1920"
+        gradient="from-pink-600/90 to-purple-600/90"
+      />
 
       {/* Filters */}
       <section className="py-8 border-b bg-white sticky top-0 z-40 shadow-sm">
