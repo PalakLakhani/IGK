@@ -7,6 +7,7 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
+import PageHero from '@/components/PageHero';
 
 export default function GalleryPage() {
   const [photos, setPhotos] = useState([]);
@@ -34,15 +35,13 @@ export default function GalleryPage() {
       <Header />
 
       {/* Hero */}
-      <section className="py-16 bg-gradient-to-br from-pink-900 to-purple-800 text-white">
-        <div className="container text-center">
-          <ImageIcon className="h-16 w-16 mx-auto mb-6" />
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Gallery</h1>
-          <p className="text-xl max-w-2xl mx-auto opacity-90">
-            Relive the magic. Browse through moments captured at our events.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        icon={ImageIcon}
+        title="Gallery"
+        subtitle="Relive the magic. Browse through moments captured at our events."
+        backgroundImage="https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=1920"
+        gradient="from-pink-900/95 via-purple-800/90 to-indigo-700/85"
+      />
 
       {/* Gallery Grid - Masonry Style */}
       <section className="py-16 bg-gradient-to-b from-white to-gray-50 flex-1">
