@@ -96,6 +96,8 @@ export default function AdminPage() {
   const teamFileInputRef = useRef(null);
   const galleryInputRef = useRef(null);
   const brandLogoInputRef = useRef(null);
+  const themePhotoInputRef = useRef(null);
+  const themeCoverInputRef = useRef(null);
   const [password, setPassword] = useState('');
   const [authenticated, setAuthenticated] = useState(false);
   const [events, setEvents] = useState([]);
@@ -120,8 +122,21 @@ export default function AdminPage() {
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   
-  // Gallery uploading state (free-flow, not event-wise)
+  // Gallery uploading state (legacy - not used)
   const [galleryUploading, setGalleryUploading] = useState(false);
+  
+  // Gallery Themes state
+  const [galleryThemes, setGalleryThemes] = useState([]);
+  const [showThemeForm, setShowThemeForm] = useState(false);
+  const [editingTheme, setEditingTheme] = useState(null);
+  const [themeForm, setThemeForm] = useState({ name: '', description: '', coverImageUrl: '', order: 0, status: 'draft' });
+  const [themeCoverUploading, setThemeCoverUploading] = useState(false);
+  
+  // Theme Photos state
+  const [selectedTheme, setSelectedTheme] = useState(null);
+  const [themePhotos, setThemePhotos] = useState([]);
+  const [showThemePhotos, setShowThemePhotos] = useState(false);
+  const [themePhotosUploading, setThemePhotosUploading] = useState(false);
   
   // Event gallery management state
   const [showGalleryManager, setShowGalleryManager] = useState(false);
