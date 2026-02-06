@@ -1005,6 +1005,218 @@ export default function AdminPage() {
     setShowBrandForm(true);
   };
 
+  // GALLERY THEMES HANDLERS
+  const handleThemeCoverUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setThemeCoverUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('type', 'gallery');
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'x-admin-password': password },
+        body: formData
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setThemeForm({ ...themeForm, coverImageUrl: data.path });
+        toast.success('Cover image uploaded!');
+      } else {
+        toast.error(data.error || 'Upload failed');
+      }
+    } catch (err) {
+      toast.error('Upload error');
+    } finally {
+      setThemeCoverUploading(false);
+      if (themeCoverInputRef.current) themeCoverInputRef.current.value = '';
+    }
+  };
+
+  const handleSaveTheme = async () => {
+    if (!themeForm.name) {
+      toast.error('Theme name is required');
+      return;
+    }
+
+    try {
+      const url = editingTheme 
+        ? `/api/admin/gallery/themes/${editingTheme.id}`
+        : '/api/admin/gallery/themes';
+      
+      const res = await fetch(url, {
+        method: editingTheme ? 'PUT' : 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-admin-password': password 
+        },
+        body: JSON.stringify(themeForm)
+      });
+
+      if (res.ok) {
+        toast.success(editingTheme ? 'Theme updated!' : 'Theme created!');
+        setShowThemeForm(false);
+        setEditingTheme(null);
+        setThemeForm({ name: '', description: '', coverImageUrl: '', order: 0, status: 'draft' });
+        fetchAllData(password);
+      } else {
+        const data = await res.json();
+        toast.error(data.error || 'Failed to save theme');
+      }
+    } catch (err) {
+      toast.error('Error saving theme');
+    }
+  };
+
+  const handleDeleteTheme = async (themeId) => {
+    if (!confirm('Delete this theme and all its photos? This cannot be undone.')) return;
+    
+    try {
+      const res = await fetch(`/api/admin/gallery/themes/${themeId}`, {
+        method: 'DELETE',
+        headers: { 'x-admin-password': password }
+      });
+
+      if (res.ok) {
+        toast.success('Theme deleted');
+        fetchAllData(password);
+      }
+    } catch (err) {
+      toast.error('Error deleting theme');
+    }
+  };
+
+  const openEditTheme = (theme) => {
+    setEditingTheme(theme);
+    setThemeForm({
+      name: theme.name || '',
+      description: theme.description || '',
+      coverImageUrl: theme.coverImageUrl || '',
+      order: theme.order || 0,
+      status: theme.status || 'draft'
+    });
+    setShowThemeForm(true);
+  };
+
+  // Theme Photos handlers
+  const openThemePhotos = async (theme) => {
+    setSelectedTheme(theme);
+    setShowThemePhotos(true);
+    
+    try {
+      const res = await fetch(`/api/admin/gallery/themes/${theme.id}`, {
+        headers: { 'x-admin-password': password }
+      });
+      const data = await res.json();
+      setThemePhotos(data.photos || []);
+    } catch (err) {
+      toast.error('Error loading photos');
+    }
+  };
+
+  const handleThemePhotosUpload = async (e) => {
+    const files = e.target.files;
+    if (!files || files.length === 0 || !selectedTheme) return;
+
+    setThemePhotosUploading(true);
+    const uploadedPhotos = [];
+
+    try {
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('type', 'gallery');
+
+        const uploadRes = await fetch('/api/upload', {
+          method: 'POST',
+          headers: { 'x-admin-password': password },
+          body: formData
+        });
+
+        const uploadData = await uploadRes.json();
+        if (uploadRes.ok && uploadData.path) {
+          uploadedPhotos.push({ imageUrl: uploadData.path, caption: '' });
+        }
+      }
+
+      if (uploadedPhotos.length > 0) {
+        // Add photos to theme
+        const res = await fetch(`/api/admin/gallery/themes/${selectedTheme.id}/photos`, {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'x-admin-password': password 
+          },
+          body: JSON.stringify({ photos: uploadedPhotos })
+        });
+
+        if (res.ok) {
+          toast.success(`${uploadedPhotos.length} photo(s) added!`);
+          // Refresh photos
+          const refreshRes = await fetch(`/api/admin/gallery/themes/${selectedTheme.id}`, {
+            headers: { 'x-admin-password': password }
+          });
+          const refreshData = await refreshRes.json();
+          setThemePhotos(refreshData.photos || []);
+          fetchAllData(password);
+        }
+      }
+    } catch (err) {
+      toast.error('Error uploading photos');
+    } finally {
+      setThemePhotosUploading(false);
+      if (themePhotoInputRef.current) themePhotoInputRef.current.value = '';
+    }
+  };
+
+  const handleDeleteThemePhoto = async (photoId) => {
+    if (!confirm('Delete this photo?')) return;
+    
+    try {
+      const res = await fetch(`/api/admin/gallery/photos/${photoId}`, {
+        method: 'DELETE',
+        headers: { 'x-admin-password': password }
+      });
+
+      if (res.ok) {
+        toast.success('Photo deleted');
+        setThemePhotos(themePhotos.filter(p => p.id !== photoId));
+        fetchAllData(password);
+      }
+    } catch (err) {
+      toast.error('Error deleting photo');
+    }
+  };
+
+  const handleSetCoverPhoto = async (photoId) => {
+    try {
+      const res = await fetch('/api/admin/gallery/photos/set-cover', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-admin-password': password 
+        },
+        body: JSON.stringify({ photoId, themeId: selectedTheme.id })
+      });
+
+      if (res.ok) {
+        toast.success('Cover photo set!');
+        // Refresh photos
+        const refreshRes = await fetch(`/api/admin/gallery/themes/${selectedTheme.id}`, {
+          headers: { 'x-admin-password': password }
+        });
+        const refreshData = await refreshRes.json();
+        setThemePhotos(refreshData.photos || []);
+      }
+    } catch (err) {
+      toast.error('Error setting cover');
+    }
+  };
+
   // Migrate events to new schema
   const handleMigrateEvents = async () => {
     try {
