@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Mail, Phone, MessageCircle, MapPin, Send } from 'lucide-react';
+import { Mail, Phone, MessageCircle, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -11,7 +11,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
 import { siteConfig } from '@/config/site';
-import Link from 'next/link';
+import { toast } from 'sonner';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -22,16 +22,36 @@ export default function ContactPage() {
     message: ''
   });
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Send to API
-    console.log('Contact form:', formData);
-    setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
-      setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
-    }, 3000);
+    setSubmitting(true);
+
+    try {
+      const res = await fetch('/api/contacts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await res.json();
+      
+      if (res.ok) {
+        setSubmitted(true);
+        toast.success(data.message || 'Message sent successfully!');
+        setTimeout(() => {
+          setSubmitted(false);
+          setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+        }, 3000);
+      } else {
+        toast.error(data.error || 'Failed to send message');
+      }
+    } catch (error) {
+      toast.error('Failed to send message. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -100,22 +120,6 @@ export default function ContactPage() {
                       <a href={`tel:${siteConfig.contact.phone}`} className="text-sm text-muted-foreground hover:text-primary">
                         {siteConfig.contact.phone}
                       </a>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="pt-6 pb-6">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center flex-shrink-0">
-                      <MapPin className="h-6 w-6" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold mb-1">Office</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {siteConfig.contact.address}
-                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -196,8 +200,8 @@ export default function ContactPage() {
                         />
                       </div>
 
-                      <Button type="submit" size="lg" className="w-full">
-                        Send Message
+                      <Button type="submit" size="lg" className="w-full" disabled={submitting}>
+                        {submitting ? 'Sending...' : 'Send Message'}
                         <Send className="ml-2 h-4 w-4" />
                       </Button>
                     </form>
@@ -206,29 +210,6 @@ export default function ContactPage() {
               </Card>
             </div>
           </div>
-
-          {/* Quick Links */}
-          <Card className="mt-12 bg-muted/40">
-            <CardContent className="p-8">
-              <div className="text-center">
-                <h3 className="text-xl font-semibold mb-4">Looking for Something Specific?</h3>
-                <div className="flex flex-wrap gap-3 justify-center">
-                  <Button variant="outline" asChild>
-                    <Link href="/tickets">My Tickets</Link>
-                  </Button>
-                  <Button variant="outline" asChild>
-                    <Link href="/refund-policy">Refund Policy</Link>
-                  </Button>
-                  <Button variant="outline" asChild>
-                    <Link href="/partner">Partnership Inquiry</Link>
-                  </Button>
-                  <Button variant="outline" asChild>
-                    <Link href="/terms">Terms & Conditions</Link>
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </section>
 
