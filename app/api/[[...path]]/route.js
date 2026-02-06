@@ -1134,8 +1134,21 @@ export async function PUT(request) {
       return corsResponse({ brand, message: 'Brand updated successfully' });
     }
 
-    // Update gallery photo
-    if (path.startsWith('admin/gallery/')) {
+    // Update gallery theme
+    if (path.startsWith('admin/gallery/themes/') && !path.includes('/photos') && !path.includes('/reorder')) {
+      const themeId = path.replace('admin/gallery/themes/', '');
+      const success = await GalleryTheme.update(themeId, body);
+      
+      if (!success) {
+        return corsResponse({ error: 'Theme not found' }, 404);
+      }
+
+      const theme = await GalleryTheme.getById(themeId);
+      return corsResponse({ theme, message: 'Theme updated successfully' });
+    }
+
+    // Update gallery photo (legacy)
+    if (path.startsWith('admin/gallery/') && !path.includes('themes')) {
       const photoId = path.replace('admin/gallery/', '');
       const success = await Gallery.update(photoId, body);
       
@@ -1144,6 +1157,19 @@ export async function PUT(request) {
       }
 
       const photo = await Gallery.getById(photoId);
+      return corsResponse({ photo, message: 'Photo updated successfully' });
+    }
+
+    // Update gallery photo in theme
+    if (path.startsWith('admin/gallery/photos/')) {
+      const photoId = path.replace('admin/gallery/photos/', '');
+      const success = await GalleryPhoto.update(photoId, body);
+      
+      if (!success) {
+        return corsResponse({ error: 'Photo not found' }, 404);
+      }
+
+      const photo = await GalleryPhoto.getById(photoId);
       return corsResponse({ photo, message: 'Photo updated successfully' });
     }
 
