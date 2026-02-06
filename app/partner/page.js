@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Handshake, Mail, MessageCircle, Building, Music, Utensils, Camera, CheckCircle } from 'lucide-react';
+import { Handshake, Mail, MessageCircle, Building, Music, Utensils, Camera, CheckCircle, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
 import { siteConfig } from '@/config/site';
+import { toast } from 'sonner';
 
 export default function PartnerPage() {
   const [formData, setFormData] = useState({
@@ -24,13 +25,36 @@ export default function PartnerPage() {
   });
 
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Send to API
-    console.log('Partnership inquiry:', formData);
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 3000);
+    setSubmitting(true);
+    
+    try {
+      const res = await fetch('/api/partners', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await res.json();
+      
+      if (res.ok) {
+        setSubmitted(true);
+        toast.success(data.message || 'Partnership inquiry submitted successfully!');
+        setTimeout(() => {
+          setSubmitted(false);
+          setFormData({ name: '', email: '', phone: '', company: '', partnershipType: '', message: '' });
+        }, 3000);
+      } else {
+        toast.error(data.error || 'Failed to submit inquiry');
+      }
+    } catch (error) {
+      toast.error('Failed to submit inquiry. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const partnershipTypes = [
