@@ -979,6 +979,32 @@ export async function PUT(request) {
       return corsResponse({ member, message: 'Team member updated successfully' });
     }
 
+    // Update brand
+    if (path.startsWith('admin/brands/')) {
+      const brandId = path.replace('admin/brands/', '');
+      const success = await Brand.update(brandId, body);
+      
+      if (!success) {
+        return corsResponse({ error: 'Brand not found' }, 404);
+      }
+
+      const brand = await Brand.getById(brandId);
+      return corsResponse({ brand, message: 'Brand updated successfully' });
+    }
+
+    // Update gallery photo
+    if (path.startsWith('admin/gallery/')) {
+      const photoId = path.replace('admin/gallery/', '');
+      const success = await Gallery.update(photoId, body);
+      
+      if (!success) {
+        return corsResponse({ error: 'Photo not found' }, 404);
+      }
+
+      const photo = await Gallery.getById(photoId);
+      return corsResponse({ photo, message: 'Photo updated successfully' });
+    }
+
     return corsResponse({ error: 'Endpoint not found' }, 404);
 
   } catch (error) {
