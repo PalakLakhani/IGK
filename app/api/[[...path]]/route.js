@@ -10,6 +10,8 @@ import { Partner } from '@/lib/models/Partner';
 import { Contact } from '@/lib/models/Contact';
 import { Brand } from '@/lib/models/Brand';
 import { Gallery } from '@/lib/models/Gallery';
+import { GalleryTheme } from '@/lib/models/GalleryTheme';
+import { GalleryPhoto } from '@/lib/models/GalleryPhoto';
 import { getDatabase } from '@/lib/mongodb';
 import { sampleEvents } from '@/lib/seed-events';
 import axios from 'axios';
