@@ -60,14 +60,13 @@ export default function ContactPage() {
       <Header />
 
       {/* Hero */}
-      <section className="py-16 bg-gradient-to-br from-green-900 to-green-700 text-white">
-        <div className="container text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Get In Touch</h1>
-          <p className="text-xl max-w-2xl mx-auto">
-            Have questions? Need assistance? We're here to help!
-          </p>
-        </div>
-      </section>
+      <PageHero
+        icon={Mail}
+        title="Get In Touch"
+        subtitle="Have questions? Need assistance? We're here to help!"
+        backgroundImage="https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=1920"
+        gradient="from-green-900/95 via-green-700/90 to-teal-600/85"
+      />
 
       <section className="py-12">
         <div className="container">
