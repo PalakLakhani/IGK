@@ -36,17 +36,14 @@ export const siteConfig = {
     green: '#00D9A3'
   },
   
+  // External ticketing - ONLY external platforms, no on-site ticket sales
   externalTicketing: {
-    desipass: 'https://desipass.com',
-    eventbrite: 'https://eventbrite.com'
+    desipass: 'https://t.ly/igk-events',
+    eventbrite: 'https://www.eventbrite.com/cc/igk-events-2888509?utm-campaign=social&utm-content=creatorshare&utm-medium=discovery&utm-term=odclsxcollection&utm-source=cp&aff=escb'
   },
 
-  // Hero video (royalty-free from Pexels)
-  heroVideo: {
-    url: 'https://videos.pexels.com/video-files/6438189/6438189-hd_1920_1080_25fps.mp4',
-    poster: 'https://images.pexels.com/videos/6438189/pexels-photo-6438189.jpeg?auto=compress&cs=tinysrgb&w=1920',
-    fallbackImage: 'https://images.unsplash.com/photo-1603228254119-e6a4d095dc59?w=1920&h=1080&fit=crop'
-  },
+  // Hero image (static image, no video)
+  heroImage: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1920&h=1080&fit=crop',
 
   // DesiPass events to feature
   desipassEvents: [
