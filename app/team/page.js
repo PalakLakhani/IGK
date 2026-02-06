@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
+import PageHero from '@/components/PageHero';
 
 export default function TeamPage() {
   const [activeCity, setActiveCity] = useState('all');
