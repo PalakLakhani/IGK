@@ -2108,6 +2108,266 @@ export default function AdminPage() {
               )}
             </div>
           </TabsContent>
+
+          {/* Partners Tab */}
+          <TabsContent value="partners">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h2 className="text-2xl font-bold">Partner Inquiries</h2>
+                <p className="text-muted-foreground">{partners.length} total, {stats.unrepliedPartners} unreplied</p>
+              </div>
+            </div>
+
+            {partners.length > 0 ? (
+              <div className="space-y-4">
+                {partners.map((partner) => (
+                  <Card key={partner.id} className={partner.replied ? 'opacity-60' : ''}>
+                    <CardContent className="p-6">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div className="flex items-center gap-2 mb-2">
+                            <h3 className="font-bold text-lg">{partner.name}</h3>
+                            {partner.replied ? (
+                              <Badge variant="secondary">Replied</Badge>
+                            ) : (
+                              <Badge variant="default" className="bg-orange-500">New</Badge>
+                            )}
+                          </div>
+                          <p className="text-sm text-muted-foreground mb-2">
+                            {partner.email} {partner.phone && `• ${partner.phone}`}
+                          </p>
+                          {partner.company && (
+                            <p className="text-sm mb-2">Company: <strong>{partner.company}</strong></p>
+                          )}
+                          {partner.partnershipType && (
+                            <p className="text-sm mb-2">Type: <Badge variant="outline">{partner.partnershipType}</Badge></p>
+                          )}
+                          <p className="mt-3 text-gray-700">{partner.message}</p>
+                          <p className="text-xs text-muted-foreground mt-3">
+                            Received: {new Date(partner.createdAt).toLocaleDateString('en-DE', {
+                              year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                            })}
+                          </p>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button 
+                            size="sm" 
+                            variant={partner.replied ? 'outline' : 'default'}
+                            onClick={() => handleMarkPartnerReplied(partner.id, !partner.replied)}
+                          >
+                            {partner.replied ? 'Mark Unreplied' : 'Mark Replied'}
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="ghost" 
+                            className="text-red-500"
+                            onClick={() => handleDeletePartner(partner.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <Card>
+                <CardContent className="py-12 text-center">
+                  <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">No partner inquiries yet.</p>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          {/* Contacts Tab */}
+          <TabsContent value="contacts">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h2 className="text-2xl font-bold">Contact Messages</h2>
+                <p className="text-muted-foreground">{contacts.length} total, {stats.unreadContacts} unread</p>
+              </div>
+            </div>
+
+            {contacts.length > 0 ? (
+              <div className="space-y-4">
+                {contacts.map((contact) => (
+                  <Card key={contact.id} className={contact.read ? 'opacity-60' : ''}>
+                    <CardContent className="p-6">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div className="flex items-center gap-2 mb-2">
+                            <h3 className="font-bold text-lg">{contact.name}</h3>
+                            {contact.read ? (
+                              <Badge variant="secondary">Read</Badge>
+                            ) : (
+                              <Badge variant="default" className="bg-blue-500">New</Badge>
+                            )}
+                          </div>
+                          <p className="text-sm text-muted-foreground mb-2">
+                            {contact.email} {contact.phone && `• ${contact.phone}`}
+                          </p>
+                          {contact.subject && (
+                            <p className="text-sm mb-2">Subject: <strong>{contact.subject}</strong></p>
+                          )}
+                          <p className="mt-3 text-gray-700">{contact.message}</p>
+                          <p className="text-xs text-muted-foreground mt-3">
+                            Received: {new Date(contact.createdAt).toLocaleDateString('en-DE', {
+                              year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                            })}
+                          </p>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button 
+                            size="sm" 
+                            variant={contact.read ? 'outline' : 'default'}
+                            onClick={() => handleMarkContactRead(contact.id, !contact.read)}
+                          >
+                            {contact.read ? 'Mark Unread' : 'Mark Read'}
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="ghost" 
+                            className="text-red-500"
+                            onClick={() => handleDeleteContact(contact.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <Card>
+                <CardContent className="py-12 text-center">
+                  <Mail className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">No contact messages yet.</p>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          {/* Brands Tab (Collaborating Partners) */}
+          <TabsContent value="brands">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h2 className="text-2xl font-bold">Collaborating Brands</h2>
+                <p className="text-muted-foreground">Manage brands shown on the "Trusted By" page</p>
+              </div>
+              <Button onClick={() => { setEditingBrand(null); setBrandForm({ name: '', logoUrl: '', websiteUrl: '', order: 0 }); setShowBrandForm(true); }}>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Brand
+              </Button>
+            </div>
+
+            {/* Brand Form Dialog */}
+            <Dialog open={showBrandForm} onOpenChange={setShowBrandForm}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>{editingBrand ? 'Edit Brand' : 'Add New Brand'}</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div>
+                    <Label>Brand Name *</Label>
+                    <Input 
+                      value={brandForm.name}
+                      onChange={(e) => setBrandForm({ ...brandForm, name: e.target.value })}
+                      placeholder="e.g., Horbach, DVAG"
+                    />
+                  </div>
+                  <div>
+                    <Label>Website URL</Label>
+                    <Input 
+                      value={brandForm.websiteUrl}
+                      onChange={(e) => setBrandForm({ ...brandForm, websiteUrl: e.target.value })}
+                      placeholder="https://example.com"
+                    />
+                  </div>
+                  <div>
+                    <Label>Logo</Label>
+                    <div className="flex items-center gap-4">
+                      {brandForm.logoUrl && (
+                        <img src={brandForm.logoUrl} alt="Logo preview" className="h-12 w-auto object-contain border rounded" />
+                      )}
+                      <Input
+                        ref={brandLogoInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleBrandLogoUpload}
+                        disabled={brandUploading}
+                        className="hidden"
+                        id="brand-logo-upload"
+                      />
+                      <label htmlFor="brand-logo-upload">
+                        <Button asChild variant="outline" disabled={brandUploading}>
+                          <span className="cursor-pointer">
+                            {brandUploading ? 'Uploading...' : 'Upload Logo'}
+                          </span>
+                        </Button>
+                      </label>
+                    </div>
+                  </div>
+                  <div>
+                    <Label>Display Order</Label>
+                    <Input 
+                      type="number"
+                      value={brandForm.order}
+                      onChange={(e) => setBrandForm({ ...brandForm, order: parseInt(e.target.value) || 0 })}
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">Lower numbers appear first</p>
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setShowBrandForm(false)}>Cancel</Button>
+                  <Button onClick={handleSaveBrand}>
+                    {editingBrand ? 'Update' : 'Add'} Brand
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+            {brands.length > 0 ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {brands.map((brand) => (
+                  <Card key={brand.id}>
+                    <CardContent className="p-4 text-center">
+                      {brand.logoUrl ? (
+                        <div className="h-16 flex items-center justify-center mb-3">
+                          <img src={brand.logoUrl} alt={brand.name} className="max-h-full max-w-full object-contain" />
+                        </div>
+                      ) : (
+                        <div className="h-16 flex items-center justify-center mb-3 bg-gray-100 rounded">
+                          <span className="text-2xl font-bold text-gray-400">{brand.name.charAt(0)}</span>
+                        </div>
+                      )}
+                      <p className="font-semibold">{brand.name}</p>
+                      <div className="flex justify-center gap-2 mt-3">
+                        <Button size="sm" variant="outline" onClick={() => openEditBrand(brand)}>
+                          <Edit2 className="h-3 w-3" />
+                        </Button>
+                        <Button size="sm" variant="ghost" className="text-red-500" onClick={() => handleDeleteBrand(brand.id)}>
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <Card>
+                <CardContent className="py-12 text-center">
+                  <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">No brands added yet.</p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Add brand logos to showcase on the "Trusted By" page.
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
         </Tabs>
       </div>
     </div>
