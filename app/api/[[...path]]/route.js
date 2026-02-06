@@ -819,6 +819,118 @@ export async function POST(request) {
       }
     }
 
+    // Partner form submission
+    if (path === 'partners') {
+      const { name, email, phone, company, partnershipType, message } = body;
+      
+      if (!name || !email || !message) {
+        return corsResponse({ error: 'Name, email, and message are required' }, 400);
+      }
+
+      try {
+        const partner = await Partner.create({
+          name, email, phone, company, partnershipType, message
+        });
+        return corsResponse({ 
+          partner, 
+          message: 'Thank you for your partnership inquiry! We will get back to you within 24 hours.' 
+        }, 201);
+      } catch (error) {
+        console.error('Partner submission error:', error);
+        return corsResponse({ error: 'Failed to submit inquiry' }, 500);
+      }
+    }
+
+    // Contact form submission
+    if (path === 'contacts') {
+      const { name, email, phone, subject, message } = body;
+      
+      if (!name || !email || !message) {
+        return corsResponse({ error: 'Name, email, and message are required' }, 400);
+      }
+
+      try {
+        const contact = await Contact.create({
+          name, email, phone, subject, message
+        });
+        return corsResponse({ 
+          contact, 
+          message: 'Thank you for your message! We will get back to you shortly.' 
+        }, 201);
+      } catch (error) {
+        console.error('Contact submission error:', error);
+        return corsResponse({ error: 'Failed to submit message' }, 500);
+      }
+    }
+
+    // Admin: Create brand
+    if (path === 'admin/brands') {
+      const password = request.headers.get('x-admin-password');
+      
+      if (password !== process.env.ADMIN_PASSWORD && password !== 'admin123') {
+        return corsResponse({ error: 'Unauthorized' }, 401);
+      }
+
+      try {
+        const brand = await Brand.create(body);
+        return corsResponse({ brand, message: 'Brand added successfully' }, 201);
+      } catch (error) {
+        return corsResponse({ error: 'Failed to create brand' }, 500);
+      }
+    }
+
+    // Admin: Create gallery photo
+    if (path === 'admin/gallery') {
+      const password = request.headers.get('x-admin-password');
+      
+      if (password !== process.env.ADMIN_PASSWORD && password !== 'admin123') {
+        return corsResponse({ error: 'Unauthorized' }, 401);
+      }
+
+      try {
+        const photo = await Gallery.create(body);
+        return corsResponse({ photo, message: 'Photo added to gallery' }, 201);
+      } catch (error) {
+        return corsResponse({ error: 'Failed to add photo' }, 500);
+      }
+    }
+
+    // Admin: Mark partner as replied
+    if (path === 'admin/partners/reply') {
+      const password = request.headers.get('x-admin-password');
+      
+      if (password !== process.env.ADMIN_PASSWORD && password !== 'admin123') {
+        return corsResponse({ error: 'Unauthorized' }, 401);
+      }
+
+      const { id, replied } = body;
+      const success = await Partner.markReplied(id, replied);
+      
+      if (!success) {
+        return corsResponse({ error: 'Partner not found' }, 404);
+      }
+
+      return corsResponse({ message: 'Partner status updated' });
+    }
+
+    // Admin: Mark contact as read
+    if (path === 'admin/contacts/read') {
+      const password = request.headers.get('x-admin-password');
+      
+      if (password !== process.env.ADMIN_PASSWORD && password !== 'admin123') {
+        return corsResponse({ error: 'Unauthorized' }, 401);
+      }
+
+      const { id, read } = body;
+      const success = await Contact.markRead(id, read);
+      
+      if (!success) {
+        return corsResponse({ error: 'Contact not found' }, 404);
+      }
+
+      return corsResponse({ message: 'Contact status updated' });
+    }
+
     return corsResponse({ error: 'Endpoint not found' }, 404);
 
   } catch (error) {
