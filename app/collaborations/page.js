@@ -37,7 +37,7 @@ export default function TrustedByPage() {
       <PageHero
         icon={Handshake}
         title="Trusted by the Best"
-        subtitle="We're proud to collaborate with leading brands and organizations across Germany and beyond."
+        subtitle="IGK is proud to collaborate with a diverse network of partners who share our vision."
         backgroundImage="https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=1920"
         gradient="from-indigo-900/95 via-purple-800/90 to-blue-700/85"
       />
@@ -47,8 +47,8 @@ export default function TrustedByPage() {
         <div className="container">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold mb-4">Our Collaborating Partners</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              These trusted brands have partnered with IGK to create memorable experiences and impactful events.
+            <p className="text-muted-foreground max-w-3xl mx-auto text-lg leading-relaxed">
+              IGK is proud to collaborate with a diverse network of partners who share our vision. From leading corporates and brands to local businesses and media houses, our events are supported by organizations that believe in building strong, connected communities.
             </p>
           </div>
 
