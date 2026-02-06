@@ -35,7 +35,7 @@ function useCountUp(end, duration = 2000, startOnView = true) {
   }, [startOnView, hasStarted]);
 
   useEffect(() => {
-    if (!hasStarted) return;
+    if (!hasStarted || end === 0) return;
 
     let startTime;
     let animationFrame;
@@ -73,36 +73,52 @@ export default function StatsBar({
   className = ''
 }) {
   const [ratingData, setRatingData] = useState({ averageRating: 5.0, totalRatings: 0 });
+  const [siteStats, setSiteStats] = useState({
+    eventsOrganized: siteConfig.stats.eventsOrganized,
+    happyAttendees: siteConfig.stats.happyAttendees,
+    citiesCovered: siteConfig.stats.citiesCovered
+  });
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Get fixed stats from siteConfig
-  const { eventsOrganized, citiesCovered } = siteConfig.stats;
-
-  // Animated counters - hardcoded to exact display values
-  const eventsCounter = useCountUp(50, 2000);      // "50+"
-  const attendeesCounter = useCountUp(25, 2500);   // "25K+"
-  const citiesCounter = useCountUp(8, 1500);       // "8"
+  // Animated counters - values from settings or defaults
+  const eventsCounter = useCountUp(siteStats.eventsOrganized, 2000);
+  const attendeesCounter = useCountUp(Math.round(siteStats.happyAttendees / 1000), 2500);
+  const citiesCounter = useCountUp(siteStats.citiesCovered, 1500);
   const ratingCounter = useCountUp(Math.round(ratingData.averageRating * 10), 2000);
 
-  // Fetch dynamic rating from API
+  // Fetch site settings and rating from API
   useEffect(() => {
-    const fetchRating = async () => {
+    const fetchData = async () => {
       try {
-        const res = await fetch('/api/testimonials?limit=1');
-        const data = await res.json();
-        if (data.averageRating !== undefined) {
+        // Fetch site settings
+        const settingsRes = await fetch('/api/settings');
+        if (settingsRes.ok) {
+          const settingsData = await settingsRes.json();
+          if (settingsData.settings) {
+            setSiteStats({
+              eventsOrganized: settingsData.settings.eventsOrganized ?? siteConfig.stats.eventsOrganized,
+              happyAttendees: settingsData.settings.happyAttendees ?? siteConfig.stats.happyAttendees,
+              citiesCovered: settingsData.settings.citiesCovered ?? siteConfig.stats.citiesCovered
+            });
+          }
+        }
+
+        // Fetch rating
+        const ratingRes = await fetch('/api/testimonials?limit=1');
+        const ratingData = await ratingRes.json();
+        if (ratingData.averageRating !== undefined) {
           setRatingData({
-            averageRating: data.averageRating || 5.0,
-            totalRatings: data.totalRatings || 0
+            averageRating: ratingData.averageRating || 5.0,
+            totalRatings: ratingData.totalRatings || 0
           });
         }
       } catch (error) {
-        console.error('Error fetching rating:', error);
+        console.error('Error fetching data:', error);
       } finally {
         setIsLoaded(true);
       }
     };
-    fetchRating();
+    fetchData();
   }, []);
 
   // Variant styles
