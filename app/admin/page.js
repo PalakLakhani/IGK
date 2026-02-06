@@ -94,14 +94,19 @@ export default function AdminPage() {
   const router = useRouter();
   const fileInputRef = useRef(null);
   const teamFileInputRef = useRef(null);
+  const galleryInputRef = useRef(null);
+  const brandLogoInputRef = useRef(null);
   const [password, setPassword] = useState('');
   const [authenticated, setAuthenticated] = useState(false);
   const [events, setEvents] = useState([]);
-  const [orders, setOrders] = useState([]);
   const [testimonials, setTestimonials] = useState([]);
   const [teamMembers, setTeamMembers] = useState([]);
   const [settings, setSettings] = useState({});
   const [newsletterSubscribers, setNewsletterSubscribers] = useState([]);
+  const [partners, setPartners] = useState([]);
+  const [contacts, setContacts] = useState([]);
+  const [brands, setBrands] = useState([]);
+  const [galleryPhotos, setGalleryPhotos] = useState([]);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadingTeamPhoto, setUploadingTeamPhoto] = useState(false);
@@ -115,11 +120,14 @@ export default function AdminPage() {
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   
-  // Gallery state
-  const [showGalleryManager, setShowGalleryManager] = useState(false);
-  const [selectedEventForGallery, setSelectedEventForGallery] = useState(null);
+  // Gallery uploading state (free-flow, not event-wise)
   const [galleryUploading, setGalleryUploading] = useState(false);
-  const galleryInputRef = useRef(null);
+  
+  // Brand form state
+  const [showBrandForm, setShowBrandForm] = useState(false);
+  const [editingBrand, setEditingBrand] = useState(null);
+  const [brandForm, setBrandForm] = useState({ name: '', logoUrl: '', websiteUrl: '', order: 0 });
+  const [brandUploading, setBrandUploading] = useState(false);
   
   // Event form state - Updated schema with new content fields
   const [showEventForm, setShowEventForm] = useState(false);
