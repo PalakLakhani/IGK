@@ -2020,21 +2020,78 @@ export default function AdminPage() {
           <TabsContent value="settings">
             <h2 className="text-2xl font-bold mb-6">Settings</h2>
             <div className="grid gap-6 max-w-2xl">
+              {/* Site Stats Section */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BarChart3 className="h-5 w-5" />
+                    Site Statistics
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">These numbers are displayed on the homepage stats banner</p>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Events Organized</label>
+                      <div className="flex gap-2">
+                        <Input 
+                          type="number" 
+                          value={settings.eventsOrganized ?? 50} 
+                          onChange={(e) => setSettings({ ...settings, eventsOrganized: parseInt(e.target.value) || 0 })} 
+                          className="max-w-[120px]"
+                          min="0"
+                        />
+                        <span className="flex items-center text-muted-foreground">+</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">Shows as "{settings.eventsOrganized ?? 50}+"</p>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Happy Attendees</label>
+                      <div className="flex gap-2">
+                        <Input 
+                          type="number" 
+                          value={settings.happyAttendees ?? 25000} 
+                          onChange={(e) => setSettings({ ...settings, happyAttendees: parseInt(e.target.value) || 0 })} 
+                          className="max-w-[120px]"
+                          min="0"
+                        />
+                        <span className="flex items-center text-muted-foreground">K+</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">Shows as "{Math.round((settings.happyAttendees ?? 25000) / 1000)}K+"</p>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Cities Covered</label>
+                      <Input 
+                        type="number" 
+                        value={settings.citiesCovered ?? 8} 
+                        onChange={(e) => setSettings({ ...settings, citiesCovered: parseInt(e.target.value) || 0 })} 
+                        className="max-w-[120px]"
+                        min="0"
+                      />
+                      <p className="text-xs text-muted-foreground">Shows as "{settings.citiesCovered ?? 8}"</p>
+                    </div>
+                  </div>
+                  <div className="pt-2">
+                    <Button onClick={async () => {
+                      await handleUpdateSettings('eventsOrganized', settings.eventsOrganized ?? 50);
+                      await handleUpdateSettings('happyAttendees', settings.happyAttendees ?? 25000);
+                      await handleUpdateSettings('citiesCovered', settings.citiesCovered ?? 8);
+                      toast.success('Site stats updated!');
+                    }}>
+                      <Save className="mr-2 h-4 w-4" />
+                      Save All Stats
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground italic">Note: Average Rating is calculated automatically from approved reviews.</p>
+                </CardContent>
+              </Card>
+
               <Card>
                 <CardHeader><CardTitle>Rating Moderation</CardTitle></CardHeader>
                 <CardContent>
                   <div className="flex items-center justify-between">
                     <div><p className="font-medium">Require Approval</p><p className="text-sm text-muted-foreground">New reviews must be approved</p></div>
                     <Switch checked={settings.moderateRatings !== false} onCheckedChange={(checked) => handleUpdateSettings('moderateRatings', checked)} />
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader><CardTitle>Manual Attendees Count</CardTitle></CardHeader>
-                <CardContent>
-                  <div className="flex gap-4">
-                    <Input type="number" value={settings.totalAttendeesManual || 25000} onChange={(e) => setSettings({ ...settings, totalAttendeesManual: parseInt(e.target.value) || 0 })} className="max-w-[200px]" />
-                    <Button onClick={() => handleUpdateSettings('totalAttendeesManual', settings.totalAttendeesManual)}>Save</Button>
                   </div>
                 </CardContent>
               </Card>
