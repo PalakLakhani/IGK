@@ -228,10 +228,10 @@ export default function TeamPage() {
             We're always looking for passionate individuals to join our mission of bringing communities together through cultural celebrations.
           </p>
           <div className="flex flex-wrap gap-6 justify-center">
-            <Button size="lg" asChild className="bg-white text-green-600 hover:bg-gray-100 font-bold text-xl px-10 py-8 rounded-full shadow-2xl">
+            <Button size="lg" asChild className="bg-white text-green-600 hover:bg-gray-100 hover:scale-105 transition-all duration-200 font-bold text-xl px-10 py-8 rounded-full shadow-2xl">
               <Link href="/contact">Get In Touch</Link>
             </Button>
-            <Button size="lg" asChild variant="outline" className="text-white border-2 border-white hover:bg-white hover:text-green-600 font-bold text-xl px-10 py-8 rounded-full backdrop-blur">
+            <Button size="lg" asChild className="bg-amber-500 text-white hover:bg-amber-600 hover:scale-105 transition-all duration-200 font-bold text-xl px-10 py-8 rounded-full shadow-2xl">
               <Link href="/partner">Partner With Us</Link>
             </Button>
           </div>
