@@ -1063,8 +1063,10 @@ export default function AdminPage() {
             <TabsTrigger value="gallery">Gallery</TabsTrigger>
             <TabsTrigger value="team">Team</TabsTrigger>
             <TabsTrigger value="testimonials">Reviews {stats.pendingTestimonials > 0 && <Badge className="ml-2 bg-red-500">{stats.pendingTestimonials}</Badge>}</TabsTrigger>
-            <TabsTrigger value="newsletter">Newsletter <Badge className="ml-2" variant="secondary">{newsletterSubscribers.length}</Badge></TabsTrigger>
-            <TabsTrigger value="orders">Orders</TabsTrigger>
+            <TabsTrigger value="newsletter">Newsletter <Badge className="ml-2" variant="secondary">{stats.totalNewsletterSubscribers}</Badge></TabsTrigger>
+            <TabsTrigger value="partners">Partners {stats.unrepliedPartners > 0 && <Badge className="ml-2 bg-orange-500">{stats.unrepliedPartners}</Badge>}</TabsTrigger>
+            <TabsTrigger value="contacts">Messages {stats.unreadContacts > 0 && <Badge className="ml-2 bg-blue-500">{stats.unreadContacts}</Badge>}</TabsTrigger>
+            <TabsTrigger value="brands">Brands</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
