@@ -1589,7 +1589,7 @@ export default function AdminPage() {
                           <div className="space-y-2">
                             <Upload className="h-8 w-8 mx-auto text-gray-400" />
                             <p className="text-sm text-gray-600">Click to upload photo</p>
-                            <p className="text-xs text-gray-400">JPG, PNG, WebP (max 5MB)</p>
+                            <p className="text-xs text-gray-400">JPG, PNG, WebP (max 30MB)</p>
                           </div>
                         )}
                       </label>
