@@ -522,7 +522,7 @@ export default function HomePage() {
                   </li>
                 </ul>
                 <Button asChild size="lg" className="w-full bg-white text-orange-600 hover:bg-orange-50 font-bold">
-                  <Link href="https://eventbrite.com" target="_blank">
+                  <Link href={siteConfig.externalTicketing.eventbrite} target="_blank">
                     Visit Eventbrite
                     <ExternalLink className="ml-2 h-5 w-5" />
                   </Link>
