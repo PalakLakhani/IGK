@@ -1852,6 +1852,7 @@ export default function AdminPage() {
                           <th className="text-left p-4 font-medium">Email</th>
                           <th className="text-left p-4 font-medium">Subscribed At</th>
                           <th className="text-left p-4 font-medium">Status</th>
+                          <th className="text-left p-4 font-medium">Actions</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1878,6 +1879,16 @@ export default function AdminPage() {
                                 {subscriber.active !== false ? 'Active' : 'Unsubscribed'}
                               </Badge>
                             </td>
+                            <td className="p-4">
+                              <Button 
+                                size="sm" 
+                                variant="ghost" 
+                                className="text-red-500 hover:text-red-700"
+                                onClick={() => handleDeleteSubscriber(subscriber.id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </td>
                           </tr>
                         ))}
                       </tbody>
@@ -1898,16 +1909,73 @@ export default function AdminPage() {
             )}
           </TabsContent>
 
-          {/* Gallery */}
+          {/* Gallery - FREE-FLOW (not event-wise) */}
           <TabsContent value="gallery">
             <div className="flex justify-between items-center mb-6">
               <div>
-                <h2 className="text-2xl font-bold">Event Gallery</h2>
-                <p className="text-muted-foreground">Manage photos for each event</p>
+                <h2 className="text-2xl font-bold">Gallery</h2>
+                <p className="text-muted-foreground">{galleryPhotos.length} photos</p>
+              </div>
+              <div>
+                <Input
+                  ref={galleryInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleGalleryPhotoUpload}
+                  disabled={galleryUploading}
+                  className="hidden"
+                  id="gallery-upload-main"
+                />
+                <label htmlFor="gallery-upload-main">
+                  <Button asChild disabled={galleryUploading}>
+                    <span className="cursor-pointer">
+                      {galleryUploading ? (
+                        <>Uploading...</>
+                      ) : (
+                        <>
+                          <ImagePlus className="mr-2 h-4 w-4" />
+                          Upload Photos
+                        </>
+                      )}
+                    </span>
+                  </Button>
+                </label>
               </div>
             </div>
 
-            {/* Gallery Manager Dialog */}
+            {galleryPhotos.length > 0 ? (
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                {galleryPhotos.map((photo) => (
+                  <div key={photo.id} className="relative group">
+                    <div className="relative aspect-square rounded-lg overflow-hidden border">
+                      <img 
+                        src={photo.imageUrl} 
+                        alt={photo.caption || 'Gallery'} 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <button
+                      onClick={() => handleDeleteGalleryPhoto(photo.id)}
+                      className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <Card>
+                <CardContent className="py-12 text-center">
+                  <ImageIcon className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">No photos in gallery yet.</p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Upload photos to showcase moments from your events.
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
             <Dialog open={showGalleryManager} onOpenChange={setShowGalleryManager}>
               <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
