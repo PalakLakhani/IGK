@@ -123,6 +123,10 @@ export default function AdminPage() {
   // Gallery uploading state (free-flow, not event-wise)
   const [galleryUploading, setGalleryUploading] = useState(false);
   
+  // Event gallery management state
+  const [showGalleryManager, setShowGalleryManager] = useState(false);
+  const [selectedEventForGallery, setSelectedEventForGallery] = useState(null);
+  
   // Brand form state
   const [showBrandForm, setShowBrandForm] = useState(false);
   const [editingBrand, setEditingBrand] = useState(null);
