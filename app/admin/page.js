@@ -195,30 +195,39 @@ export default function AdminPage() {
   const fetchAllData = async (pwd) => {
     setLoading(true);
     try {
-      const [eventsRes, ordersRes, testimonialsRes, settingsRes, teamRes, newsletterRes] = await Promise.all([
+      const [eventsRes, testimonialsRes, settingsRes, teamRes, newsletterRes, partnersRes, contactsRes, brandsRes, galleryRes] = await Promise.all([
         fetch('/api/events?type=classified'),
-        fetch('/api/admin/orders', { headers: { 'x-admin-password': pwd } }),
         fetch('/api/admin/testimonials', { headers: { 'x-admin-password': pwd } }),
         fetch('/api/admin/settings', { headers: { 'x-admin-password': pwd } }),
         fetch('/api/admin/team', { headers: { 'x-admin-password': pwd } }),
-        fetch('/api/admin/newsletter', { headers: { 'x-admin-password': pwd } })
+        fetch('/api/admin/newsletter', { headers: { 'x-admin-password': pwd } }),
+        fetch('/api/admin/partners', { headers: { 'x-admin-password': pwd } }),
+        fetch('/api/admin/contacts', { headers: { 'x-admin-password': pwd } }),
+        fetch('/api/admin/brands', { headers: { 'x-admin-password': pwd } }),
+        fetch('/api/admin/gallery', { headers: { 'x-admin-password': pwd } })
       ]);
 
       const eventsData = await eventsRes.json();
-      const ordersData = await ordersRes.json();
       const testimonialsData = await testimonialsRes.json();
       const settingsData = await settingsRes.json();
       const teamData = await teamRes.json();
       const newsletterData = await newsletterRes.json();
+      const partnersData = await partnersRes.json();
+      const contactsData = await contactsRes.json();
+      const brandsData = await brandsRes.json();
+      const galleryData = await galleryRes.json();
 
       // Combine upcoming and past events
       const allEvents = [...(eventsData.upcoming || []), ...(eventsData.past || [])];
       setEvents(allEvents);
-      setOrders(ordersData.orders || []);
       setTestimonials(testimonialsData.testimonials || []);
       setSettings(settingsData.settings || {});
       setTeamMembers(teamData.members || []);
       setNewsletterSubscribers(newsletterData.subscribers || []);
+      setPartners(partnersData.partners || []);
+      setContacts(contactsData.contacts || []);
+      setBrands(brandsData.brands || []);
+      setGalleryPhotos(galleryData.photos || []);
     } catch (err) {
       console.error('Error fetching data:', err);
     } finally {
