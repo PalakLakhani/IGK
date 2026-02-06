@@ -101,3 +101,213 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: |
+  Build a theme-wise gallery system for IGK Events website. Admin should be able to:
+  1. Create gallery themes (e.g., "Holi 2024", "Bollywood Nights")
+  2. Upload photos into specific themes
+  3. Manage (edit/delete) themes and photos
+  Frontend should display galleries organized by theme with lightbox functionality.
+
+backend:
+  - task: "GET /api/gallery/themes - Fetch all published gallery themes"
+    implemented: true
+    working: "NA"
+    file: "/app/app/api/[[...path]]/route.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented endpoint to fetch all published themes for frontend"
+
+  - task: "GET /api/gallery/themes/[slug] - Fetch theme with photos"
+    implemented: true
+    working: "NA"
+    file: "/app/app/api/[[...path]]/route.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented endpoint to fetch single theme by slug with its photos"
+
+  - task: "GET /api/admin/gallery-themes - Admin fetch all themes"
+    implemented: true
+    working: "NA"
+    file: "/app/app/api/[[...path]]/route.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented admin endpoint to list all themes regardless of status"
+
+  - task: "POST /api/admin/gallery-themes - Create new theme"
+    implemented: true
+    working: "NA"
+    file: "/app/app/api/[[...path]]/route.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented endpoint to create new gallery theme with name, description, coverImage, status"
+
+  - task: "PUT /api/admin/gallery-themes/[id] - Update theme"
+    implemented: true
+    working: "NA"
+    file: "/app/app/api/[[...path]]/route.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented endpoint to update theme details"
+
+  - task: "DELETE /api/admin/gallery-themes/[id] - Delete theme"
+    implemented: true
+    working: "NA"
+    file: "/app/app/api/[[...path]]/route.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented endpoint to delete theme and its photos"
+
+  - task: "GET /api/admin/gallery-photos - Fetch photos for a theme"
+    implemented: true
+    working: "NA"
+    file: "/app/app/api/[[...path]]/route.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented endpoint with themeId query param to fetch photos"
+
+  - task: "POST /api/admin/gallery-photos - Add photo to theme"
+    implemented: true
+    working: "NA"
+    file: "/app/app/api/[[...path]]/route.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented endpoint to add new photo with themeId, imageUrl, caption"
+
+  - task: "DELETE /api/admin/gallery-photos/[id] - Delete photo"
+    implemented: true
+    working: "NA"
+    file: "/app/app/api/[[...path]]/route.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented endpoint to delete a photo from theme"
+
+  - task: "POST /api/upload - File upload (30MB limit)"
+    implemented: true
+    working: "NA"
+    file: "/app/app/api/upload/route.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Upload endpoint with 30MB limit for gallery photos"
+
+frontend:
+  - task: "Gallery Theme List Page - /gallery"
+    implemented: true
+    working: true
+    file: "/app/app/gallery/page.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Verified via screenshot - shows Browse by Theme section with theme cards"
+
+  - task: "Gallery Theme Detail Page - /gallery/[slug]"
+    implemented: true
+    working: true
+    file: "/app/app/gallery/[slug]/page.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Verified via screenshot - shows theme title, description, photo grid with empty state"
+
+  - task: "Admin Gallery Tab - Theme Management UI"
+    implemented: true
+    working: true
+    file: "/app/app/admin/page.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Verified via screenshot - shows Gallery Themes section with Create Theme button"
+
+  - task: "Admin Photos Dialog - Upload and manage photos"
+    implemented: true
+    working: true
+    file: "/app/app/admin/page.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Verified via screenshot - Photos dialog opens with upload area"
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 1
+  run_ui: false
+
+test_plan:
+  current_focus:
+    - "GET /api/gallery/themes - Fetch all published gallery themes"
+    - "GET /api/gallery/themes/[slug] - Fetch theme with photos"
+    - "POST /api/admin/gallery-themes - Create new theme"
+    - "POST /api/admin/gallery-photos - Add photo to theme"
+    - "POST /api/upload - File upload (30MB limit)"
+  stuck_tasks: []
+  test_all: true
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "main"
+    message: |
+      Theme-wise gallery system has been implemented. Please test all backend API endpoints:
+      1. Public APIs: /api/gallery/themes (GET list), /api/gallery/themes/[slug] (GET single)
+      2. Admin APIs: /api/admin/gallery-themes (CRUD), /api/admin/gallery-photos (CRUD)
+      3. File upload: /api/upload with multipart form data
+      
+      Test scenarios:
+      - Create a new theme with POST /api/admin/gallery-themes
+      - Fetch themes with GET /api/gallery/themes
+      - Add photos using POST /api/admin/gallery-photos
+      - Delete photos and themes
+      
+      There's already a "Holi 2024" theme created in the system.
