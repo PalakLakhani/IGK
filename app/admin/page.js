@@ -214,7 +214,7 @@ export default function AdminPage() {
   const fetchAllData = async (pwd) => {
     setLoading(true);
     try {
-      const [eventsRes, testimonialsRes, settingsRes, teamRes, newsletterRes, partnersRes, contactsRes, brandsRes, galleryRes] = await Promise.all([
+      const [eventsRes, testimonialsRes, settingsRes, teamRes, newsletterRes, partnersRes, contactsRes, brandsRes, galleryRes, themesRes] = await Promise.all([
         fetch('/api/events?type=classified'),
         fetch('/api/admin/testimonials', { headers: { 'x-admin-password': pwd } }),
         fetch('/api/admin/settings', { headers: { 'x-admin-password': pwd } }),
@@ -223,7 +223,8 @@ export default function AdminPage() {
         fetch('/api/admin/partners', { headers: { 'x-admin-password': pwd } }),
         fetch('/api/admin/contacts', { headers: { 'x-admin-password': pwd } }),
         fetch('/api/admin/brands', { headers: { 'x-admin-password': pwd } }),
-        fetch('/api/admin/gallery', { headers: { 'x-admin-password': pwd } })
+        fetch('/api/admin/gallery', { headers: { 'x-admin-password': pwd } }),
+        fetch('/api/admin/gallery/themes', { headers: { 'x-admin-password': pwd } })
       ]);
 
       const eventsData = await eventsRes.json();
@@ -235,6 +236,7 @@ export default function AdminPage() {
       const contactsData = await contactsRes.json();
       const brandsData = await brandsRes.json();
       const galleryData = await galleryRes.json();
+      const themesData = await themesRes.json();
 
       // Combine upcoming and past events
       const allEvents = [...(eventsData.upcoming || []), ...(eventsData.past || [])];
@@ -247,6 +249,7 @@ export default function AdminPage() {
       setContacts(contactsData.contacts || []);
       setBrands(brandsData.brands || []);
       setGalleryPhotos(galleryData.photos || []);
+      setGalleryThemes(themesData.themes || []);
     } catch (err) {
       console.error('Error fetching data:', err);
     } finally {
