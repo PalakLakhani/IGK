@@ -709,6 +709,264 @@ export default function AdminPage() {
     }
   };
 
+  // FREE-FLOW GALLERY HANDLERS (not event-wise)
+  const handleGalleryPhotoUpload = async (e) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setGalleryUploading(true);
+    let uploadedCount = 0;
+
+    try {
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('type', 'gallery');
+
+        const uploadRes = await fetch('/api/upload', {
+          method: 'POST',
+          headers: { 'x-admin-password': password },
+          body: formData
+        });
+
+        const uploadData = await uploadRes.json();
+        if (uploadRes.ok) {
+          // Create gallery entry
+          await fetch('/api/admin/gallery', {
+            method: 'POST',
+            headers: { 
+              'Content-Type': 'application/json',
+              'x-admin-password': password 
+            },
+            body: JSON.stringify({ 
+              imageUrl: uploadData.path,
+              caption: ''
+            })
+          });
+          uploadedCount++;
+        }
+      }
+
+      if (uploadedCount > 0) {
+        toast.success(`${uploadedCount} photo(s) added to gallery!`);
+        fetchAllData(password);
+      }
+    } catch (err) {
+      toast.error('Error uploading photos');
+    } finally {
+      setGalleryUploading(false);
+      if (galleryInputRef.current) galleryInputRef.current.value = '';
+    }
+  };
+
+  const handleDeleteGalleryPhoto = async (photoId) => {
+    if (!confirm('Delete this photo from gallery?')) return;
+    
+    try {
+      const res = await fetch(`/api/admin/gallery/${photoId}`, {
+        method: 'DELETE',
+        headers: { 'x-admin-password': password }
+      });
+
+      if (res.ok) {
+        toast.success('Photo deleted');
+        fetchAllData(password);
+      }
+    } catch (err) {
+      toast.error('Error deleting photo');
+    }
+  };
+
+  // NEWSLETTER DELETE HANDLER
+  const handleDeleteSubscriber = async (subscriberId) => {
+    if (!confirm('Delete this subscriber?')) return;
+    
+    try {
+      const res = await fetch(`/api/admin/newsletter/${subscriberId}`, {
+        method: 'DELETE',
+        headers: { 'x-admin-password': password }
+      });
+
+      if (res.ok) {
+        toast.success('Subscriber deleted');
+        fetchAllData(password);
+      }
+    } catch (err) {
+      toast.error('Error deleting subscriber');
+    }
+  };
+
+  // PARTNER HANDLERS
+  const handleMarkPartnerReplied = async (partnerId, replied) => {
+    try {
+      const res = await fetch('/api/admin/partners/reply', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-admin-password': password 
+        },
+        body: JSON.stringify({ id: partnerId, replied })
+      });
+
+      if (res.ok) {
+        toast.success(replied ? 'Marked as replied' : 'Marked as unreplied');
+        fetchAllData(password);
+      }
+    } catch (err) {
+      toast.error('Error updating partner');
+    }
+  };
+
+  const handleDeletePartner = async (partnerId) => {
+    if (!confirm('Delete this partner inquiry?')) return;
+    
+    try {
+      const res = await fetch(`/api/admin/partners/${partnerId}`, {
+        method: 'DELETE',
+        headers: { 'x-admin-password': password }
+      });
+
+      if (res.ok) {
+        toast.success('Partner inquiry deleted');
+        fetchAllData(password);
+      }
+    } catch (err) {
+      toast.error('Error deleting partner');
+    }
+  };
+
+  // CONTACT HANDLERS
+  const handleMarkContactRead = async (contactId, read) => {
+    try {
+      const res = await fetch('/api/admin/contacts/read', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-admin-password': password 
+        },
+        body: JSON.stringify({ id: contactId, read })
+      });
+
+      if (res.ok) {
+        toast.success(read ? 'Marked as read' : 'Marked as unread');
+        fetchAllData(password);
+      }
+    } catch (err) {
+      toast.error('Error updating contact');
+    }
+  };
+
+  const handleDeleteContact = async (contactId) => {
+    if (!confirm('Delete this contact message?')) return;
+    
+    try {
+      const res = await fetch(`/api/admin/contacts/${contactId}`, {
+        method: 'DELETE',
+        headers: { 'x-admin-password': password }
+      });
+
+      if (res.ok) {
+        toast.success('Contact message deleted');
+        fetchAllData(password);
+      }
+    } catch (err) {
+      toast.error('Error deleting contact');
+    }
+  };
+
+  // BRAND HANDLERS
+  const handleBrandLogoUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setBrandUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('type', 'brands');
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'x-admin-password': password },
+        body: formData
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setBrandForm({ ...brandForm, logoUrl: data.path });
+        toast.success('Logo uploaded!');
+      } else {
+        toast.error(data.error || 'Upload failed');
+      }
+    } catch (err) {
+      toast.error('Upload error');
+    } finally {
+      setBrandUploading(false);
+      if (brandLogoInputRef.current) brandLogoInputRef.current.value = '';
+    }
+  };
+
+  const handleSaveBrand = async () => {
+    if (!brandForm.name) {
+      toast.error('Brand name is required');
+      return;
+    }
+
+    try {
+      const url = editingBrand 
+        ? `/api/admin/brands/${editingBrand.id}`
+        : '/api/admin/brands';
+      
+      const res = await fetch(url, {
+        method: editingBrand ? 'PUT' : 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-admin-password': password 
+        },
+        body: JSON.stringify(brandForm)
+      });
+
+      if (res.ok) {
+        toast.success(editingBrand ? 'Brand updated!' : 'Brand added!');
+        setShowBrandForm(false);
+        setEditingBrand(null);
+        setBrandForm({ name: '', logoUrl: '', websiteUrl: '', order: 0 });
+        fetchAllData(password);
+      }
+    } catch (err) {
+      toast.error('Error saving brand');
+    }
+  };
+
+  const handleDeleteBrand = async (brandId) => {
+    if (!confirm('Delete this brand?')) return;
+    
+    try {
+      const res = await fetch(`/api/admin/brands/${brandId}`, {
+        method: 'DELETE',
+        headers: { 'x-admin-password': password }
+      });
+
+      if (res.ok) {
+        toast.success('Brand deleted');
+        fetchAllData(password);
+      }
+    } catch (err) {
+      toast.error('Error deleting brand');
+    }
+  };
+
+  const openEditBrand = (brand) => {
+    setEditingBrand(brand);
+    setBrandForm({
+      name: brand.name || '',
+      logoUrl: brand.logoUrl || '',
+      websiteUrl: brand.websiteUrl || '',
+      order: brand.order || 0
+    });
+    setShowBrandForm(true);
+  };
+
   // Migrate events to new schema
   const handleMigrateEvents = async () => {
     try {
