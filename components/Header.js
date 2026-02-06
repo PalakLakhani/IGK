@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
-import { Menu, X, Calendar, Users, Handshake, ImageIcon, Info, MessageSquare, Star } from 'lucide-react';
+import { Menu, X, Calendar, Users, Handshake, ImageIcon, Info, MessageSquare, Star, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { siteConfig } from '@/config/site';
 
@@ -16,7 +16,8 @@ export default function Header() {
     { href: '/about', label: 'About Us', icon: Info, color: 'blue' },
     { href: '/team', label: 'Team', icon: Users, color: 'green' },
     { href: '/gallery', label: 'Gallery', icon: ImageIcon, color: 'purple' },
-    { href: '/community', label: 'Community', icon: MessageSquare, color: 'indigo' },
+    { href: '/collaborations', label: 'Trusted By', icon: Building2, color: 'indigo' },
+    { href: '/community', label: 'Community', icon: MessageSquare, color: 'cyan' },
     { href: '/partner', label: 'Partners', icon: Handshake, color: 'orange' },
     { href: '/contact', label: 'Contact', icon: MessageSquare, color: 'teal' },
   ];
@@ -36,7 +37,7 @@ export default function Header() {
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden lg:flex items-center space-x-6 text-sm font-bold">
+        <nav className="hidden lg:flex items-center space-x-5 text-sm font-bold">
           {navItems.map((item) => (
             <Link 
               key={item.href}
