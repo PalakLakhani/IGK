@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
+import PageHero from '@/components/PageHero';
 
 export default function TrustedByPage() {
   const [brands, setBrands] = useState([]);
@@ -33,15 +34,13 @@ export default function TrustedByPage() {
       <Header />
 
       {/* Hero */}
-      <section className="py-16 bg-gradient-to-br from-indigo-900 to-purple-800 text-white">
-        <div className="container text-center">
-          <Handshake className="h-16 w-16 mx-auto mb-6" />
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Trusted by the Best</h1>
-          <p className="text-xl max-w-2xl mx-auto opacity-90">
-            We're proud to collaborate with leading brands and organizations across Germany and beyond.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        icon={Handshake}
+        title="Trusted by the Best"
+        subtitle="We're proud to collaborate with leading brands and organizations across Germany and beyond."
+        backgroundImage="https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=1920"
+        gradient="from-indigo-900/95 via-purple-800/90 to-blue-700/85"
+      />
 
       {/* Brands Grid */}
       <section className="py-20 flex-1 bg-gradient-to-b from-white to-gray-50">
