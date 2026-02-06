@@ -393,7 +393,7 @@ export default function HomePage() {
             {/* Community Connection - Updated Image */}
             <Card className="overflow-hidden border-none shadow-2xl hover:shadow-blue-500/50 transition-all hover:scale-105">
               <div className="relative h-48">
-                <Image src="https://images.unsplash.com/photo-1529543544277-c91de6e7e5a9?w=800" alt="People Networking" fill className="object-cover" />
+                <Image src="https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=800" alt="People Networking" fill className="object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-blue-600/90 to-transparent" />
                 <div className="absolute bottom-4 left-4">
                   <Users className="h-12 w-12 text-white" />
