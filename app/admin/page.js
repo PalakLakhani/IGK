@@ -1259,6 +1259,7 @@ export default function AdminPage() {
   const pastEvents = events.filter(e => e.classification === 'past');
   const unrepliedPartners = partners.filter(p => !p.replied).length;
   const unreadContacts = contacts.filter(c => !c.read).length;
+  const totalThemePhotos = galleryThemes.reduce((sum, t) => sum + (t.photoCount || 0), 0);
   
   const stats = {
     totalEvents: events.length,
@@ -1272,7 +1273,8 @@ export default function AdminPage() {
     totalContacts: contacts.length,
     unreadContacts,
     totalBrands: brands.length,
-    totalGalleryPhotos: galleryPhotos.length
+    totalGalleryThemes: galleryThemes.length,
+    totalGalleryPhotos: totalThemePhotos
   };
 
   const categories = ['Bollywood Night', 'Concert', 'Holi', 'Garba', 'Navratri', 'Wedding', 'Corporate', 'Cultural', 'Other'];
