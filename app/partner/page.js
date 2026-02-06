@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
+import PageHero from '@/components/PageHero';
 import { siteConfig } from '@/config/site';
 import { toast } from 'sonner';
 
