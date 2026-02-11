@@ -560,23 +560,22 @@ export default function HomePage() {
         />
         <div className="absolute inset-0 bg-gradient-to-r from-purple-600/95 to-pink-600/95" />
         <div className="relative container text-center text-white">
-          <Heart className="h-20 w-20 mx-auto mb-8 animate-pulse" />
-          <h2 className="text-6xl font-black mb-6 drop-shadow-2xl">Join Our Community</h2>
-          <p className="text-2xl mb-10 max-w-3xl mx-auto opacity-95 leading-relaxed">
+          <Heart className="h-16 sm:h-20 w-16 sm:w-20 mx-auto mb-6 sm:mb-8 animate-pulse" />
+          <h2 className="text-4xl sm:text-6xl font-black mb-4 sm:mb-6 drop-shadow-2xl">Join Our Community</h2>
+          <p className="text-lg sm:text-2xl mb-8 sm:mb-10 max-w-3xl mx-auto opacity-95 leading-relaxed px-4">
             Connect with thousands of Indian expats across Germany. Join WhatsApp groups, follow us on social media, and stay updated.
           </p>
-          <div className="flex flex-wrap gap-6 justify-center">
-            <Button size="lg" asChild className="bg-white text-purple-600 hover:bg-gray-100 font-bold text-xl px-10 py-8 rounded-full shadow-2xl">
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center px-4 max-w-lg sm:max-w-none mx-auto">
+            <Button size="lg" asChild className="bg-white text-purple-600 hover:bg-gray-100 font-bold text-base sm:text-xl px-8 sm:px-10 py-6 sm:py-8 rounded-full shadow-2xl w-full sm:w-auto justify-center">
               <Link href="/community">
-                <Users className="mr-2 h-6 w-6" />
+                <Users className="mr-2 h-5 w-5 sm:h-6 sm:w-6" />
                 Explore Community
-                <ArrowRight className="ml-2 h-6 w-6" />
               </Link>
             </Button>
             {/* WhatsApp Button - Always Visible */}
-            <Button size="lg" asChild className="bg-green-500 hover:bg-green-600 text-white font-bold text-xl px-10 py-8 rounded-full shadow-2xl">
+            <Button size="lg" asChild className="bg-green-500 hover:bg-green-600 text-white font-bold text-base sm:text-xl px-8 sm:px-10 py-6 sm:py-8 rounded-full shadow-2xl w-full sm:w-auto justify-center">
               <Link href={`https://wa.me/${siteConfig.contact.whatsapp.replace(/[^0-9]/g, '')}`} target="_blank">
-                <MessageCircle className="mr-2 h-6 w-6" />
+                <MessageCircle className="mr-2 h-5 w-5 sm:h-6 sm:w-6" />
                 WhatsApp Us
               </Link>
             </Button>
