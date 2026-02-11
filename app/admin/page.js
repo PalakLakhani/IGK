@@ -1300,6 +1300,9 @@ export default function AdminPage() {
             <Badge variant="outline">{siteConfig.name}</Badge>
           </div>
           <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => window.open('https://cloud.umami.is/share/YOUR_SHARE_ID', '_blank')} title="View Analytics">
+              <BarChart3 className="mr-2 h-4 w-4" />Analytics
+            </Button>
             <Button variant="outline" size="sm" onClick={() => fetchAllData(password)}><RefreshCw className="mr-2 h-4 w-4" />Refresh</Button>
             <Button variant="outline" size="sm" onClick={() => router.push('/')}><Eye className="mr-2 h-4 w-4" />View Site</Button>
             <Button variant="outline" size="sm" onClick={handleLogout}>Logout</Button>
