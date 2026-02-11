@@ -220,7 +220,7 @@ export default function CommunityPage() {
                 <p className="font-bold">LinkedIn</p>
               </Card>
             </Link>
-            <Link href={`https://wa.me/${siteConfig.contact.whatsapp.replace(/[^0-9]/g, '')}`} target="_blank">
+            <Link href="https://whatsapp.com/channel/0029VagfJY5FcowDFB25Qq2j" target="_blank">
               <Card className="text-center p-6 border-2 hover:border-green-500 hover:shadow-lg transition-all hover:scale-105">
                 <MessageCircle className="h-12 w-12 mx-auto mb-3 text-green-500" />
                 <p className="font-bold">WhatsApp</p>
