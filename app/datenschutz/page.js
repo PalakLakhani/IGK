@@ -59,9 +59,31 @@ export default function DatenschutzPage() {
               </div>
 
               <div>
-                <h2 className="text-xl font-semibold mb-3">5. Cookies</h2>
+                <h2 className="text-xl font-semibold mb-3">5. Website Analytics</h2>
                 <p className="text-muted-foreground mb-4">
-                  This website uses cookies to improve user experience. You can configure your browser to reject cookies or notify you when cookies are being sent.
+                  We use <strong>Umami Analytics</strong>, a privacy-focused analytics service, to understand how visitors use our website. Umami is designed to be compliant with GDPR, CCPA, and other privacy regulations.
+                </p>
+                <h3 className="font-semibold mb-2">What data is collected?</h3>
+                <ul className="list-disc list-inside space-y-2 text-muted-foreground mb-4">
+                  <li>Page views and navigation patterns</li>
+                  <li>Referral sources (how you found our site)</li>
+                  <li>Device type (mobile/desktop)</li>
+                  <li>Country/region (anonymized)</li>
+                  <li>Browser type</li>
+                </ul>
+                <h3 className="font-semibold mb-2">Privacy Features</h3>
+                <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+                  <li><strong>No cookies:</strong> Umami does not use cookies</li>
+                  <li><strong>No personal data:</strong> We do not collect IP addresses or personal identifiers</li>
+                  <li><strong>No cross-site tracking:</strong> Your activity is not tracked across websites</li>
+                  <li><strong>GDPR compliant:</strong> No consent banner required due to privacy-first design</li>
+                </ul>
+              </div>
+
+              <div>
+                <h2 className="text-xl font-semibold mb-3">6. Cookies</h2>
+                <p className="text-muted-foreground mb-4">
+                  This website uses minimal cookies to improve user experience. Our analytics service (Umami) does not use cookies. Essential cookies may be used for basic functionality like remembering your preferences.
                 </p>
               </div>
 
