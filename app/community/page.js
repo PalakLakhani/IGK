@@ -191,7 +191,7 @@ export default function CommunityPage() {
           >
             <Link href={`https://wa.me/${siteConfig.contact.whatsapp.replace(/[^0-9]/g, '')}`} target="_blank">
               <MessageCircle className="mr-2 h-6 w-6" />
-              WhatsApp Us: {siteConfig.contact.phone}
+              WhatsApp Us
             </Link>
           </Button>
         </div>
