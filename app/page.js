@@ -166,8 +166,8 @@ export default function HomePage() {
               </div>
             ))}
             
-            <div className="relative container h-full flex items-center">
-              <div className="max-w-3xl text-white space-y-8 animate-in fade-in slide-in-from-left-10 duration-700">
+            <div className="relative container h-full flex items-center pb-24 sm:pb-0">
+              <div className="max-w-3xl text-white space-y-6 sm:space-y-8 animate-in fade-in slide-in-from-left-10 duration-700">
                 <div className="flex items-center gap-3">
                   <Badge className="bg-yellow-400 text-black text-base px-5 py-2 font-bold animate-pulse">
                     {heroEvents[currentSlide]?.category}
