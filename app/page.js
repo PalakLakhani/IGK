@@ -196,15 +196,15 @@ export default function HomePage() {
                     {heroEvents[currentSlide]?.heroTagline || `Don't miss this event in ${heroEvents[currentSlide]?.city}.`}
                   </p>
                 )}
-                <div className="flex flex-wrap gap-4">
-                  <Button size="lg" asChild className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold text-lg px-8 py-7 rounded-full shadow-2xl transform hover:scale-105 transition-all">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
+                  <Button size="lg" asChild className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-7 rounded-full shadow-2xl transform hover:scale-105 transition-all w-full sm:w-auto justify-center">
                     <Link href={`/events/${heroEvents[currentSlide]?.slug}`}>
-                      <PartyPopper className="mr-2 h-6 w-6" />
+                      <PartyPopper className="mr-2 h-5 w-5 sm:h-6 sm:w-6" />
                       Get Tickets Now
-                      <ArrowRight className="ml-2 h-6 w-6" />
+                      <ArrowRight className="ml-2 h-5 w-5 sm:h-6 sm:w-6" />
                     </Link>
                   </Button>
-                  <Button size="lg" variant="outline" asChild className="text-black bg-white border-2 border-white hover:bg-yellow-400 hover:border-yellow-400 hover:text-black font-bold text-lg px-8 py-7 rounded-full shadow-lg">
+                  <Button size="lg" variant="outline" asChild className="text-black bg-white border-2 border-white hover:bg-yellow-400 hover:border-yellow-400 hover:text-black font-bold text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-7 rounded-full shadow-lg w-full sm:w-auto justify-center">
                     <Link href="/events">
                       View All Events
                     </Link>
