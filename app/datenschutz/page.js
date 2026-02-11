@@ -88,14 +88,14 @@ export default function DatenschutzPage() {
               </div>
 
               <div>
-                <h2 className="text-xl font-semibold mb-3">6. Newsletter</h2>
+                <h2 className="text-xl font-semibold mb-3">7. Newsletter</h2>
                 <p className="text-muted-foreground mb-4">
                   If you subscribe to our newsletter, we collect your email address. You can unsubscribe at any time by clicking the unsubscribe link in any newsletter.
                 </p>
               </div>
 
               <div>
-                <h2 className="text-xl font-semibold mb-3">7. Contact</h2>
+                <h2 className="text-xl font-semibold mb-3">8. Contact</h2>
                 <p className="text-muted-foreground mb-4">
                   For data protection inquiries, please contact:<br />
                   Email: {siteConfig.contact.email}
