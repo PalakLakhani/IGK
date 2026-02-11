@@ -105,13 +105,13 @@ export default function MascotAssistant() {
         <div className="relative">
           {/* Speech Bubble */}
           {showBubble && !hasClosedBubble && (
-            <Card className="absolute bottom-20 right-0 w-80 p-4 shadow-2xl animate-in slide-in-from-bottom-5 mb-2">
+            <Card className="absolute bottom-20 right-0 w-72 sm:w-80 p-4 shadow-2xl animate-in slide-in-from-bottom-5 mb-2 max-h-[50vh] overflow-y-auto">
               <button
                 onClick={closeBubble}
-                className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+                className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 z-10"
                 aria-label="Close"
               >
-                <X className="h-4 w-4" />
+                <X className="h-5 w-5" />
               </button>
               
               <p className="text-sm font-medium mb-4 pr-6">{content.message}</p>
