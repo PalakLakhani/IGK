@@ -177,22 +177,22 @@ export default function HomePage() {
                     Featured Event
                   </Badge>
                 </div>
-                <h1 className="text-6xl md:text-7xl font-black leading-tight drop-shadow-2xl">
+                <h1 className="text-4xl sm:text-6xl md:text-7xl font-black leading-tight drop-shadow-2xl">
                   {heroEvents[currentSlide]?.title}
                 </h1>
-                <div className="flex flex-wrap gap-6 text-xl font-semibold">
-                  <div className="flex items-center gap-3 bg-white/20 backdrop-blur px-5 py-3 rounded-full">
-                    <Calendar className="h-6 w-6" />
+                <div className="flex flex-wrap gap-3 sm:gap-6 text-base sm:text-xl font-semibold">
+                  <div className="flex items-center gap-2 sm:gap-3 bg-white/20 backdrop-blur px-4 sm:px-5 py-2 sm:py-3 rounded-full">
+                    <Calendar className="h-5 w-5 sm:h-6 sm:w-6" />
                     <span>{heroEvents[currentSlide]?.date ? format(new Date(heroEvents[currentSlide]?.date), 'MMM dd, yyyy') : ''}</span>
                   </div>
-                  <div className="flex items-center gap-3 bg-white/20 backdrop-blur px-5 py-3 rounded-full">
-                    <MapPin className="h-6 w-6" />
+                  <div className="flex items-center gap-2 sm:gap-3 bg-white/20 backdrop-blur px-4 sm:px-5 py-2 sm:py-3 rounded-full">
+                    <MapPin className="h-5 w-5 sm:h-6 sm:w-6" />
                     <span>{heroEvents[currentSlide]?.city}</span>
                   </div>
                 </div>
                 {/* Hero Tagline - Short text only, max 2 lines */}
                 {(heroEvents[currentSlide]?.heroTagline || heroEvents[currentSlide]?.city) && (
-                  <p className="text-xl md:text-2xl text-white/95 leading-relaxed max-w-2xl line-clamp-2">
+                  <p className="text-base sm:text-xl md:text-2xl text-white/95 leading-relaxed max-w-2xl line-clamp-2">
                     {heroEvents[currentSlide]?.heroTagline || `Don't miss this event in ${heroEvents[currentSlide]?.city}.`}
                   </p>
                 )}
