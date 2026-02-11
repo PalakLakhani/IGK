@@ -573,9 +573,9 @@ export default function HomePage() {
               </Link>
             </Button>
             {/* WhatsApp Button - Always Visible */}
-            <Button size="lg" asChild className="bg-green-500 hover:bg-green-600 text-white font-bold text-base sm:text-xl px-8 sm:px-10 py-6 sm:py-8 rounded-full shadow-2xl w-full sm:w-auto justify-center">
+            <Button size="lg" asChild className="bg-green-500 hover:bg-green-600 text-white font-bold text-xl px-10 py-8 rounded-full shadow-2xl w-full sm:w-auto justify-center">
               <Link href={`https://wa.me/${siteConfig.contact.whatsapp.replace(/[^0-9]/g, '')}`} target="_blank">
-                <MessageCircle className="mr-2 h-5 w-5 sm:h-6 sm:w-6" />
+                <MessageCircle className="mr-2 h-6 w-6" />
                 WhatsApp Us
               </Link>
             </Button>
