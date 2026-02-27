@@ -671,6 +671,16 @@ export async function POST(request) {
   const path = pathname.replace('/api/', '');
 
   try {
+    // Admin: Validate password (no body needed)
+    if (path === 'admin/validate') {
+      const password = request.headers.get('x-admin-password');
+      
+      if (password === process.env.ADMIN_PASSWORD) {
+        return corsResponse({ valid: true });
+      }
+      return corsResponse({ error: 'Invalid password' }, 401);
+    }
+
     const body = await request.json();
 
     // Submit testimonial
