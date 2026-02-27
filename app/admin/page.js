@@ -190,25 +190,43 @@ export default function AdminPage() {
     bio: '', city: '', type: 'city', order: 0
   });
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // Only check against environment variable - no hardcoded password
-    if (password === process.env.NEXT_PUBLIC_ADMIN_PASSWORD) {
-      setAuthenticated(true);
-      setError('');
-      localStorage.setItem('admin_password', password);
-      fetchAllData(password);
-    } else {
-      setError('Invalid password');
+    // Validate password via API call (uses server-side ADMIN_PASSWORD)
+    try {
+      const res = await fetch('/api/admin/validate', {
+        method: 'POST',
+        headers: { 'x-admin-password': password }
+      });
+      if (res.ok) {
+        setAuthenticated(true);
+        setError('');
+        localStorage.setItem('admin_password', password);
+        fetchAllData(password);
+      } else {
+        setError('Invalid password');
+      }
+    } catch (err) {
+      setError('Login failed. Please try again.');
     }
   };
 
   useEffect(() => {
     const savedPassword = localStorage.getItem('admin_password');
     if (savedPassword) {
-      setPassword(savedPassword);
-      setAuthenticated(true);
-      fetchAllData(savedPassword);
+      // Validate saved password
+      fetch('/api/admin/validate', {
+        method: 'POST',
+        headers: { 'x-admin-password': savedPassword }
+      }).then(res => {
+        if (res.ok) {
+          setPassword(savedPassword);
+          setAuthenticated(true);
+          fetchAllData(savedPassword);
+        } else {
+          localStorage.removeItem('admin_password');
+        }
+      });
     }
   }, []);
 
