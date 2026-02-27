@@ -23,10 +23,18 @@ export default function HomePage() {
   const [testimonials, setTestimonials] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [showWelcome, setShowWelcome] = useState(true);
 
   useEffect(() => {
     fetchUpcomingEvents();
     fetchTestimonials();
+    
+    // Show welcome screen for 6 seconds before showing events
+    const welcomeTimer = setTimeout(() => {
+      setShowWelcome(false);
+    }, 6000);
+    
+    return () => clearTimeout(welcomeTimer);
   }, []);
 
   const fetchUpcomingEvents = async () => {
