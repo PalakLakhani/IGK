@@ -17,10 +17,9 @@ export default function ImpressumPage() {
               <div>
                 <h2 className="text-xl font-semibold mb-3">Company Information</h2>
                 <p className="text-muted-foreground">
-                  {siteConfig.name}<br />
-                  [Complete Legal Name]<br />
-                  [Street Address]<br />
-                  [Postal Code City]<br />
+                  IGK Indo-German Konnekt UG (haftungsbeschränkt)<br />
+                  Friesenstraße 10<br />
+                  06112 Halle (Saale)<br />
                   Germany
                 </p>
               </div>
@@ -37,31 +36,27 @@ export default function ImpressumPage() {
               <div>
                 <h2 className="text-xl font-semibold mb-3">Authorized Representative</h2>
                 <p className="text-muted-foreground">
-                  [Name of Managing Director]<br />
-                  [Position]
+                  Palak Kamlesh Lakhani<br />
+                  Founder & CEO
                 </p>
               </div>
 
               <div>
                 <h2 className="text-xl font-semibold mb-3">Register Entry</h2>
                 <p className="text-muted-foreground">
-                  Register Court: [Court Name]<br />
-                  Register Number: [Registration Number]<br />
-                  VAT ID: [VAT Identification Number]
+                  Register Court: Amtsgericht Charlottenburg<br />
+                  Register Number: HRB 259840 B<br />
+                  VAT ID: DE365404336
                 </p>
               </div>
 
               <div>
                 <h2 className="text-xl font-semibold mb-3">Responsible for Content</h2>
                 <p className="text-muted-foreground">
-                  [Name]<br />
-                  [Address]
-                </p>
-              </div>
-
-              <div className="pt-6 border-t">
-                <p className="text-sm text-muted-foreground">
-                  <strong>Note:</strong> This is a placeholder Impressum. Please fill in your complete legal information as required by German law (TMG § 5).
+                  Palak Kamlesh Lakhani<br />
+                  Friesenstraße 10<br />
+                  06112 Halle (Saale)<br />
+                  Germany
                 </p>
               </div>
             </CardContent>
