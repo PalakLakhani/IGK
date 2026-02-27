@@ -732,16 +732,35 @@ export async function GET(request) {
 export async function POST(request) {
   const { pathname } = new URL(request.url);
   const path = pathname.replace('/api/', '');
+  const clientIP = getClientIP(request);
 
   try {
-    // Admin: Validate password (no body needed)
+    // Admin: Validate password (no body needed) - with rate limiting
     if (path === 'admin/validate') {
+      // Rate limit login attempts (5 per minute)
+      const rateCheck = checkRateLimit(clientIP, true);
+      if (!rateCheck.allowed) {
+        return corsResponse({ 
+          error: 'Too many login attempts. Please try again later.',
+          retryAfter: Math.ceil((rateCheck.resetTime - Date.now()) / 1000)
+        }, 429, request);
+      }
+      
       const password = request.headers.get('x-admin-password');
       
       if (password === process.env.ADMIN_PASSWORD) {
-        return corsResponse({ valid: true });
+        return corsResponse({ valid: true }, 200, request);
       }
-      return corsResponse({ error: 'Invalid password' }, 401);
+      return corsResponse({ error: 'Invalid password' }, 401, request);
+    }
+
+    // Rate limit all other POST requests
+    const rateCheck = checkRateLimit(clientIP);
+    if (!rateCheck.allowed) {
+      return corsResponse({ 
+        error: 'Rate limit exceeded. Please slow down.',
+        retryAfter: Math.ceil((rateCheck.resetTime - Date.now()) / 1000)
+      }, 429, request);
     }
 
     const body = await request.json();
