@@ -118,9 +118,9 @@ export default function GalleryThemePage() {
 
       {/* Hero Section */}
       <section className="relative py-24 overflow-hidden">
-        {theme.coverImageUrl ? (
+        {(theme.coverImage || theme.coverImageUrl) ? (
           <Image
-            src={theme.coverImageUrl}
+            src={theme.coverImage || theme.coverImageUrl}
             alt={theme.name}
             fill
             className="object-cover"
