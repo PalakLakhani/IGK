@@ -1,8 +1,12 @@
 import { NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import { existsSync } from 'fs';
-import path from 'path';
-import { v4 as uuidv4 } from 'uuid';
+import { v2 as cloudinary } from 'cloudinary';
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 // Configure max request body size for this route (30MB)
 export const config = {
@@ -38,7 +42,7 @@ export async function POST(request) {
 
     const formData = await request.formData();
     const file = formData.get('file');
-    const type = formData.get('type') || 'events'; // events, team, gallery
+    const type = formData.get('type') || 'events'; // events, team, gallery, brands
 
     if (!file || typeof file === 'string') {
       return NextResponse.json({ error: 'No file provided' }, { status: 400, headers: corsHeaders });
@@ -62,33 +66,32 @@ export async function POST(request) {
       );
     }
 
-    // Generate unique filename
-    const ext = file.name.split('.').pop() || 'jpg';
-    const filename = `${uuidv4()}.${ext}`;
-    
-    // Ensure upload directory exists
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads', type);
-    if (!existsSync(uploadDir)) {
-      await mkdir(uploadDir, { recursive: true });
-    }
-
-    // Convert file to buffer and save
+    // Convert file to buffer then to base64 for Cloudinary
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    const filePath = path.join(uploadDir, filename);
-    
-    await writeFile(filePath, buffer);
+    const base64Data = `data:${file.type};base64,${buffer.toString('base64')}`;
 
-    // Return the public URL path
-    const publicPath = `/uploads/${type}/${filename}`;
+    // Upload to Cloudinary
+    const uploadResult = await cloudinary.uploader.upload(base64Data, {
+      folder: `igkonnekt/${type}`, // Organize by type: igkonnekt/events, igkonnekt/team, etc.
+      resource_type: 'image',
+      transformation: [
+        { quality: 'auto:good' }, // Automatic quality optimization
+        { fetch_format: 'auto' }, // Automatic format (WebP for supported browsers)
+      ],
+    });
 
     return NextResponse.json({
       success: true,
-      path: publicPath,
-      filename,
+      path: uploadResult.secure_url, // Cloudinary HTTPS URL
+      publicId: uploadResult.public_id,
+      filename: uploadResult.public_id.split('/').pop(),
       size: file.size,
       type: file.type,
-      message: 'File uploaded successfully'
+      width: uploadResult.width,
+      height: uploadResult.height,
+      format: uploadResult.format,
+      message: 'File uploaded successfully to Cloudinary'
     }, { headers: corsHeaders });
 
   } catch (error) {
