@@ -181,6 +181,16 @@ export async function GET(request) {
       return corsResponse({ testimonials });
     }
 
+    // Admin: Validate password
+    if (path === 'admin/validate') {
+      const password = request.headers.get('x-admin-password');
+      
+      if (password === process.env.ADMIN_PASSWORD) {
+        return corsResponse({ valid: true });
+      }
+      return corsResponse({ error: 'Invalid password' }, 401);
+    }
+
     // Admin: Get newsletter subscribers
     if (path === 'admin/newsletter') {
       const password = request.headers.get('x-admin-password');
