@@ -753,6 +753,16 @@ export async function POST(request) {
       return corsResponse({ message: 'Testimonial rejected and deleted' });
     }
 
+    // Admin: Validate password (POST method)
+    if (path === 'admin/validate') {
+      const password = request.headers.get('x-admin-password');
+      
+      if (password === process.env.ADMIN_PASSWORD) {
+        return corsResponse({ valid: true });
+      }
+      return corsResponse({ error: 'Invalid password' }, 401);
+    }
+
     // Admin: Update settings
     if (path === 'admin/settings') {
       const password = request.headers.get('x-admin-password');
