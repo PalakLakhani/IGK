@@ -38,7 +38,7 @@ export default function RefundPolicyPage() {
               </div>
 
               <div>
-                <h2 className text-xl font-semibold mb-3">Event Postponement</h2>
+                <h2 className="text-xl font-semibold mb-3">Event Postponement</h2>
                 <p className="text-muted-foreground mb-4">
                   If an event is postponed to a new date:
                 </p>
