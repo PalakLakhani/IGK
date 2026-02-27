@@ -29,10 +29,10 @@ export default function HomePage() {
     fetchUpcomingEvents();
     fetchTestimonials();
     
-    // Show welcome screen for 6 seconds before showing events
+    // Show welcome screen for 3 seconds before showing events
     const welcomeTimer = setTimeout(() => {
       setShowWelcome(false);
-    }, 6000);
+    }, 3000);
     
     return () => clearTimeout(welcomeTimer);
   }, []);
