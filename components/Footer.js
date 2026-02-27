@@ -8,14 +8,14 @@ import NewsletterSubscribe from './NewsletterSubscribe';
 import OurBrands from './OurBrands';
 
 export default function Footer() {
-  // Unified Quick Links (matching header nav + extras)
+  // Unified Quick Links (matching header nav order exactly)
   const quickLinks = [
     { href: '/events', label: 'Events' },
     { href: '/about', label: 'About Us' },
     { href: '/team', label: 'Team' },
     { href: '/gallery', label: 'Gallery' },
-    { href: '/community', label: 'Community' },
     { href: '/collaborations', label: 'Trusted By' },
+    { href: '/community', label: 'Community' },
     { href: '/partner', label: 'Partners' },
     { href: '/contact', label: 'Contact' },
     { href: '/testimonials', label: 'Share Your Experience' },
