@@ -64,9 +64,9 @@ export default function OurBrands({ variant = 'full' }) {
             >
               <Card className="overflow-hidden border-2 hover:border-pink-500 transition-all hover:scale-105 group cursor-pointer h-full">
                 <CardContent className="p-8">
-                  <div className="relative h-32 mb-6 flex items-center justify-center">
+                  <div className="relative h-40 mb-6 flex items-center justify-center">
                     <div className={`absolute inset-0 bg-gradient-to-br ${brand.color} opacity-10 rounded-lg group-hover:opacity-20 transition-opacity`} />
-                    <div className="relative w-24 h-24">
+                    <div className="relative w-36 h-36">
                       <Image
                         src={brand.logo}
                         alt={brand.name}
