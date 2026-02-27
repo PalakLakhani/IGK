@@ -71,7 +71,7 @@ export default function OurBrands({ variant = 'full' }) {
                         src={brand.logo}
                         alt={brand.name}
                         fill
-                        className="object-contain"
+                        className={`object-contain ${brand.id === 'navaratri' ? 'mix-blend-multiply' : ''}`}
                       />
                     </div>
                   </div>
