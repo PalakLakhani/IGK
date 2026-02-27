@@ -185,7 +185,7 @@ export async function GET(request) {
     if (path === 'admin/newsletter') {
       const password = request.headers.get('x-admin-password');
       
-      if (password !== process.env.ADMIN_PASSWORD && password !== 'admin123') {
+      if (password !== process.env.ADMIN_PASSWORD) {
         return corsResponse({ error: 'Unauthorized' }, 401);
       }
 
@@ -249,7 +249,7 @@ export async function GET(request) {
     if (path === 'admin/partners') {
       const password = request.headers.get('x-admin-password');
       
-      if (password !== process.env.ADMIN_PASSWORD && password !== 'admin123') {
+      if (password !== process.env.ADMIN_PASSWORD) {
         return corsResponse({ error: 'Unauthorized' }, 401);
       }
 
@@ -261,7 +261,7 @@ export async function GET(request) {
     if (path === 'admin/contacts') {
       const password = request.headers.get('x-admin-password');
       
-      if (password !== process.env.ADMIN_PASSWORD && password !== 'admin123') {
+      if (password !== process.env.ADMIN_PASSWORD) {
         return corsResponse({ error: 'Unauthorized' }, 401);
       }
 
@@ -273,7 +273,7 @@ export async function GET(request) {
     if (path === 'admin/brands') {
       const password = request.headers.get('x-admin-password');
       
-      if (password !== process.env.ADMIN_PASSWORD && password !== 'admin123') {
+      if (password !== process.env.ADMIN_PASSWORD) {
         return corsResponse({ error: 'Unauthorized' }, 401);
       }
 
@@ -291,7 +291,7 @@ export async function GET(request) {
     if (path === 'admin/gallery') {
       const password = request.headers.get('x-admin-password');
       
-      if (password !== process.env.ADMIN_PASSWORD && password !== 'admin123') {
+      if (password !== process.env.ADMIN_PASSWORD) {
         return corsResponse({ error: 'Unauthorized' }, 401);
       }
 
@@ -327,7 +327,7 @@ export async function GET(request) {
     // Admin: Get all gallery themes
     if (path === 'admin/gallery/themes') {
       const password = request.headers.get('x-admin-password');
-      if (password !== process.env.ADMIN_PASSWORD && password !== 'admin123') {
+      if (password !== process.env.ADMIN_PASSWORD) {
         return corsResponse({ error: 'Unauthorized' }, 401);
       }
 
@@ -338,7 +338,7 @@ export async function GET(request) {
     // Admin: Get theme with photos
     if (path.startsWith('admin/gallery/themes/') && !path.includes('/photos')) {
       const password = request.headers.get('x-admin-password');
-      if (password !== process.env.ADMIN_PASSWORD && password !== 'admin123') {
+      if (password !== process.env.ADMIN_PASSWORD) {
         return corsResponse({ error: 'Unauthorized' }, 401);
       }
 
@@ -356,7 +356,7 @@ export async function GET(request) {
     // Admin: Get photos for a theme
     if (path.match(/^admin\/gallery\/themes\/[^/]+\/photos$/)) {
       const password = request.headers.get('x-admin-password');
-      if (password !== process.env.ADMIN_PASSWORD && password !== 'admin123') {
+      if (password !== process.env.ADMIN_PASSWORD) {
         return corsResponse({ error: 'Unauthorized' }, 401);
       }
 
@@ -942,7 +942,7 @@ export async function POST(request) {
     if (path === 'admin/brands') {
       const password = request.headers.get('x-admin-password');
       
-      if (password !== process.env.ADMIN_PASSWORD && password !== 'admin123') {
+      if (password !== process.env.ADMIN_PASSWORD) {
         return corsResponse({ error: 'Unauthorized' }, 401);
       }
 
@@ -958,7 +958,7 @@ export async function POST(request) {
     if (path === 'admin/gallery') {
       const password = request.headers.get('x-admin-password');
       
-      if (password !== process.env.ADMIN_PASSWORD && password !== 'admin123') {
+      if (password !== process.env.ADMIN_PASSWORD) {
         return corsResponse({ error: 'Unauthorized' }, 401);
       }
 
@@ -973,7 +973,7 @@ export async function POST(request) {
     // Admin: Create gallery theme
     if (path === 'admin/gallery/themes') {
       const password = request.headers.get('x-admin-password');
-      if (password !== process.env.ADMIN_PASSWORD && password !== 'admin123') {
+      if (password !== process.env.ADMIN_PASSWORD) {
         return corsResponse({ error: 'Unauthorized' }, 401);
       }
 
@@ -992,7 +992,7 @@ export async function POST(request) {
     // Admin: Add photos to theme (bulk upload)
     if (path.match(/^admin\/gallery\/themes\/[^/]+\/photos$/)) {
       const password = request.headers.get('x-admin-password');
-      if (password !== process.env.ADMIN_PASSWORD && password !== 'admin123') {
+      if (password !== process.env.ADMIN_PASSWORD) {
         return corsResponse({ error: 'Unauthorized' }, 401);
       }
 
@@ -1015,7 +1015,7 @@ export async function POST(request) {
     // Admin: Reorder photos in theme
     if (path.match(/^admin\/gallery\/themes\/[^/]+\/reorder$/)) {
       const password = request.headers.get('x-admin-password');
-      if (password !== process.env.ADMIN_PASSWORD && password !== 'admin123') {
+      if (password !== process.env.ADMIN_PASSWORD) {
         return corsResponse({ error: 'Unauthorized' }, 401);
       }
 
@@ -1037,7 +1037,7 @@ export async function POST(request) {
     // Admin: Set photo as cover
     if (path === 'admin/gallery/photos/set-cover') {
       const password = request.headers.get('x-admin-password');
-      if (password !== process.env.ADMIN_PASSWORD && password !== 'admin123') {
+      if (password !== process.env.ADMIN_PASSWORD) {
         return corsResponse({ error: 'Unauthorized' }, 401);
       }
 
@@ -1054,7 +1054,7 @@ export async function POST(request) {
     if (path === 'admin/partners/reply') {
       const password = request.headers.get('x-admin-password');
       
-      if (password !== process.env.ADMIN_PASSWORD && password !== 'admin123') {
+      if (password !== process.env.ADMIN_PASSWORD) {
         return corsResponse({ error: 'Unauthorized' }, 401);
       }
 
@@ -1072,7 +1072,7 @@ export async function POST(request) {
     if (path === 'admin/contacts/read') {
       const password = request.headers.get('x-admin-password');
       
-      if (password !== process.env.ADMIN_PASSWORD && password !== 'admin123') {
+      if (password !== process.env.ADMIN_PASSWORD) {
         return corsResponse({ error: 'Unauthorized' }, 401);
       }
 
