@@ -17,15 +17,78 @@ import { sampleEvents } from '@/lib/seed-events';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 
-// CORS headers
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-};
+// Allowed origins for CORS (production domains)
+const allowedOrigins = [
+  'https://www.igkonnekt.com',
+  'https://igkonnekt.com',
+  'https://igkonnekt.netlify.app',
+  process.env.NEXT_PUBLIC_BASE_URL,
+].filter(Boolean);
 
-function corsResponse(data, status = 200) {
-  return NextResponse.json(data, { status, headers: corsHeaders });
+// Rate limiting storage (in-memory for serverless)
+const rateLimitStore = new Map();
+const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
+const RATE_LIMIT_MAX_REQUESTS = 100; // 100 requests per minute
+const LOGIN_RATE_LIMIT_MAX = 5; // 5 login attempts per minute
+
+function checkRateLimit(ip, isLogin = false) {
+  const now = Date.now();
+  const key = isLogin ? `login:${ip}` : `api:${ip}`;
+  const limit = isLogin ? LOGIN_RATE_LIMIT_MAX : RATE_LIMIT_MAX_REQUESTS;
+  
+  if (!rateLimitStore.has(key)) {
+    rateLimitStore.set(key, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
+    return { allowed: true, remaining: limit - 1 };
+  }
+  
+  const record = rateLimitStore.get(key);
+  
+  if (now > record.resetTime) {
+    rateLimitStore.set(key, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
+    return { allowed: true, remaining: limit - 1 };
+  }
+  
+  if (record.count >= limit) {
+    return { allowed: false, remaining: 0, resetTime: record.resetTime };
+  }
+  
+  record.count++;
+  return { allowed: true, remaining: limit - record.count };
+}
+
+// Get client IP
+function getClientIP(request) {
+  return request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
+         request.headers.get('x-real-ip') || 
+         'unknown';
+}
+
+// Security headers
+function getCorsHeaders(request) {
+  const origin = request.headers.get('origin');
+  const isAllowed = !origin || allowedOrigins.includes(origin) || origin.includes('localhost');
+  
+  return {
+    'Access-Control-Allow-Origin': isAllowed ? (origin || '*') : allowedOrigins[0],
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-admin-password',
+    'Access-Control-Allow-Credentials': 'true',
+    // Security headers
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY',
+    'X-XSS-Protection': '1; mode=block',
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
+    'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+  };
+}
+
+function corsResponse(data, status = 200, request = null) {
+  const headers = request ? getCorsHeaders(request) : {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-admin-password',
+  };
+  return NextResponse.json(data, { status, headers });
 }
 
 // OPTIONS handler for CORS
