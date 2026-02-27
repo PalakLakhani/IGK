@@ -115,7 +115,7 @@ export default function Footer() {
 
         {/* Copyright */}
         <div className="mt-8 pt-8 border-t text-center text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} IGK Events. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} IGK Indo-German Konnekt. All rights reserved.</p>
           <p className="mt-1">{siteConfig.tagline}</p>
         </div>
       </div>
