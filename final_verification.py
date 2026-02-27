@@ -8,7 +8,7 @@ import json
 
 def final_verification():
     """Quick final verification of all major endpoints"""
-    base_url = "https://igk-event-preview.preview.emergentagent.com/api"
+    base_url = "https://igk-deploy.preview.emergentagent.com/api"
     headers = {
         "Content-Type": "application/json",
         "x-admin-password": "admin123"
