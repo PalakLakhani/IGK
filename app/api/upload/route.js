@@ -8,16 +8,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Configure max request body size for this route (30MB)
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: '30mb',
-    },
-  },
-};
-
-// For App Router - increase body size limit
+// Route Segment Config (App Router)
 export const maxDuration = 60; // seconds
 export const dynamic = 'force-dynamic';
 
