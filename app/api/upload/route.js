@@ -27,7 +27,7 @@ export async function POST(request) {
   try {
     // Check admin password
     const password = request.headers.get('x-admin-password');
-    if (password !== process.env.ADMIN_PASSWORD && password !== 'admin123') {
+    if (password !== process.env.ADMIN_PASSWORD) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders });
     }
 
