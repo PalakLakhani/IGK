@@ -67,9 +67,9 @@ export default function GalleryPage() {
                     <Card className="group overflow-hidden border-none shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 cursor-pointer h-full">
                       {/* Cover Image */}
                       <div className="relative h-56 overflow-hidden">
-                        {theme.coverImageUrl ? (
+                        {(theme.coverImage || theme.coverImageUrl) ? (
                           <Image
-                            src={theme.coverImageUrl}
+                            src={theme.coverImage || theme.coverImageUrl}
                             alt={theme.name}
                             fill
                             className="object-cover group-hover:scale-110 transition-transform duration-500"
