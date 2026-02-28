@@ -1124,6 +1124,23 @@ export async function POST(request) {
       }
     }
 
+    // Admin: Create media coverage
+    if (path === 'admin/media') {
+      const password = request.headers.get('x-admin-password');
+      
+      if (password !== process.env.ADMIN_PASSWORD) {
+        return corsResponse({ error: 'Unauthorized' }, 401);
+      }
+
+      try {
+        const media = await MediaCoverage.create(body);
+        return corsResponse({ media, message: 'Media coverage added successfully' }, 201);
+      } catch (error) {
+        console.error('Failed to create media:', error);
+        return corsResponse({ error: 'Failed to add media coverage' }, 500);
+      }
+    }
+
     // Admin: Create gallery photo (legacy)
     if (path === 'admin/gallery') {
       const password = request.headers.get('x-admin-password');
