@@ -198,10 +198,10 @@ export default function SpotlightPage() {
                   transition={{ delay: 0.4 + i * 0.1 }}
                   className="flex items-center gap-2 md:gap-3 bg-white/10 backdrop-blur-sm px-3 py-2 md:px-5 md:py-3 rounded-lg md:rounded-xl border border-white/20"
                 >
-                  <stat.icon className="h-5 w-5 text-yellow-400" />
+                  <stat.icon className="h-4 w-4 md:h-5 md:w-5 text-yellow-400" />
                   <div>
-                    <div className="text-2xl font-bold text-white">{stat.value}+</div>
-                    <div className="text-xs text-white/60">{stat.label}</div>
+                    <div className="text-lg md:text-2xl font-bold text-white">{stat.value}+</div>
+                    <div className="text-[10px] md:text-xs text-white/60">{stat.label}</div>
                   </div>
                 </motion.div>
               ))}
@@ -211,7 +211,7 @@ export default function SpotlightPage() {
         
         {/* Scroll Indicator */}
         <motion.div 
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
+          className="absolute bottom-4 md:bottom-8 left-1/2 -translate-x-1/2 hidden md:block"
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 2, repeat: Infinity }}
         >
