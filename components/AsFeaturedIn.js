@@ -137,7 +137,7 @@ export default function AsFeaturedIn() {
             variant="outline" 
             className="rounded-full border-2 border-purple-200 hover:border-purple-400 hover:bg-purple-50 group"
           >
-            <Link href="/press">
+            <Link href="/spotlight">
               View All Media Coverage
               <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </Link>
