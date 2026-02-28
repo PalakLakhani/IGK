@@ -304,14 +304,14 @@ export default function MascotAssistant() {
               
               <div className="mt-6 space-y-6">
                 {/* Welcome Message */}
-                <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-4 border border-purple-100">
-                  <p className="text-lg font-bold text-purple-700 mb-1">{content.greeting}</p>
+                <div className="bg-gradient-to-r from-emerald-50 to-cyan-50 rounded-2xl p-4 border border-teal-100">
+                  <p className="text-lg font-bold text-teal-700 mb-1">{content.greeting}</p>
                   <p className="text-gray-700">{content.message}</p>
                 </div>
 
                 <div>
                   <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
-                    <Sparkles className="h-5 w-5 text-purple-500" />
+                    <Sparkles className="h-5 w-5 text-teal-500" />
                     Quick Actions
                   </h3>
                   <div className="space-y-2">
@@ -320,14 +320,14 @@ export default function MascotAssistant() {
                         key={index}
                         asChild
                         variant="outline"
-                        className="w-full justify-between group hover:border-purple-300 hover:bg-purple-50"
+                        className="w-full justify-between group hover:border-teal-300 hover:bg-teal-50"
                       >
                         <Link href={action.href} target={action.external ? '_blank' : undefined}>
                           <span className="flex items-center gap-2">
-                            <action.icon className="h-4 w-4 text-purple-500" />
+                            <action.icon className="h-4 w-4 text-teal-500" />
                             {action.label}
                           </span>
-                          <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-purple-500 group-hover:translate-x-1 transition-all" />
+                          <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-teal-500 group-hover:translate-x-1 transition-all" />
                         </Link>
                       </Button>
                     ))}
@@ -336,7 +336,7 @@ export default function MascotAssistant() {
 
                 <div>
                   <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
-                    <HelpCircle className="h-5 w-5 text-purple-500" />
+                    <HelpCircle className="h-5 w-5 text-teal-500" />
                     Frequently Asked Questions
                   </h3>
                   <div className="space-y-3">
