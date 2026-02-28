@@ -148,6 +148,28 @@ export default function AdminPage() {
   const [brandForm, setBrandForm] = useState({ name: '', logoUrl: '', websiteUrl: '', order: 0 });
   const [brandUploading, setBrandUploading] = useState(false);
   
+  // Media Coverage state
+  const [mediaCoverage, setMediaCoverage] = useState([]);
+  const [showMediaForm, setShowMediaForm] = useState(false);
+  const [editingMedia, setEditingMedia] = useState(null);
+  const [mediaForm, setMediaForm] = useState({
+    type: 'newspaper',
+    title: '',
+    description: '',
+    quote: '',
+    publicationName: '',
+    publicationLogo: '',
+    coverImage: '',
+    articleUrl: '',
+    embedUrl: '',
+    publishedDate: '',
+    featured: false,
+    order: 0
+  });
+  const [mediaUploading, setMediaUploading] = useState(false);
+  const mediaLogoInputRef = useRef(null);
+  const mediaCoverInputRef = useRef(null);
+  
   // Event form state - Updated schema with new content fields
   const [showEventForm, setShowEventForm] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
