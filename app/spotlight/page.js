@@ -454,29 +454,29 @@ export default function SpotlightPage() {
       <section className="py-20 bg-gradient-to-r from-purple-900 via-pink-800 to-orange-700 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-50" />
         
-        <div className="container relative">
+        <div className="container relative px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="text-center text-white"
           >
-            <Sparkles className="h-12 w-12 mx-auto mb-6 text-yellow-400" />
-            <h2 className="text-4xl md:text-5xl font-black mb-6">Want to Feature Our Events?</h2>
-            <p className="text-xl text-white/80 mb-10 max-w-2xl mx-auto">
+            <Sparkles className="h-8 w-8 md:h-12 md:w-12 mx-auto mb-4 md:mb-6 text-yellow-400" />
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black mb-4 md:mb-6">Want to Feature Our Events?</h2>
+            <p className="text-base md:text-xl text-white/80 mb-6 md:mb-10 max-w-2xl mx-auto">
               Are you a journalist, blogger, or content creator? We'd love to collaborate with you and share our story!
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="bg-white text-purple-600 hover:bg-gray-100 font-bold rounded-full px-8">
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center">
+              <Button asChild size="lg" className="bg-white text-purple-600 hover:bg-gray-100 font-bold rounded-full px-6 md:px-8 text-sm md:text-base">
                 <Link href="/contact">
                   Get in Touch
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white/10 font-bold rounded-full px-8">
+              <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white/10 font-bold rounded-full px-6 md:px-8 text-sm md:text-base">
                 <Link href="/partner">
                   Become a Partner
-                  <ChevronRight className="ml-2 h-5 w-5" />
+                  <ChevronRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
                 </Link>
               </Button>
             </div>
