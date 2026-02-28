@@ -295,10 +295,11 @@ export default function EventsPage() {
       {/* Hero Section */}
       <PageHero
         icon={Calendar}
-        title="Discover Amazing Events"
+        badge="Upcoming Experiences"
+        title="Discover Amazing|Events"
         subtitle="Curated events & experiences across Germany - Holi, Bollywood Nights, Garba, Weddings, and more"
         backgroundImage="https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=1920"
-        gradient="from-pink-600/90 to-purple-600/90"
+        gradient="from-purple-900/95 via-pink-900/90 to-orange-900/85"
       />
 
       {/* Filters */}
