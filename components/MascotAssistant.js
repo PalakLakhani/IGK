@@ -359,7 +359,7 @@ export default function MascotAssistant() {
                         Contact Support
                       </Link>
                     </Button>
-                    <Button asChild variant="outline" className="w-full border-white text-white hover:bg-white/20">
+                    <Button asChild className="w-full bg-green-500 text-white hover:bg-green-600">
                       <Link href={`https://wa.me/${siteConfig.contact.whatsapp.replace(/[^0-9]/g, '')}`} target="_blank">
                         <Phone className="h-4 w-4 mr-2" />
                         WhatsApp Us
