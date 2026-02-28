@@ -77,10 +77,11 @@ export default function TeamPage() {
       {/* Hero Section */}
       <PageHero
         icon={UsersIcon}
-        title="Meet Our Team"
+        badge="The People Behind IGK"
+        title="Meet Our|Team"
         subtitle="Passionate individuals bringing joy through cultural celebrations"
         backgroundImage="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920"
-        gradient="from-indigo-600/95 via-purple-600/90 to-pink-500/85"
+        gradient="from-purple-900/95 via-pink-900/90 to-orange-900/85"
       />
 
       {loading ? (
