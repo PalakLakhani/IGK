@@ -297,7 +297,7 @@ export default function MascotAssistant() {
                         Online
                       </span>
                     </div>
-                    <p className="text-sm text-gray-500 font-normal">Your Indo-German events helper</p>
+                    <p className="text-sm text-gray-500 font-normal">Your IGK Buddy</p>
                   </div>
                 </SheetTitle>
               </SheetHeader>
