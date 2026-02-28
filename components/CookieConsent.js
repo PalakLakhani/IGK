@@ -3,22 +3,17 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Cookie, X, Shield, ChevronDown, ChevronUp } from 'lucide-react';
+import { Cookie, X, Shield, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function CookieConsent() {
-  const [showBanner, setShowBanner] = useState(false);
-  const [showDetails, setShowDetails] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [hasConsent, setHasConsent] = useState(true); // Start as true to avoid flash
 
   useEffect(() => {
-    // Check if user has already made a choice
     const consent = localStorage.getItem('cookie-consent');
     if (!consent) {
-      // Show banner after a short delay
-      const timer = setTimeout(() => {
-        setShowBanner(true);
-      }, 1500);
-      return () => clearTimeout(timer);
+      setHasConsent(false);
     }
   }, []);
 
@@ -26,170 +21,156 @@ export default function CookieConsent() {
     localStorage.setItem('cookie-consent', JSON.stringify({
       essential: true,
       analytics: true,
-      marketing: false, // We don't use marketing cookies
       timestamp: new Date().toISOString()
     }));
-    setShowBanner(false);
+    setHasConsent(true);
+    setShowPopup(false);
   };
 
   const acceptEssentialOnly = () => {
     localStorage.setItem('cookie-consent', JSON.stringify({
       essential: true,
       analytics: false,
-      marketing: false,
       timestamp: new Date().toISOString()
     }));
-    // Disable Umami if user declines analytics
     if (typeof window !== 'undefined' && window.umami) {
       window.umami.disabled = true;
     }
-    setShowBanner(false);
+    setHasConsent(true);
+    setShowPopup(false);
   };
 
-  if (!showBanner) return null;
+  // Don't show anything if user has already consented
+  if (hasConsent) return null;
 
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ y: 100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: 100, opacity: 0 }}
-        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-        className="fixed bottom-0 left-0 right-0 z-[100] p-4 md:p-6"
-      >
-        <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
-          {/* Main Banner */}
-          <div className="p-4 md:p-6">
-            <div className="flex items-start gap-4">
-              {/* Cookie Icon */}
-              <div className="hidden sm:flex h-12 w-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 items-center justify-center flex-shrink-0">
-                <Cookie className="h-6 w-6 text-white" />
+    <>
+      {/* Small Cookie Button - Bottom Left */}
+      <AnimatePresence>
+        {!showPopup && (
+          <motion.button
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0 }}
+            transition={{ type: 'spring', damping: 20, stiffness: 300, delay: 1 }}
+            onClick={() => setShowPopup(true)}
+            className="fixed bottom-4 left-4 z-[100] group"
+            aria-label="Cookie settings"
+          >
+            <div className="relative">
+              {/* Glow effect */}
+              <div className="absolute inset-0 bg-amber-400 rounded-full blur-lg opacity-40 group-hover:opacity-60 transition-opacity" />
+              
+              {/* Cookie button */}
+              <div className="relative h-14 w-14 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Cookie className="h-7 w-7 text-white" />
+              </div>
+              
+              {/* Notification dot */}
+              <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full border-2 border-white animate-pulse" />
+            </div>
+            
+            {/* Tooltip on hover */}
+            <div className="absolute left-16 bottom-1/2 translate-y-1/2 bg-gray-900 text-white text-sm px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+              Cookie Settings
+              <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-gray-900" />
+            </div>
+          </motion.button>
+        )}
+      </AnimatePresence>
+
+      {/* Popup when clicked */}
+      <AnimatePresence>
+        {showPopup && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-4 bg-black/20 backdrop-blur-sm"
+            onClick={() => setShowPopup(false)}
+          >
+            <motion.div
+              initial={{ y: 50, opacity: 0, scale: 0.95 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: 50, opacity: 0, scale: 0.95 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-sm bg-white rounded-2xl shadow-2xl overflow-hidden"
+            >
+              {/* Header */}
+              <div className="bg-gradient-to-r from-amber-400 to-orange-500 p-4 flex items-center gap-3">
+                <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center">
+                  <Cookie className="h-6 w-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-white text-lg">Cookie Settings</h3>
+                  <p className="text-white/80 text-sm">Manage your preferences</p>
+                </div>
+                <button
+                  onClick={() => setShowPopup(false)}
+                  className="text-white/80 hover:text-white p-1"
+                >
+                  <X className="h-5 w-5" />
+                </button>
               </div>
               
               {/* Content */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-2">
-                  <Cookie className="h-5 w-5 text-amber-500 sm:hidden" />
-                  <h3 className="font-bold text-lg text-gray-900">We Value Your Privacy</h3>
-                </div>
-                
-                <p className="text-gray-600 text-sm md:text-base mb-4">
-                  We use cookies to enhance your browsing experience and analyze site traffic. 
-                  Our analytics are privacy-focused and don't track you across websites.
-                  {' '}
-                  <Link href="/datenschutz" className="text-teal-600 hover:underline font-medium">
-                    Learn more
-                  </Link>
+              <div className="p-4 space-y-3">
+                <p className="text-gray-600 text-sm">
+                  We use privacy-focused analytics (Umami) that don't track you across websites.
                 </p>
                 
-                {/* Expandable Details */}
-                <button
-                  onClick={() => setShowDetails(!showDetails)}
-                  className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-4"
-                >
-                  {showDetails ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                  {showDetails ? 'Hide details' : 'Show cookie details'}
-                </button>
-                
-                <AnimatePresence>
-                  {showDetails && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="bg-gray-50 rounded-xl p-4 mb-4 space-y-3">
-                        {/* Essential Cookies */}
-                        <div className="flex items-start gap-3">
-                          <div className="mt-0.5">
-                            <Shield className="h-5 w-5 text-green-500" />
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <span className="font-semibold text-gray-900">Essential</span>
-                              <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Always Active</span>
-                            </div>
-                            <p className="text-sm text-gray-600">
-                              Required for the website to function. These include session management and your cookie preferences.
-                            </p>
-                          </div>
-                        </div>
-                        
-                        {/* Analytics Cookies */}
-                        <div className="flex items-start gap-3">
-                          <div className="mt-0.5">
-                            <svg className="h-5 w-5 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <path d="M3 3v18h18" />
-                              <path d="M18 9l-5 5-4-4-3 3" />
-                            </svg>
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <span className="font-semibold text-gray-900">Analytics</span>
-                              <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">Privacy-Focused</span>
-                            </div>
-                            <p className="text-sm text-gray-600">
-                              We use Umami Analytics - a privacy-friendly, cookieless analytics tool that doesn't collect personal data or track you across sites.
-                            </p>
-                          </div>
-                        </div>
-                        
-                        {/* Third-Party */}
-                        <div className="flex items-start gap-3">
-                          <div className="mt-0.5">
-                            <svg className="h-5 w-5 text-purple-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <rect x="3" y="3" width="18" height="18" rx="2" />
-                              <path d="M9 9h6v6H9z" />
-                            </svg>
-                          </div>
-                          <div>
-                            <span className="font-semibold text-gray-900">Third-Party Services</span>
-                            <p className="text-sm text-gray-600">
-                              Google Fonts for typography. These may set cookies according to their own policies.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                {/* Cookie Types */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3 p-2 bg-green-50 rounded-lg">
+                    <Shield className="h-5 w-5 text-green-600" />
+                    <div className="flex-1">
+                      <span className="font-medium text-gray-900 text-sm">Essential</span>
+                      <span className="ml-2 text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded">Required</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-2 bg-blue-50 rounded-lg">
+                    <svg className="h-5 w-5 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M3 3v18h18" />
+                      <path d="M18 9l-5 5-4-4-3 3" />
+                    </svg>
+                    <div className="flex-1">
+                      <span className="font-medium text-gray-900 text-sm">Analytics</span>
+                      <span className="ml-2 text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">Privacy-First</span>
+                    </div>
+                  </div>
+                </div>
                 
                 {/* Buttons */}
-                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                <div className="flex gap-2 pt-2">
                   <Button
                     onClick={acceptAll}
-                    className="bg-gradient-to-r from-teal-500 to-cyan-600 hover:from-teal-600 hover:to-cyan-700 text-white font-semibold"
+                    className="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold"
                   >
                     Accept All
                   </Button>
                   <Button
                     onClick={acceptEssentialOnly}
                     variant="outline"
-                    className="border-gray-300 hover:bg-gray-50"
+                    className="flex-1"
                   >
                     Essential Only
                   </Button>
-                  <Link href="/datenschutz" className="hidden sm:inline-flex">
-                    <Button variant="ghost" className="text-gray-500 hover:text-gray-700">
-                      Privacy Policy
-                    </Button>
-                  </Link>
                 </div>
+                
+                {/* Privacy link */}
+                <Link 
+                  href="/datenschutz" 
+                  className="flex items-center justify-center gap-1 text-sm text-gray-500 hover:text-gray-700"
+                >
+                  Privacy Policy
+                  <ChevronRight className="h-4 w-4" />
+                </Link>
               </div>
-              
-              {/* Close Button (just hides, doesn't accept) */}
-              <button
-                onClick={() => setShowBanner(false)}
-                className="text-gray-400 hover:text-gray-600 p-1 -mt-1 -mr-1"
-                aria-label="Close temporarily"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-    </AnimatePresence>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
