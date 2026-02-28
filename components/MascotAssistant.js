@@ -272,7 +272,7 @@ export default function MascotAssistant() {
                 
                 {/* Message indicator */}
                 <motion.div 
-                  className="absolute -top-1 -right-1 bg-green-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shadow-lg"
+                  className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shadow-lg border-2 border-white"
                   animate={{ scale: [1, 1.2, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
@@ -284,8 +284,10 @@ export default function MascotAssistant() {
             <SheetContent className="w-full sm:max-w-md overflow-y-auto">
               <SheetHeader>
                 <SheetTitle className="flex items-center gap-3">
-                  <div className="w-14 h-14 bg-gradient-to-br from-orange-400 via-pink-500 to-purple-600 rounded-full p-1 shadow-lg">
-                    <MascotCharacter className="w-full h-full" isWaving={true} />
+                  <div className="w-14 h-14 bg-gradient-to-br from-emerald-400 via-teal-500 to-cyan-600 rounded-full p-1 shadow-lg">
+                    <div className="w-full h-full bg-white rounded-full flex items-center justify-center">
+                      <MascotCharacter className="w-10 h-10" isWaving={true} />
+                    </div>
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
