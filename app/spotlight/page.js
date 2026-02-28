@@ -229,16 +229,16 @@ export default function SpotlightPage() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-8 md:mb-16 px-4"
           >
-            <Badge className="mb-4 bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 border-purple-200">
+            <Badge className="mb-3 md:mb-4 bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 border-purple-200">
               <Calendar className="h-3 w-3 mr-1" />
               Our Media Timeline
             </Badge>
-            <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-gray-900 mb-3 md:mb-4">
               The Story of Our Growth
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-base md:text-xl text-gray-600 max-w-2xl mx-auto">
               Watch our journey unfold through media coverage over the years
             </p>
           </motion.div>
