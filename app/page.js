@@ -596,6 +596,9 @@ export default function HomePage() {
       {/* Our Brands Section */}
       <OurBrands />
 
+      {/* As Featured In - Media Coverage */}
+      <AsFeaturedIn />
+
       {/* Testimonials - Dynamic */}
       <section className="py-20 bg-gradient-to-br from-yellow-50 via-orange-50 to-pink-50">
         <div className="container">
