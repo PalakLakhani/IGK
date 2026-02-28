@@ -62,10 +62,11 @@ export default function ContactPage() {
       {/* Hero */}
       <PageHero
         icon={Mail}
-        title="Get In Touch"
+        badge="We'd Love to Hear From You"
+        title="Get In|Touch"
         subtitle="Have questions? Need assistance? We're here to help!"
         backgroundImage="https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=1920"
-        gradient="from-green-900/95 via-green-700/90 to-teal-600/85"
+        gradient="from-purple-900/95 via-pink-900/90 to-orange-900/85"
       />
 
       <section className="py-12">
