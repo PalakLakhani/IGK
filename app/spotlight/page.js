@@ -180,7 +180,7 @@ export default function SpotlightPage() {
             {/* Subtitle */}
             <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/80 max-w-2xl leading-relaxed mb-6 md:mb-10 px-4 md:px-0 mx-auto md:mx-0">
               Our journey through the eyes of media. From local newspapers to viral social posts — 
-              see how IGK events have been making waves across Germany.
+              see how IGK events have been making waves worldwide.
             </p>
             
             {/* Quick Stats - Mobile optimized */}
