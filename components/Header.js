@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
-import { Menu, X, Calendar, Users, Handshake, ImageIcon, Info, MessageSquare, Star, Building2, Newspaper } from 'lucide-react';
+import { Menu, X, Calendar, Users, Handshake, ImageIcon, Info, MessageSquare, Star, Building2, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { siteConfig } from '@/config/site';
 
@@ -16,7 +16,7 @@ export default function Header() {
     { href: '/about', label: 'About Us', icon: Info, color: 'blue' },
     { href: '/team', label: 'Team', icon: Users, color: 'green' },
     { href: '/gallery', label: 'Gallery', icon: ImageIcon, color: 'purple' },
-    { href: '/press', label: 'Press', icon: Newspaper, color: 'gray' },
+    { href: '/spotlight', label: 'In the Spotlight', icon: Sparkles, color: 'yellow' },
     { href: '/collaborations', label: 'Trusted By', icon: Building2, color: 'indigo' },
     { href: '/community', label: 'Community', icon: MessageSquare, color: 'cyan' },
     { href: '/partner', label: 'Partners', icon: Handshake, color: 'orange' },
