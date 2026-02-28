@@ -2922,6 +2922,272 @@ export default function AdminPage() {
               </Card>
             )}
           </TabsContent>
+
+          {/* Media Coverage Tab */}
+          <TabsContent value="media">
+            <div className="flex justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold">Media Coverage</h2>
+                <p className="text-muted-foreground">Manage press features, Instagram posts, and YouTube videos</p>
+              </div>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={async () => {
+                  try {
+                    const res = await fetch('/api/seed-media');
+                    const data = await res.json();
+                    toast.success(data.message || 'Placeholders seeded');
+                    fetchAllData(password);
+                  } catch (err) {
+                    toast.error('Failed to seed placeholders');
+                  }
+                }}>
+                  <RefreshCw className="mr-2 h-4 w-4" /> Seed Placeholders
+                </Button>
+                <Button onClick={() => { resetMediaForm(); setShowMediaForm(true); }}>
+                  <Plus className="mr-2 h-4 w-4" /> Add Media
+                </Button>
+              </div>
+            </div>
+
+            {/* Media Form Dialog */}
+            <Dialog open={showMediaForm} onOpenChange={setShowMediaForm}>
+              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>{editingMedia ? 'Edit Media Coverage' : 'Add Media Coverage'}</DialogTitle>
+                  <DialogDescription>Add newspaper articles, Instagram posts, YouTube videos, or online articles.</DialogDescription>
+                </DialogHeader>
+                
+                <div className="space-y-4">
+                  {/* Type Selection */}
+                  <div>
+                    <Label>Media Type *</Label>
+                    <Select value={mediaForm.type} onValueChange={(v) => setMediaForm({...mediaForm, type: v})}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="newspaper">📰 Print Media / Newspaper</SelectItem>
+                        <SelectItem value="instagram">📸 Instagram</SelectItem>
+                        <SelectItem value="youtube">🎬 YouTube</SelectItem>
+                        <SelectItem value="online">🌐 Online Article</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Title & Publication */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>Title / Headline *</Label>
+                      <Input 
+                        value={mediaForm.title} 
+                        onChange={(e) => setMediaForm({...mediaForm, title: e.target.value})}
+                        placeholder="Article headline or post title"
+                      />
+                    </div>
+                    <div>
+                      <Label>Publication / Channel Name *</Label>
+                      <Input 
+                        value={mediaForm.publicationName} 
+                        onChange={(e) => setMediaForm({...mediaForm, publicationName: e.target.value})}
+                        placeholder={mediaForm.type === 'instagram' ? '@accountname' : 'Publication name'}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  <div>
+                    <Label>Description</Label>
+                    <Textarea 
+                      value={mediaForm.description} 
+                      onChange={(e) => setMediaForm({...mediaForm, description: e.target.value})}
+                      placeholder="Brief description of the coverage"
+                      rows={2}
+                    />
+                  </div>
+
+                  {/* Quote (for newspaper/online) */}
+                  {(mediaForm.type === 'newspaper' || mediaForm.type === 'online') && (
+                    <div>
+                      <Label>Pull Quote (Optional)</Label>
+                      <Textarea 
+                        value={mediaForm.quote} 
+                        onChange={(e) => setMediaForm({...mediaForm, quote: e.target.value})}
+                        placeholder="A standout quote from the article..."
+                        rows={2}
+                      />
+                    </div>
+                  )}
+
+                  {/* URLs */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>Article / Post URL</Label>
+                      <Input 
+                        value={mediaForm.articleUrl} 
+                        onChange={(e) => setMediaForm({...mediaForm, articleUrl: e.target.value})}
+                        placeholder="https://..."
+                      />
+                    </div>
+                    {mediaForm.type === 'youtube' && (
+                      <div>
+                        <Label>YouTube Embed URL</Label>
+                        <Input 
+                          value={mediaForm.embedUrl} 
+                          onChange={(e) => setMediaForm({...mediaForm, embedUrl: e.target.value})}
+                          placeholder="https://www.youtube.com/embed/VIDEO_ID"
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Images */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>Publication Logo</Label>
+                      <div className="flex gap-2">
+                        <Input 
+                          value={mediaForm.publicationLogo} 
+                          onChange={(e) => setMediaForm({...mediaForm, publicationLogo: e.target.value})}
+                          placeholder="Logo URL"
+                        />
+                        <input type="file" ref={mediaLogoInputRef} onChange={handleMediaLogoUpload} className="hidden" accept="image/*" />
+                        <Button type="button" variant="outline" onClick={() => mediaLogoInputRef.current?.click()} disabled={mediaUploading}>
+                          <Upload className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      {mediaForm.publicationLogo && (
+                        <div className="mt-2 h-12 w-24 relative bg-gray-100 rounded">
+                          <img src={mediaForm.publicationLogo} alt="Logo" className="h-full w-full object-contain" />
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <Label>Cover Image / Screenshot</Label>
+                      <div className="flex gap-2">
+                        <Input 
+                          value={mediaForm.coverImage} 
+                          onChange={(e) => setMediaForm({...mediaForm, coverImage: e.target.value})}
+                          placeholder="Cover image URL"
+                        />
+                        <input type="file" ref={mediaCoverInputRef} onChange={handleMediaCoverUpload} className="hidden" accept="image/*" />
+                        <Button type="button" variant="outline" onClick={() => mediaCoverInputRef.current?.click()} disabled={mediaUploading}>
+                          <Upload className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      {mediaForm.coverImage && (
+                        <div className="mt-2 h-24 w-full relative bg-gray-100 rounded overflow-hidden">
+                          <img src={mediaForm.coverImage} alt="Cover" className="h-full w-full object-cover" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Date & Order */}
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <Label>Published Date</Label>
+                      <Input 
+                        type="date"
+                        value={mediaForm.publishedDate} 
+                        onChange={(e) => setMediaForm({...mediaForm, publishedDate: e.target.value})}
+                      />
+                    </div>
+                    <div>
+                      <Label>Display Order</Label>
+                      <Input 
+                        type="number"
+                        value={mediaForm.order} 
+                        onChange={(e) => setMediaForm({...mediaForm, order: parseInt(e.target.value) || 0})}
+                      />
+                    </div>
+                    <div className="flex items-center gap-2 pt-6">
+                      <Switch 
+                        checked={mediaForm.featured}
+                        onCheckedChange={(v) => setMediaForm({...mediaForm, featured: v})}
+                      />
+                      <Label>Featured on Homepage</Label>
+                    </div>
+                  </div>
+                </div>
+
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setShowMediaForm(false)}>Cancel</Button>
+                  <Button onClick={handleSaveMedia}>
+                    <Save className="mr-2 h-4 w-4" />
+                    {editingMedia ? 'Update' : 'Add'} Media
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+            {/* Media List */}
+            {mediaCoverage.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {mediaCoverage.map((media) => (
+                  <Card key={media.id} className="overflow-hidden">
+                    {media.coverImage && (
+                      <div className="h-40 relative">
+                        <img src={media.coverImage} alt={media.title} className="w-full h-full object-cover" />
+                        <Badge className="absolute top-2 left-2 flex items-center gap-1">
+                          {getMediaTypeIcon(media.type)}
+                          {media.type}
+                        </Badge>
+                        {media.featured && (
+                          <Badge className="absolute top-2 right-2 bg-yellow-500">Featured</Badge>
+                        )}
+                      </div>
+                    )}
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        {media.publicationLogo ? (
+                          <img src={media.publicationLogo} alt="" className="h-8 w-8 object-contain rounded" />
+                        ) : (
+                          <div className="h-8 w-8 bg-gray-100 rounded flex items-center justify-center">
+                            {getMediaTypeIcon(media.type)}
+                          </div>
+                        )}
+                        <span className="text-sm font-medium text-muted-foreground">{media.publicationName}</span>
+                      </div>
+                      <h3 className="font-semibold line-clamp-2 mb-2">{media.title}</h3>
+                      {media.description && (
+                        <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{media.description}</p>
+                      )}
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs text-muted-foreground">
+                          {media.publishedDate ? new Date(media.publishedDate).toLocaleDateString() : 'No date'}
+                        </span>
+                        <div className="flex gap-2">
+                          {media.articleUrl && (
+                            <Button size="sm" variant="ghost" asChild>
+                              <a href={media.articleUrl} target="_blank" rel="noopener noreferrer">
+                                <ExternalLink className="h-3 w-3" />
+                              </a>
+                            </Button>
+                          )}
+                          <Button size="sm" variant="outline" onClick={() => openEditMedia(media)}>
+                            <Edit2 className="h-3 w-3" />
+                          </Button>
+                          <Button size="sm" variant="ghost" className="text-red-500" onClick={() => handleDeleteMedia(media.id)}>
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <Card>
+                <CardContent className="py-12 text-center">
+                  <Newspaper className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">No media coverage added yet.</p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Click "Seed Placeholders" to add sample content, or add your own media coverage.
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
         </Tabs>
       </div>
     </div>
