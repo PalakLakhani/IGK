@@ -473,7 +473,7 @@ export default function SpotlightPage() {
                   <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white/10 font-bold rounded-full px-6 md:px-8 text-sm md:text-base">
+              <Button asChild size="lg" className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-purple-600 font-bold rounded-full px-6 md:px-8 text-sm md:text-base">
                 <Link href="/partner">
                   Become a Partner
                   <ChevronRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
