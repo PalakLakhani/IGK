@@ -36,10 +36,11 @@ export default function TrustedByPage() {
       {/* Hero */}
       <PageHero
         icon={Handshake}
-        title="Trusted by the Best"
+        badge="Our Partners"
+        title="Trusted by the|Best"
         subtitle="IGK is proud to collaborate with a diverse network of partners who share our vision."
         backgroundImage="https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=1920"
-        gradient="from-indigo-900/95 via-purple-800/90 to-blue-700/85"
+        gradient="from-purple-900/95 via-pink-900/90 to-orange-900/85"
       />
 
       {/* Brands Grid */}
