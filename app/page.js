@@ -642,7 +642,6 @@ export default function HomePage() {
       </section>
 
       <Footer />
-      <WhatsAppFloat />
       <MascotAssistant />
     </div>
   );
