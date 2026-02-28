@@ -1050,6 +1050,170 @@ export default function AdminPage() {
     setShowBrandForm(true);
   };
 
+  // MEDIA COVERAGE HANDLERS
+  const resetMediaForm = () => {
+    setMediaForm({
+      type: 'newspaper',
+      title: '',
+      description: '',
+      quote: '',
+      publicationName: '',
+      publicationLogo: '',
+      coverImage: '',
+      articleUrl: '',
+      embedUrl: '',
+      publishedDate: '',
+      featured: false,
+      order: 0
+    });
+    setEditingMedia(null);
+  };
+
+  const handleMediaLogoUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setMediaUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('type', 'media');
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'x-admin-password': password },
+        body: formData
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setMediaForm({ ...mediaForm, publicationLogo: data.path });
+        toast.success('Logo uploaded!');
+      } else {
+        toast.error(data.error || 'Upload failed');
+      }
+    } catch (err) {
+      toast.error('Upload error');
+    } finally {
+      setMediaUploading(false);
+      if (mediaLogoInputRef.current) mediaLogoInputRef.current.value = '';
+    }
+  };
+
+  const handleMediaCoverUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setMediaUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('type', 'media');
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'x-admin-password': password },
+        body: formData
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setMediaForm({ ...mediaForm, coverImage: data.path });
+        toast.success('Cover image uploaded!');
+      } else {
+        toast.error(data.error || 'Upload failed');
+      }
+    } catch (err) {
+      toast.error('Upload error');
+    } finally {
+      setMediaUploading(false);
+      if (mediaCoverInputRef.current) mediaCoverInputRef.current.value = '';
+    }
+  };
+
+  const handleSaveMedia = async () => {
+    if (!mediaForm.title || !mediaForm.publicationName) {
+      toast.error('Title and Publication Name are required');
+      return;
+    }
+
+    try {
+      const url = editingMedia 
+        ? `/api/admin/media/${editingMedia.id}`
+        : '/api/admin/media';
+      
+      const res = await fetch(url, {
+        method: editingMedia ? 'PUT' : 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-admin-password': password 
+        },
+        body: JSON.stringify(mediaForm)
+      });
+
+      if (res.ok) {
+        toast.success(editingMedia ? 'Media updated!' : 'Media added!');
+        resetMediaForm();
+        setShowMediaForm(false);
+        fetchAllData(password);
+      } else {
+        const data = await res.json();
+        toast.error(data.error || 'Failed to save media');
+      }
+    } catch (err) {
+      toast.error('Error saving media');
+    }
+  };
+
+  const handleDeleteMedia = async (mediaId) => {
+    if (!confirm('Are you sure you want to delete this media item?')) return;
+
+    try {
+      const res = await fetch(`/api/admin/media/${mediaId}`, {
+        method: 'DELETE',
+        headers: { 'x-admin-password': password }
+      });
+
+      if (res.ok) {
+        toast.success('Media deleted');
+        setMediaCoverage(mediaCoverage.filter(m => m.id !== mediaId));
+      } else {
+        toast.error('Failed to delete');
+      }
+    } catch (err) {
+      toast.error('Delete error');
+    }
+  };
+
+  const openEditMedia = (media) => {
+    setEditingMedia(media);
+    setMediaForm({
+      type: media.type || 'newspaper',
+      title: media.title || '',
+      description: media.description || '',
+      quote: media.quote || '',
+      publicationName: media.publicationName || '',
+      publicationLogo: media.publicationLogo || '',
+      coverImage: media.coverImage || '',
+      articleUrl: media.articleUrl || '',
+      embedUrl: media.embedUrl || '',
+      publishedDate: media.publishedDate ? media.publishedDate.split('T')[0] : '',
+      featured: media.featured || false,
+      order: media.order || 0
+    });
+    setShowMediaForm(true);
+  };
+
+  const getMediaTypeIcon = (type) => {
+    switch (type) {
+      case 'newspaper': return <Newspaper className="h-4 w-4" />;
+      case 'instagram': return <Instagram className="h-4 w-4" />;
+      case 'youtube': return <Youtube className="h-4 w-4" />;
+      case 'online': return <Globe className="h-4 w-4" />;
+      default: return <Newspaper className="h-4 w-4" />;
+    }
+  };
+
   // GALLERY THEMES HANDLERS
   const handleThemeCoverUpload = async (e) => {
     const file = e.target.files?.[0];
