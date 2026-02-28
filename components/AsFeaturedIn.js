@@ -51,7 +51,7 @@ export default function AsFeaturedIn() {
               As Featured In
             </h2>
             <p className="text-2xl text-gray-600 max-w-2xl mx-auto font-medium">
-              Our events have been recognized by leading media outlets across Germany
+              Our events have been featured by leading media outlets worldwide
             </p>
           </motion.div>
         </div>
