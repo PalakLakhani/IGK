@@ -2925,10 +2925,13 @@ export default function AdminPage() {
 
           {/* Media Coverage Tab */}
           <TabsContent value="media">
-            <div className="flex justify-between mb-6">
+            <div className="flex justify-between items-start mb-6">
               <div>
-                <h2 className="text-2xl font-bold">Media Coverage</h2>
-                <p className="text-muted-foreground">Manage press features, Instagram posts, and YouTube videos</p>
+                <h2 className="text-2xl font-bold flex items-center gap-2">
+                  <Sparkles className="h-6 w-6 text-yellow-500" />
+                  In the Spotlight
+                </h2>
+                <p className="text-muted-foreground">Manage your media timeline - newspaper articles, Instagram posts, YouTube videos</p>
               </div>
               <div className="flex gap-2">
                 <Button variant="outline" onClick={async () => {
@@ -2941,37 +2944,85 @@ export default function AdminPage() {
                     toast.error('Failed to seed placeholders');
                   }
                 }}>
-                  <RefreshCw className="mr-2 h-4 w-4" /> Seed Placeholders
+                  <RefreshCw className="mr-2 h-4 w-4" /> Seed Demo Data
                 </Button>
-                <Button onClick={() => { resetMediaForm(); setShowMediaForm(true); }}>
-                  <Plus className="mr-2 h-4 w-4" /> Add Media
+                <Button onClick={() => { resetMediaForm(); setShowMediaForm(true); }} className="bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90">
+                  <Plus className="mr-2 h-4 w-4" /> Add Media Entry
                 </Button>
               </div>
+            </div>
+
+            {/* Stats Summary */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+              <Card className="bg-gradient-to-br from-purple-50 to-pink-50 border-purple-100">
+                <CardContent className="p-4 text-center">
+                  <div className="text-3xl font-bold text-purple-600">{mediaCoverage.length}</div>
+                  <div className="text-sm text-purple-600/70">Total Coverage</div>
+                </CardContent>
+              </Card>
+              <Card className="bg-slate-50 border-slate-200">
+                <CardContent className="p-4 text-center">
+                  <div className="text-3xl font-bold text-slate-700">{mediaCoverage.filter(m => m.type === 'newspaper').length}</div>
+                  <div className="text-sm text-slate-500 flex items-center justify-center gap-1"><Newspaper className="h-3 w-3" /> Print</div>
+                </CardContent>
+              </Card>
+              <Card className="bg-gradient-to-br from-pink-50 to-purple-50 border-pink-200">
+                <CardContent className="p-4 text-center">
+                  <div className="text-3xl font-bold text-pink-600">{mediaCoverage.filter(m => m.type === 'instagram').length}</div>
+                  <div className="text-sm text-pink-500 flex items-center justify-center gap-1"><Instagram className="h-3 w-3" /> Instagram</div>
+                </CardContent>
+              </Card>
+              <Card className="bg-red-50 border-red-200">
+                <CardContent className="p-4 text-center">
+                  <div className="text-3xl font-bold text-red-600">{mediaCoverage.filter(m => m.type === 'youtube').length}</div>
+                  <div className="text-sm text-red-500 flex items-center justify-center gap-1"><Youtube className="h-3 w-3" /> YouTube</div>
+                </CardContent>
+              </Card>
+              <Card className="bg-yellow-50 border-yellow-200">
+                <CardContent className="p-4 text-center">
+                  <div className="text-3xl font-bold text-yellow-600">{mediaCoverage.filter(m => m.featured).length}</div>
+                  <div className="text-sm text-yellow-600 flex items-center justify-center gap-1"><Star className="h-3 w-3" /> Featured</div>
+                </CardContent>
+              </Card>
             </div>
 
             {/* Media Form Dialog */}
             <Dialog open={showMediaForm} onOpenChange={setShowMediaForm}>
               <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                  <DialogTitle>{editingMedia ? 'Edit Media Coverage' : 'Add Media Coverage'}</DialogTitle>
-                  <DialogDescription>Add newspaper articles, Instagram posts, YouTube videos, or online articles.</DialogDescription>
+                  <DialogTitle className="flex items-center gap-2">
+                    <Sparkles className="h-5 w-5 text-yellow-500" />
+                    {editingMedia ? 'Edit Media Entry' : 'Add New Media Entry'}
+                  </DialogTitle>
+                  <DialogDescription>Add a new entry to your media timeline - articles, videos, or social posts about your events.</DialogDescription>
                 </DialogHeader>
                 
                 <div className="space-y-4">
-                  {/* Type Selection */}
+                  {/* Type Selection - Visual Cards */}
                   <div>
-                    <Label>Media Type *</Label>
-                    <Select value={mediaForm.type} onValueChange={(v) => setMediaForm({...mediaForm, type: v})}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="newspaper">📰 Print Media / Newspaper</SelectItem>
-                        <SelectItem value="instagram">📸 Instagram</SelectItem>
-                        <SelectItem value="youtube">🎬 YouTube</SelectItem>
-                        <SelectItem value="online">🌐 Online Article</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Label className="mb-3 block">Media Type *</Label>
+                    <div className="grid grid-cols-4 gap-2">
+                      {[
+                        { value: 'newspaper', icon: Newspaper, label: 'Print', color: 'slate' },
+                        { value: 'instagram', icon: Instagram, label: 'Instagram', color: 'pink' },
+                        { value: 'youtube', icon: Youtube, label: 'YouTube', color: 'red' },
+                        { value: 'online', icon: Globe, label: 'Online', color: 'blue' }
+                      ].map(type => (
+                        <button
+                          key={type.value}
+                          type="button"
+                          onClick={() => setMediaForm({...mediaForm, type: type.value})}
+                          className={`p-3 rounded-lg border-2 transition-all ${
+                            mediaForm.type === type.value 
+                              ? `border-${type.color}-500 bg-${type.color}-50` 
+                              : 'border-gray-200 hover:border-gray-300'
+                          }`}
+                        >
+                          <type.icon className={`h-6 w-6 mx-auto mb-1 ${mediaForm.type === type.value ? `text-${type.color}-600` : 'text-gray-400'}`} />
+                          <div className={`text-xs font-medium ${mediaForm.type === type.value ? `text-${type.color}-600` : 'text-gray-500'}`}>{type.label}</div>
+                        </button>
+                      ))}
+                    </div>
                   </div>
 
                   {/* Title & Publication */}
@@ -2981,7 +3032,7 @@ export default function AdminPage() {
                       <Input 
                         value={mediaForm.title} 
                         onChange={(e) => setMediaForm({...mediaForm, title: e.target.value})}
-                        placeholder="Article headline or post title"
+                        placeholder="e.g., IGK Diwali 2024 Makes Headlines"
                       />
                     </div>
                     <div>
@@ -2989,7 +3040,7 @@ export default function AdminPage() {
                       <Input 
                         value={mediaForm.publicationName} 
                         onChange={(e) => setMediaForm({...mediaForm, publicationName: e.target.value})}
-                        placeholder={mediaForm.type === 'instagram' ? '@accountname' : 'Publication name'}
+                        placeholder={mediaForm.type === 'instagram' ? '@bollywood_germany' : 'Frankfurter Allgemeine'}
                       />
                     </div>
                   </div>
@@ -3000,7 +3051,7 @@ export default function AdminPage() {
                     <Textarea 
                       value={mediaForm.description} 
                       onChange={(e) => setMediaForm({...mediaForm, description: e.target.value})}
-                      placeholder="Brief description of the coverage"
+                      placeholder="Brief description of the media coverage..."
                       rows={2}
                     />
                   </div>
@@ -3008,11 +3059,11 @@ export default function AdminPage() {
                   {/* Quote (for newspaper/online) */}
                   {(mediaForm.type === 'newspaper' || mediaForm.type === 'online') && (
                     <div>
-                      <Label>Pull Quote (Optional)</Label>
+                      <Label className="flex items-center gap-1"><Quote className="h-3 w-3" /> Pull Quote (Optional)</Label>
                       <Textarea 
                         value={mediaForm.quote} 
                         onChange={(e) => setMediaForm({...mediaForm, quote: e.target.value})}
-                        placeholder="A standout quote from the article..."
+                        placeholder='"A spectacular evening that brought Indian culture to Germany"'
                         rows={2}
                       />
                     </div>
@@ -3036,6 +3087,7 @@ export default function AdminPage() {
                           onChange={(e) => setMediaForm({...mediaForm, embedUrl: e.target.value})}
                           placeholder="https://www.youtube.com/embed/VIDEO_ID"
                         />
+                        <p className="text-xs text-muted-foreground mt-1">Convert watch?v= to /embed/</p>
                       </div>
                     )}
                   </div>
@@ -3048,29 +3100,31 @@ export default function AdminPage() {
                         <Input 
                           value={mediaForm.publicationLogo} 
                           onChange={(e) => setMediaForm({...mediaForm, publicationLogo: e.target.value})}
-                          placeholder="Logo URL"
+                          placeholder="Logo URL or upload"
+                          className="flex-1"
                         />
                         <input type="file" ref={mediaLogoInputRef} onChange={handleMediaLogoUpload} className="hidden" accept="image/*" />
-                        <Button type="button" variant="outline" onClick={() => mediaLogoInputRef.current?.click()} disabled={mediaUploading}>
+                        <Button type="button" variant="outline" size="icon" onClick={() => mediaLogoInputRef.current?.click()} disabled={mediaUploading}>
                           <Upload className="h-4 w-4" />
                         </Button>
                       </div>
                       {mediaForm.publicationLogo && (
-                        <div className="mt-2 h-12 w-24 relative bg-gray-100 rounded">
+                        <div className="mt-2 h-12 w-24 relative bg-gray-100 rounded overflow-hidden">
                           <img src={mediaForm.publicationLogo} alt="Logo" className="h-full w-full object-contain" />
                         </div>
                       )}
                     </div>
                     <div>
-                      <Label>Cover Image / Screenshot</Label>
+                      <Label>Cover Image / Screenshot *</Label>
                       <div className="flex gap-2">
                         <Input 
                           value={mediaForm.coverImage} 
                           onChange={(e) => setMediaForm({...mediaForm, coverImage: e.target.value})}
-                          placeholder="Cover image URL"
+                          placeholder="Cover image URL or upload"
+                          className="flex-1"
                         />
                         <input type="file" ref={mediaCoverInputRef} onChange={handleMediaCoverUpload} className="hidden" accept="image/*" />
-                        <Button type="button" variant="outline" onClick={() => mediaCoverInputRef.current?.click()} disabled={mediaUploading}>
+                        <Button type="button" variant="outline" size="icon" onClick={() => mediaCoverInputRef.current?.click()} disabled={mediaUploading}>
                           <Upload className="h-4 w-4" />
                         </Button>
                       </div>
@@ -3082,15 +3136,16 @@ export default function AdminPage() {
                     </div>
                   </div>
 
-                  {/* Date & Order */}
+                  {/* Date, Order & Featured */}
                   <div className="grid grid-cols-3 gap-4">
                     <div>
-                      <Label>Published Date</Label>
+                      <Label>Published Date *</Label>
                       <Input 
                         type="date"
                         value={mediaForm.publishedDate} 
                         onChange={(e) => setMediaForm({...mediaForm, publishedDate: e.target.value})}
                       />
+                      <p className="text-xs text-muted-foreground mt-1">Date shown on timeline</p>
                     </div>
                     <div>
                       <Label>Display Order</Label>
@@ -3099,91 +3154,153 @@ export default function AdminPage() {
                         value={mediaForm.order} 
                         onChange={(e) => setMediaForm({...mediaForm, order: parseInt(e.target.value) || 0})}
                       />
+                      <p className="text-xs text-muted-foreground mt-1">Lower = shown first</p>
                     </div>
-                    <div className="flex items-center gap-2 pt-6">
-                      <Switch 
-                        checked={mediaForm.featured}
-                        onCheckedChange={(v) => setMediaForm({...mediaForm, featured: v})}
-                      />
-                      <Label>Featured on Homepage</Label>
+                    <div className="flex flex-col justify-end">
+                      <div className="flex items-center gap-2 p-3 rounded-lg bg-yellow-50 border border-yellow-200">
+                        <Switch 
+                          checked={mediaForm.featured}
+                          onCheckedChange={(v) => setMediaForm({...mediaForm, featured: v})}
+                        />
+                        <Label className="flex items-center gap-1 text-yellow-700">
+                          <Star className="h-4 w-4" /> Featured
+                        </Label>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <DialogFooter>
+                <DialogFooter className="mt-6">
                   <Button variant="outline" onClick={() => setShowMediaForm(false)}>Cancel</Button>
-                  <Button onClick={handleSaveMedia}>
+                  <Button onClick={handleSaveMedia} className="bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90">
                     <Save className="mr-2 h-4 w-4" />
-                    {editingMedia ? 'Update' : 'Add'} Media
+                    {editingMedia ? 'Update Entry' : 'Add to Timeline'}
                   </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
 
-            {/* Media List */}
+            {/* Media Timeline View */}
             {mediaCoverage.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {mediaCoverage.map((media) => (
-                  <Card key={media.id} className="overflow-hidden">
-                    {media.coverImage && (
-                      <div className="h-40 relative">
-                        <img src={media.coverImage} alt={media.title} className="w-full h-full object-cover" />
-                        <Badge className="absolute top-2 left-2 flex items-center gap-1">
-                          {getMediaTypeIcon(media.type)}
-                          {media.type}
-                        </Badge>
-                        {media.featured && (
-                          <Badge className="absolute top-2 right-2 bg-yellow-500">Featured</Badge>
-                        )}
-                      </div>
-                    )}
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        {media.publicationLogo ? (
-                          <img src={media.publicationLogo} alt="" className="h-8 w-8 object-contain rounded" />
-                        ) : (
-                          <div className="h-8 w-8 bg-gray-100 rounded flex items-center justify-center">
-                            {getMediaTypeIcon(media.type)}
-                          </div>
-                        )}
-                        <span className="text-sm font-medium text-muted-foreground">{media.publicationName}</span>
-                      </div>
-                      <h3 className="font-semibold line-clamp-2 mb-2">{media.title}</h3>
-                      {media.description && (
-                        <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{media.description}</p>
-                      )}
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs text-muted-foreground">
-                          {media.publishedDate ? new Date(media.publishedDate).toLocaleDateString() : 'No date'}
-                        </span>
-                        <div className="flex gap-2">
-                          {media.articleUrl && (
-                            <Button size="sm" variant="ghost" asChild>
-                              <a href={media.articleUrl} target="_blank" rel="noopener noreferrer">
-                                <ExternalLink className="h-3 w-3" />
-                              </a>
-                            </Button>
+              <div className="space-y-4">
+                {/* Sort by date and display */}
+                {mediaCoverage
+                  .sort((a, b) => new Date(b.publishedDate || 0) - new Date(a.publishedDate || 0))
+                  .map((media, index) => (
+                  <Card key={media.id} className={`overflow-hidden transition-all hover:shadow-lg ${media.featured ? 'ring-2 ring-yellow-400' : ''}`}>
+                    <div className="flex flex-col md:flex-row">
+                      {/* Cover Image */}
+                      {media.coverImage && (
+                        <div className="md:w-48 h-32 md:h-auto relative flex-shrink-0">
+                          <img src={media.coverImage} alt={media.title} className="w-full h-full object-cover" />
+                          {media.type === 'youtube' && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                              <div className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center">
+                                <Play className="h-6 w-6 text-white ml-0.5" fill="white" />
+                              </div>
+                            </div>
                           )}
-                          <Button size="sm" variant="outline" onClick={() => openEditMedia(media)}>
-                            <Edit2 className="h-3 w-3" />
-                          </Button>
-                          <Button size="sm" variant="ghost" className="text-red-500" onClick={() => handleDeleteMedia(media.id)}>
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
                         </div>
-                      </div>
-                    </CardContent>
+                      )}
+                      
+                      {/* Content */}
+                      <CardContent className="flex-1 p-4">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1 min-w-0">
+                            {/* Header */}
+                            <div className="flex flex-wrap items-center gap-2 mb-2">
+                              <Badge variant="outline" className={`
+                                ${media.type === 'newspaper' ? 'bg-slate-100 text-slate-700 border-slate-300' : ''}
+                                ${media.type === 'instagram' ? 'bg-pink-100 text-pink-700 border-pink-300' : ''}
+                                ${media.type === 'youtube' ? 'bg-red-100 text-red-700 border-red-300' : ''}
+                                ${media.type === 'online' ? 'bg-blue-100 text-blue-700 border-blue-300' : ''}
+                              `}>
+                                {getMediaTypeIcon(media.type)}
+                                <span className="ml-1">{media.type === 'newspaper' ? 'Print' : media.type === 'instagram' ? 'Instagram' : media.type === 'youtube' ? 'YouTube' : 'Online'}</span>
+                              </Badge>
+                              {media.featured && (
+                                <Badge className="bg-yellow-100 text-yellow-700 border-yellow-300">
+                                  <Star className="h-3 w-3 mr-1 fill-yellow-500" /> Featured
+                                </Badge>
+                              )}
+                              <span className="text-sm text-muted-foreground">
+                                {media.publishedDate ? new Date(media.publishedDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'No date'}
+                              </span>
+                            </div>
+                            
+                            {/* Publication */}
+                            <div className="flex items-center gap-2 mb-2">
+                              {media.publicationLogo ? (
+                                <img src={media.publicationLogo} alt="" className="h-6 w-6 object-contain rounded" />
+                              ) : (
+                                <div className="h-6 w-6 bg-gray-100 rounded flex items-center justify-center">
+                                  {getMediaTypeIcon(media.type)}
+                                </div>
+                              )}
+                              <span className="font-medium text-gray-700">{media.publicationName}</span>
+                            </div>
+                            
+                            {/* Title & Description */}
+                            <h3 className="font-bold text-lg mb-1 line-clamp-1">{media.title}</h3>
+                            {media.description && (
+                              <p className="text-sm text-muted-foreground line-clamp-2">{media.description}</p>
+                            )}
+                            
+                            {/* Quote Preview */}
+                            {media.quote && (
+                              <div className="mt-2 text-sm italic text-purple-600 line-clamp-1">"{media.quote}"</div>
+                            )}
+                          </div>
+                          
+                          {/* Actions */}
+                          <div className="flex flex-col gap-2">
+                            {media.articleUrl && (
+                              <Button size="sm" variant="outline" asChild>
+                                <a href={media.articleUrl} target="_blank" rel="noopener noreferrer">
+                                  <ExternalLink className="h-3 w-3 mr-1" /> View
+                                </a>
+                              </Button>
+                            )}
+                            <Button size="sm" variant="outline" onClick={() => openEditMedia(media)}>
+                              <Edit2 className="h-3 w-3 mr-1" /> Edit
+                            </Button>
+                            <Button size="sm" variant="ghost" className="text-red-500 hover:text-red-700 hover:bg-red-50" onClick={() => handleDeleteMedia(media.id)}>
+                              <Trash2 className="h-3 w-3 mr-1" /> Delete
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </div>
                   </Card>
                 ))}
               </div>
             ) : (
-              <Card>
-                <CardContent className="py-12 text-center">
-                  <Newspaper className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground">No media coverage added yet.</p>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Click "Seed Placeholders" to add sample content, or add your own media coverage.
+              <Card className="border-dashed border-2">
+                <CardContent className="py-16 text-center">
+                  <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center">
+                    <Sparkles className="h-10 w-10 text-purple-500" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-700 mb-2">No Media Coverage Yet</h3>
+                  <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                    Start building your media timeline! Add newspaper articles, Instagram posts, or YouTube videos that feature your events.
                   </p>
+                  <div className="flex gap-3 justify-center">
+                    <Button variant="outline" onClick={async () => {
+                      try {
+                        const res = await fetch('/api/seed-media');
+                        const data = await res.json();
+                        toast.success(data.message || 'Demo data added');
+                        fetchAllData(password);
+                      } catch (err) {
+                        toast.error('Failed to add demo data');
+                      }
+                    }}>
+                      <RefreshCw className="mr-2 h-4 w-4" /> Add Demo Data
+                    </Button>
+                    <Button onClick={() => { resetMediaForm(); setShowMediaForm(true); }} className="bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90">
+                      <Plus className="mr-2 h-4 w-4" /> Add Your First Entry
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             )}
