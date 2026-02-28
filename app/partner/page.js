@@ -92,10 +92,11 @@ export default function PartnerPage() {
       {/* Hero */}
       <PageHero
         icon={Handshake}
-        title="Partner With Us"
+        badge="Collaborate With IGK"
+        title="Partner|With Us"
         subtitle="Join us in creating unforgettable cultural experiences across Germany. We're always looking for passionate partners."
         backgroundImage="https://images.unsplash.com/photo-1552664730-d307ca884978?w=1920"
-        gradient="from-purple-900/95 via-purple-700/90 to-indigo-600/85"
+        gradient="from-purple-900/95 via-pink-900/90 to-orange-900/85"
       />
 
       {/* Partnership Types */}
