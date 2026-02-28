@@ -9,7 +9,7 @@ import {
   Star, CheckCircle, XCircle, Settings, RefreshCw, Ticket, Save, UserPlus,
   Upload, Clock, MapPin, ExternalLink, AlertCircle, ZoomIn, ZoomOut, Move,
   Mail, Image as ImageIcon, Download, X, ImagePlus, Handshake, Building2, MessageSquare,
-  Newspaper, Instagram, Youtube, Globe, Quote
+  Newspaper, Instagram, Youtube, Globe, Quote, Sparkles, Play
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
