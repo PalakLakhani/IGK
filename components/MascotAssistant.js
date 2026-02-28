@@ -13,17 +13,42 @@ import { siteConfig } from '@/config/site';
 // Cute Indo-German mascot SVG
 const MascotCharacter = ({ className, isWaving = false }) => (
   <svg viewBox="0 0 100 100" className={className} xmlns="http://www.w3.org/2000/svg">
-    {/* Body - Traditional outfit inspired */}
-    <ellipse cx="50" cy="70" rx="25" ry="20" fill="#FF6B35" />
-    <ellipse cx="50" cy="70" rx="22" ry="17" fill="#FFB347" />
+    {/* Fancy outfit - Gradient kurta/dress */}
+    <defs>
+      <linearGradient id="outfitGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#8B5CF6" />
+        <stop offset="50%" stopColor="#EC4899" />
+        <stop offset="100%" stopColor="#F59E0B" />
+      </linearGradient>
+      <linearGradient id="outfitShine" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="white" stopOpacity="0.3" />
+        <stop offset="100%" stopColor="white" stopOpacity="0" />
+      </linearGradient>
+    </defs>
+    
+    {/* Body - Fancy gradient outfit */}
+    <ellipse cx="50" cy="72" rx="26" ry="22" fill="url(#outfitGradient)" />
+    <ellipse cx="50" cy="72" rx="23" ry="19" fill="url(#outfitShine)" />
+    
+    {/* Decorative collar/neckline */}
+    <ellipse cx="50" cy="55" rx="12" ry="5" fill="#FFD700" />
+    <ellipse cx="50" cy="55" rx="8" ry="3" fill="#FFF8DC" />
+    
+    {/* Sparkle details on outfit */}
+    <circle cx="38" cy="68" r="2" fill="#FFD700" opacity="0.8" />
+    <circle cx="62" cy="65" r="1.5" fill="#FFD700" opacity="0.8" />
+    <circle cx="45" cy="78" r="1.5" fill="#FFD700" opacity="0.8" />
+    <circle cx="58" cy="75" r="2" fill="#FFD700" opacity="0.8" />
     
     {/* Head */}
     <circle cx="50" cy="38" r="22" fill="#FFDAB9" />
     
-    {/* Hair - Black */}
-    <ellipse cx="50" cy="25" rx="20" ry="12" fill="#1a1a1a" />
-    <ellipse cx="35" cy="32" rx="5" ry="8" fill="#1a1a1a" />
-    <ellipse cx="65" cy="32" rx="5" ry="8" fill="#1a1a1a" />
+    {/* Hair - Black stylish */}
+    <ellipse cx="50" cy="24" rx="20" ry="12" fill="#1a1a1a" />
+    <ellipse cx="35" cy="30" rx="6" ry="10" fill="#1a1a1a" />
+    <ellipse cx="65" cy="30" rx="6" ry="10" fill="#1a1a1a" />
+    {/* Hair shine */}
+    <ellipse cx="45" cy="20" rx="8" ry="4" fill="#333" opacity="0.5" />
     
     {/* Eyes - Big and cute */}
     <ellipse cx="42" cy="38" rx="5" ry="6" fill="white" />
@@ -33,6 +58,10 @@ const MascotCharacter = ({ className, isWaving = false }) => (
     <circle cx="44" cy="38" r="1" fill="white" />
     <circle cx="60" cy="38" r="1" fill="white" />
     
+    {/* Cute eyelashes */}
+    <path d="M37 34 L39 36" stroke="#1a1a1a" strokeWidth="1" />
+    <path d="M63 34 L61 36" stroke="#1a1a1a" strokeWidth="1" />
+    
     {/* Rosy cheeks */}
     <circle cx="35" cy="44" r="4" fill="#FFB6C1" opacity="0.6" />
     <circle cx="65" cy="44" r="4" fill="#FFB6C1" opacity="0.6" />
@@ -40,8 +69,15 @@ const MascotCharacter = ({ className, isWaving = false }) => (
     {/* Smile */}
     <path d="M 42 48 Q 50 55 58 48" stroke="#2D1810" strokeWidth="2" fill="none" strokeLinecap="round" />
     
-    {/* Bindi (optional cultural touch) */}
-    <circle cx="50" cy="28" r="2" fill="#E31C23" />
+    {/* Bindi */}
+    <circle cx="50" cy="28" r="2.5" fill="#E31C23" />
+    <circle cx="50" cy="28" r="1" fill="#FF6B6B" />
+    
+    {/* Fancy earrings */}
+    <circle cx="28" cy="42" r="3" fill="#FFD700" />
+    <circle cx="28" cy="46" r="2" fill="#FFD700" />
+    <circle cx="72" cy="42" r="3" fill="#FFD700" />
+    <circle cx="72" cy="46" r="2" fill="#FFD700" />
     
     {/* Waving hand */}
     <motion.g
@@ -54,12 +90,9 @@ const MascotCharacter = ({ className, isWaving = false }) => (
       <ellipse cx="85" cy="50" rx="2" ry="4" fill="#FFDAB9" />
       <ellipse cx="88" cy="53" rx="2" ry="4" fill="#FFDAB9" />
       <ellipse cx="89" cy="57" rx="2" ry="4" fill="#FFDAB9" />
+      {/* Bracelet */}
+      <ellipse cx="75" cy="55" rx="4" ry="3" fill="#FFD700" opacity="0.8" />
     </motion.g>
-    
-    {/* German flag colors accent on outfit */}
-    <rect x="30" y="62" width="40" height="3" fill="#000000" rx="1" />
-    <rect x="30" y="65" width="40" height="3" fill="#DD0000" rx="1" />
-    <rect x="30" y="68" width="40" height="3" fill="#FFCC00" rx="1" />
     
     {/* Sparkles around head for AI feel */}
     <motion.circle
@@ -82,6 +115,12 @@ const MascotCharacter = ({ className, isWaving = false }) => (
       fill="#00BFFF"
       animate={{ scale: [1, 1.5, 1], opacity: [0.5, 1, 0.5] }}
       transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+    />
+    <motion.path
+      d="M20 40 L22 38 L24 40 L22 42 Z"
+      fill="#FFD700"
+      animate={{ scale: [1, 1.3, 1], opacity: [0.6, 1, 0.6] }}
+      transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}
     />
   </svg>
 );
