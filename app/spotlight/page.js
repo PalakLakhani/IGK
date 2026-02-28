@@ -116,7 +116,7 @@ export default function SpotlightPage() {
       <Header />
       
       {/* Hero Section with Background Image */}
-      <section className="relative min-h-[70vh] flex items-center overflow-hidden">
+      <section className="relative min-h-[50vh] md:min-h-[60vh] flex items-center overflow-hidden">
         {/* Background Image */}
         <div className="absolute inset-0">
           <Image
@@ -130,46 +130,46 @@ export default function SpotlightPage() {
           <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-30" />
         </div>
         
-        {/* Floating Elements */}
+        {/* Floating Elements - Hidden on mobile */}
         <motion.div 
-          className="absolute top-20 left-10 w-20 h-20 bg-yellow-400/20 rounded-full blur-xl"
+          className="absolute top-10 left-5 md:top-20 md:left-10 w-16 h-16 md:w-20 md:h-20 bg-yellow-400/20 rounded-full blur-xl hidden sm:block"
           animate={{ y: [0, 30, 0], scale: [1, 1.2, 1] }}
           transition={{ duration: 5, repeat: Infinity }}
         />
         <motion.div 
-          className="absolute bottom-20 right-20 w-32 h-32 bg-pink-400/20 rounded-full blur-xl"
+          className="absolute bottom-10 right-10 md:bottom-20 md:right-20 w-20 h-20 md:w-32 md:h-32 bg-pink-400/20 rounded-full blur-xl hidden sm:block"
           animate={{ y: [0, -30, 0], scale: [1, 1.1, 1] }}
           transition={{ duration: 6, repeat: Infinity, delay: 1 }}
         />
         
-        <div className="relative container py-20">
+        <div className="relative container py-12 md:py-20">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="max-w-4xl"
+            className="max-w-4xl mx-auto text-center md:text-left"
           >
             {/* Badge */}
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white px-5 py-2.5 rounded-full text-sm font-semibold mb-8"
+              className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white px-4 py-2 md:px-5 md:py-2.5 rounded-full text-xs md:text-sm font-semibold mb-4 md:mb-8"
             >
-              <Sparkles className="h-4 w-4 text-yellow-400" />
+              <Sparkles className="h-3 w-3 md:h-4 md:w-4 text-yellow-400" />
               IGK Media Journey
-              <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
+              <Star className="h-3 w-3 md:h-4 md:w-4 text-yellow-400 fill-yellow-400" />
             </motion.div>
             
             {/* Main Title */}
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white mb-6 leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-white mb-4 md:mb-6 leading-tight px-4 md:px-0">
               In the{' '}
-              <span className="relative">
+              <span className="relative inline-block">
                 <span className="bg-gradient-to-r from-yellow-400 via-orange-400 to-pink-400 bg-clip-text text-transparent">
                   Spotlight
                 </span>
                 <motion.span 
-                  className="absolute -bottom-2 left-0 right-0 h-2 bg-gradient-to-r from-yellow-400 via-orange-400 to-pink-400 rounded-full"
+                  className="absolute -bottom-1 md:-bottom-2 left-0 right-0 h-1 md:h-2 bg-gradient-to-r from-yellow-400 via-orange-400 to-pink-400 rounded-full"
                   initial={{ scaleX: 0 }}
                   animate={{ scaleX: 1 }}
                   transition={{ delay: 0.5, duration: 0.8 }}
@@ -178,13 +178,13 @@ export default function SpotlightPage() {
             </h1>
             
             {/* Subtitle */}
-            <p className="text-xl md:text-2xl text-white/80 max-w-2xl leading-relaxed mb-10">
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/80 max-w-2xl leading-relaxed mb-6 md:mb-10 px-4 md:px-0 mx-auto md:mx-0">
               Our journey through the eyes of media. From local newspapers to viral social posts — 
               see how IGK events have been making waves across Germany.
             </p>
             
-            {/* Quick Stats */}
-            <div className="flex flex-wrap gap-6">
+            {/* Quick Stats - Mobile optimized */}
+            <div className="grid grid-cols-2 md:flex md:flex-wrap gap-3 md:gap-6 px-4 md:px-0">
               {[
                 { icon: TrendingUp, value: stats.total, label: 'Media Features' },
                 { icon: FileText, value: stats.newspapers, label: 'Print Articles' },
@@ -196,7 +196,7 @@ export default function SpotlightPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 + i * 0.1 }}
-                  className="flex items-center gap-3 bg-white/10 backdrop-blur-sm px-5 py-3 rounded-xl border border-white/20"
+                  className="flex items-center gap-2 md:gap-3 bg-white/10 backdrop-blur-sm px-3 py-2 md:px-5 md:py-3 rounded-lg md:rounded-xl border border-white/20"
                 >
                   <stat.icon className="h-5 w-5 text-yellow-400" />
                   <div>
