@@ -94,7 +94,7 @@ export default function AsFeaturedIn() {
                   {[...featuredMedia, ...featuredMedia, ...featuredMedia].map((item, index) => (
                     <Link
                       key={`${item.id}-${index}`}
-                      href="/press"
+                      href="/spotlight"
                       className="flex-shrink-0 group"
                     >
                       <div className="relative flex flex-col items-center gap-3 px-6 py-4 bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 group-hover:scale-105 border border-gray-100">
