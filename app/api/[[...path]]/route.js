@@ -361,6 +361,63 @@ export async function GET(request) {
       return corsResponse({ brands });
     }
 
+    // ============ MEDIA COVERAGE ENDPOINTS ============
+    
+    // Public: Get all media coverage
+    if (path === 'media') {
+      const type = searchParams.get('type');
+      const filters = {};
+      if (type && type !== 'all') {
+        filters.type = type;
+      }
+      const media = await MediaCoverage.findAll(filters);
+      return corsResponse({ media });
+    }
+
+    // Public: Get featured media (for homepage)
+    if (path === 'media/featured') {
+      const media = await MediaCoverage.getFeatured();
+      return corsResponse({ media });
+    }
+
+    // Seed media coverage with placeholders
+    if (path === 'seed-media') {
+      const result = await MediaCoverage.seedPlaceholders();
+      return corsResponse(result);
+    }
+
+    // Admin: Get all media coverage
+    if (path === 'admin/media') {
+      const password = request.headers.get('x-admin-password');
+      
+      if (password !== process.env.ADMIN_PASSWORD) {
+        return corsResponse({ error: 'Unauthorized' }, 401);
+      }
+
+      const media = await MediaCoverage.findAll();
+      return corsResponse({ media });
+    }
+
+    // Admin: Get single media item
+    if (path.startsWith('admin/media/') && !path.includes('/order')) {
+      const password = request.headers.get('x-admin-password');
+      
+      if (password !== process.env.ADMIN_PASSWORD) {
+        return corsResponse({ error: 'Unauthorized' }, 401);
+      }
+
+      const mediaId = path.replace('admin/media/', '');
+      const item = await MediaCoverage.findById(mediaId);
+      
+      if (!item) {
+        return corsResponse({ error: 'Media item not found' }, 404);
+      }
+      
+      return corsResponse({ media: item });
+    }
+
+    // ============ END MEDIA COVERAGE ENDPOINTS ============
+
     // Admin: Get all gallery photos
     if (path === 'admin/gallery') {
       const password = request.headers.get('x-admin-password');
