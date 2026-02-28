@@ -8,7 +8,7 @@ import { Star } from 'lucide-react';
 /**
  * PageHero - Consistent hero section component for all pages
  * Matches the "In the Spotlight" design exactly:
- * - Left aligned text
+ * - Centered on mobile, left-aligned on desktop
  * - Badge on top with icon
  * - Gradient colored keyword with underline animation
  * - Floating animated elements
@@ -35,7 +35,7 @@ export default function PageHero({
   const gradientText = titleParts[1] || '';
 
   return (
-    <section className="relative min-h-[45vh] md:min-h-[55vh] flex items-center overflow-hidden">
+    <section className="relative min-h-[50vh] md:min-h-[60vh] flex items-center overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
@@ -63,13 +63,13 @@ export default function PageHero({
         transition={{ duration: 6, repeat: Infinity, delay: 1 }}
       />
       
-      {/* Content - LEFT ALIGNED */}
-      <div className="relative container py-12 md:py-16">
+      {/* Content - CENTERED on mobile, LEFT-ALIGNED on desktop (same as Spotlight) */}
+      <div className="relative container py-12 md:py-20">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="max-w-4xl"
+          className="max-w-4xl mx-auto text-center md:text-left"
         >
           {/* Badge */}
           {badge && (
@@ -77,13 +77,11 @@ export default function PageHero({
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2 }}
-              className="mb-4 md:mb-6"
+              className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white px-4 py-2 md:px-5 md:py-2.5 rounded-full text-xs md:text-sm font-semibold mb-4 md:mb-8"
             >
-              <Badge className="bg-white/10 backdrop-blur-sm border border-white/20 text-white px-4 py-2 md:px-5 md:py-2.5 text-xs md:text-sm font-semibold inline-flex items-center gap-2">
-                {Icon && <Icon className="h-3 w-3 md:h-4 md:w-4 text-yellow-400" />}
-                {badge}
-                <Star className="h-3 w-3 md:h-4 md:w-4 text-yellow-400 fill-yellow-400" />
-              </Badge>
+              {Icon && <Icon className="h-3 w-3 md:h-4 md:w-4 text-yellow-400" />}
+              {badge}
+              <Star className="h-3 w-3 md:h-4 md:w-4 text-yellow-400 fill-yellow-400" />
             </motion.div>
           )}
           
@@ -101,8 +99,8 @@ export default function PageHero({
             </motion.div>
           )}
           
-          {/* Title - Left aligned with gradient text */}
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 md:mb-6 leading-tight">
+          {/* Title - Same styling as Spotlight */}
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-white mb-4 md:mb-6 leading-tight px-4 md:px-0">
             {regularText && <span className="drop-shadow-2xl">{regularText} </span>}
             {gradientText && (
               <span className="relative inline-block">
@@ -119,13 +117,13 @@ export default function PageHero({
             )}
           </h1>
           
-          {/* Subtitle */}
+          {/* Subtitle - Same styling as Spotlight */}
           {subtitle && (
             <motion.p 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.6 }}
-              className="text-base sm:text-lg md:text-xl text-white/80 max-w-2xl leading-relaxed"
+              className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/80 max-w-2xl leading-relaxed px-4 md:px-0 mx-auto md:mx-0"
             >
               {subtitle}
             </motion.p>
