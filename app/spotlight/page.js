@@ -257,9 +257,12 @@ export default function SpotlightPage() {
             </Card>
           ) : (
             <div className="relative">
-              {/* Central Timeline Line */}
+              {/* Central Timeline Line - Desktop */}
               <div className="absolute left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-purple-500 via-pink-500 to-orange-500 hidden lg:block" 
                    style={{ transform: 'translateX(-50%)' }} />
+              
+              {/* Left Timeline Line - Mobile/Tablet */}
+              <div className="absolute left-6 md:left-8 top-0 bottom-0 w-1 bg-gradient-to-b from-purple-500 via-pink-500 to-orange-500 lg:hidden" />
               
               {/* Timeline Content */}
               {sortedYears.map((year, yearIndex) => (
@@ -269,8 +272,12 @@ export default function SpotlightPage() {
                     initial={{ opacity: 0, scale: 0.8 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
-                    className="relative flex justify-center mb-6 md:mb-12"
+                    className="relative flex lg:justify-center mb-6 md:mb-12 pl-12 md:pl-16 lg:pl-0"
                   >
+                    {/* Mobile Timeline Node for Year */}
+                    <div className="absolute left-4 md:left-6 top-1/2 w-5 h-5 bg-white border-4 border-purple-500 rounded-full lg:hidden"
+                         style={{ transform: 'translateY(-50%)' }} />
+                    
                     <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-5 py-2 md:px-8 md:py-4 rounded-xl md:rounded-2xl shadow-xl z-10">
                       <div className="flex items-center gap-2 md:gap-3">
                         <Award className="h-4 w-4 md:h-6 md:w-6" />
@@ -287,20 +294,23 @@ export default function SpotlightPage() {
                       const isLeft = monthIndex % 2 === 0;
                       
                       return (
-                        <div key={yearMonth} className="relative mb-6 md:mb-12 px-4 lg:px-0">
-                          {/* Month Label - Center on mobile, alternating on desktop */}
+                        <div key={yearMonth} className="relative mb-6 md:mb-12 pl-12 md:pl-16 lg:pl-0 pr-4 lg:pr-0">
+                          {/* Mobile Timeline Node for Month */}
+                          <div className="absolute left-4 md:left-6 top-2 w-3 h-3 bg-pink-500 rounded-full lg:hidden" />
+                          
+                          {/* Month Label - Left aligned on mobile, alternating on desktop */}
                           <motion.div
                             initial={{ opacity: 0, x: isLeft ? -50 : 50 }}
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
-                            className={`flex mb-4 lg:mb-0 ${isLeft ? 'lg:justify-end lg:pr-[52%]' : 'lg:justify-start lg:pl-[52%]'} justify-center`}
+                            className={`flex mb-4 lg:mb-0 ${isLeft ? 'lg:justify-end lg:pr-[52%]' : 'lg:justify-start lg:pl-[52%]'} justify-start lg:justify-center`}
                           >
                             <div className="bg-white shadow-lg px-4 py-1.5 md:px-6 md:py-2 rounded-full border-2 border-gray-100">
                               <span className="font-bold text-sm md:text-base text-gray-700">{format(monthDate, 'MMMM')}</span>
                             </div>
                           </motion.div>
                           
-                          {/* Timeline Node */}
+                          {/* Desktop Timeline Node */}
                           <div className="absolute left-1/2 top-0 w-5 h-5 bg-white border-4 border-purple-500 rounded-full hidden lg:block"
                                style={{ transform: 'translate(-50%, 8px)' }} />
                           
