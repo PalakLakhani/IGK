@@ -33,24 +33,23 @@ export default function AsFeaturedIn() {
   }
 
   return (
-    <section className="py-16 bg-gradient-to-b from-white to-gray-50 overflow-hidden">
+    <section className="py-20 bg-white overflow-hidden">
       <div className="container">
-        {/* Header */}
-        <div className="text-center mb-10">
+        {/* Header - Matching OurBrands styling */}
+        <div className="text-center mb-16">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 px-4 py-2 rounded-full text-sm font-semibold mb-4">
-              <Sparkles className="h-4 w-4" />
+            <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-lg px-6 py-2 mb-4">
               Media Coverage
-            </div>
-            <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-3">
+            </Badge>
+            <h2 className="text-5xl font-black mb-6 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
               As Featured In
             </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
+            <p className="text-2xl text-gray-600 max-w-2xl mx-auto font-medium">
               Our events have been recognized by leading media outlets across Germany
             </p>
           </motion.div>
