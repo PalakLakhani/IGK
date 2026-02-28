@@ -1334,6 +1334,18 @@ export async function PUT(request) {
       return corsResponse({ brand, message: 'Brand updated successfully' });
     }
 
+    // Update media coverage
+    if (path.startsWith('admin/media/')) {
+      const mediaId = path.replace('admin/media/', '');
+      const media = await MediaCoverage.update(mediaId, body);
+      
+      if (!media) {
+        return corsResponse({ error: 'Media item not found' }, 404);
+      }
+
+      return corsResponse({ media, message: 'Media coverage updated successfully' });
+    }
+
     // Update gallery theme
     if (path.startsWith('admin/gallery/themes/') && !path.includes('/photos') && !path.includes('/reorder')) {
       const themeId = path.replace('admin/gallery/themes/', '');
