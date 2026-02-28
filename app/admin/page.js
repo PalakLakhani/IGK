@@ -1341,6 +1341,7 @@ export default function AdminPage() {
             <TabsTrigger value="partners">Partners {stats.unrepliedPartners > 0 && <Badge className="ml-2 bg-orange-500">{stats.unrepliedPartners}</Badge>}</TabsTrigger>
             <TabsTrigger value="contacts">Messages {stats.unreadContacts > 0 && <Badge className="ml-2 bg-blue-500">{stats.unreadContacts}</Badge>}</TabsTrigger>
             <TabsTrigger value="brands">Brands</TabsTrigger>
+            <TabsTrigger value="media">Media Coverage</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
