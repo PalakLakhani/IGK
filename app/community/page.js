@@ -88,7 +88,7 @@ export default function CommunityPage() {
         badge="Connect With Us"
         title="Join Our|Community"
         subtitle="Connect with thousands of Indian expats across Germany. Join WhatsApp groups, follow us on social media, and stay updated!"
-        backgroundImage="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=1920"
+        backgroundImage="https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=1920"
         gradient="from-purple-900/95 via-pink-900/90 to-orange-900/85"
       />
 
