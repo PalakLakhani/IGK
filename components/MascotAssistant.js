@@ -252,7 +252,7 @@ export default function MascotAssistant() {
           <Sheet>
             <SheetTrigger asChild>
               <motion.button
-                className="relative h-20 w-20 md:h-24 md:w-24 rounded-full bg-gradient-to-br from-orange-400 via-pink-500 to-purple-600 shadow-2xl flex items-center justify-center overflow-visible group"
+                className="relative h-20 w-20 md:h-24 md:w-24 rounded-full bg-gradient-to-br from-emerald-400 via-teal-500 to-cyan-600 shadow-2xl flex items-center justify-center overflow-visible group"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
                 onHoverStart={() => setIsHovered(true)}
@@ -260,7 +260,10 @@ export default function MascotAssistant() {
                 aria-label="IGK AI Assistant"
               >
                 {/* Glow effect */}
-                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-orange-400 via-pink-500 to-purple-600 blur-lg opacity-50 group-hover:opacity-75 transition-opacity"></div>
+                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-emerald-400 via-teal-500 to-cyan-600 blur-lg opacity-60 group-hover:opacity-80 transition-opacity"></div>
+                
+                {/* White circle background for character */}
+                <div className="absolute inset-2 rounded-full bg-white shadow-inner"></div>
                 
                 {/* Character */}
                 <div className="relative z-10 w-16 h-16 md:w-20 md:h-20">
