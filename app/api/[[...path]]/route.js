@@ -12,6 +12,7 @@ import { Brand } from '@/lib/models/Brand';
 import { Gallery } from '@/lib/models/Gallery';
 import { GalleryTheme } from '@/lib/models/GalleryTheme';
 import { GalleryPhoto } from '@/lib/models/GalleryPhoto';
+import { MediaCoverage } from '@/lib/models/MediaCoverage';
 import { getDatabase } from '@/lib/mongodb';
 import { sampleEvents } from '@/lib/seed-events';
 import axios from 'axios';
