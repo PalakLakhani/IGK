@@ -22,7 +22,7 @@ export default function AboutPage() {
         badge="Our Story"
         title="About|IGK"
         subtitle={siteConfig.tagline}
-        backgroundImage="https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=1920"
+        backgroundImage="https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=1920"
         gradient="from-purple-900/95 via-pink-900/90 to-orange-900/85"
       />
 
