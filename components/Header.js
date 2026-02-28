@@ -19,7 +19,7 @@ export default function Header() {
     { href: '/spotlight', label: 'In the Spotlight', icon: Sparkles, color: 'yellow' },
     { href: '/collaborations', label: 'Trusted By', icon: Building2, color: 'indigo' },
     { href: '/community', label: 'Community', icon: MessageSquare, color: 'cyan' },
-    { href: '/partner', label: 'Partners', icon: Handshake, color: 'orange' },
+    { href: '/partner', label: 'Partnership Opportunities', icon: Handshake, color: 'orange' },
     { href: '/contact', label: 'Contact', icon: MessageSquare, color: 'teal' },
   ];
 
