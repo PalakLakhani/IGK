@@ -9,7 +9,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import WhatsAppFloat from '@/components/WhatsAppFloat';
 import EventCard from '@/components/EventCard';
 import NewsletterSubscribe from '@/components/NewsletterSubscribe';
 import OurBrands from '@/components/OurBrands';
