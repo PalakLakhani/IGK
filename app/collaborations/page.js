@@ -39,7 +39,7 @@ export default function TrustedByPage() {
         badge="Our Partners"
         title="Trusted by the|Best"
         subtitle="IGK is proud to collaborate with a diverse network of partners who share our vision."
-        backgroundImage="https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=1920"
+        backgroundImage="https://images.unsplash.com/photo-1521791136064-7986c2920216?w=1920"
         gradient="from-purple-900/95 via-pink-900/90 to-orange-900/85"
       />
 
