@@ -19,10 +19,11 @@ export default function AboutPage() {
       {/* Hero */}
       <PageHero
         icon={Info}
-        title="About IGK"
+        badge="Our Story"
+        title="About|IGK"
         subtitle={siteConfig.tagline}
         backgroundImage="https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=1920"
-        gradient="from-indigo-900/95 via-indigo-700/90 to-purple-600/85"
+        gradient="from-purple-900/95 via-pink-900/90 to-orange-900/85"
       />
 
       {/* Our Story */}
