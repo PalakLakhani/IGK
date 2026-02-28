@@ -17,7 +17,7 @@ export default function Footer() {
     { href: '/spotlight', label: 'In the Spotlight' },
     { href: '/collaborations', label: 'Trusted By' },
     { href: '/community', label: 'Community' },
-    { href: '/partner', label: 'Partners' },
+    { href: '/partner', label: 'Partnership Opportunities' },
     { href: '/contact', label: 'Contact' },
     { href: '/testimonials', label: 'Share Your Experience' },
   ];
