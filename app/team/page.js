@@ -80,7 +80,7 @@ export default function TeamPage() {
         badge="The People Behind IGK"
         title="Meet Our|Team"
         subtitle="Passionate individuals bringing joy through cultural celebrations"
-        backgroundImage="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920"
+        backgroundImage="https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?w=1920"
         gradient="from-purple-900/95 via-pink-900/90 to-orange-900/85"
       />
 
