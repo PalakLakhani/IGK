@@ -349,11 +349,11 @@ export default function MascotAssistant() {
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl p-4 text-white">
+                <div className="bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-600 rounded-2xl p-4 text-white">
                   <h3 className="font-bold text-lg mb-2">Need More Help?</h3>
                   <p className="text-sm text-white/80 mb-4">Our team is always here to assist you!</p>
                   <div className="space-y-2">
-                    <Button asChild variant="secondary" className="w-full bg-white text-purple-600 hover:bg-gray-100">
+                    <Button asChild variant="secondary" className="w-full bg-white text-teal-600 hover:bg-gray-100">
                       <Link href="/contact">
                         <Mail className="h-4 w-4 mr-2" />
                         Contact Support
