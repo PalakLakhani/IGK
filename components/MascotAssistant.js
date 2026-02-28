@@ -192,7 +192,7 @@ export default function MascotAssistant() {
                 exit={{ opacity: 0, scale: 0.8, y: 20 }}
                 className="absolute bottom-24 right-0 w-72 sm:w-80"
               >
-                <Card className="p-4 shadow-2xl border-2 border-purple-100 bg-white/95 backdrop-blur-sm">
+                <Card className="p-4 shadow-2xl border-2 border-teal-100 bg-white/95 backdrop-blur-sm">
                   {/* Close button */}
                   <button
                     onClick={closeBubble}
@@ -204,9 +204,9 @@ export default function MascotAssistant() {
                   
                   {/* AI Badge */}
                   <div className="flex items-center gap-2 mb-3">
-                    <div className="flex items-center gap-1.5 bg-gradient-to-r from-purple-100 to-pink-100 px-2.5 py-1 rounded-full">
-                      <Sparkles className="h-3 w-3 text-purple-500" />
-                      <span className="text-xs font-semibold text-purple-700">IGK Assistant</span>
+                    <div className="flex items-center gap-1.5 bg-gradient-to-r from-emerald-100 to-cyan-100 px-2.5 py-1 rounded-full">
+                      <Sparkles className="h-3 w-3 text-teal-500" />
+                      <span className="text-xs font-semibold text-teal-700">IGK Assistant</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
@@ -215,8 +215,8 @@ export default function MascotAssistant() {
                   </div>
                   
                   {/* Message */}
-                  <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl rounded-bl-none p-3 mb-3">
-                    <p className="text-sm font-bold text-purple-700 mb-1">{content.greeting}</p>
+                  <div className="bg-gradient-to-r from-emerald-50 to-cyan-50 rounded-2xl rounded-bl-none p-3 mb-3">
+                    <p className="text-sm font-bold text-teal-700 mb-1">{content.greeting}</p>
                     <p className="text-sm text-gray-700">{content.message}</p>
                   </div>
                   
@@ -228,14 +228,14 @@ export default function MascotAssistant() {
                         asChild
                         variant="outline"
                         size="sm"
-                        className="w-full justify-between text-left group hover:border-purple-300 hover:bg-purple-50"
+                        className="w-full justify-between text-left group hover:border-teal-300 hover:bg-teal-50"
                       >
                         <Link href={action.href} target={action.external ? '_blank' : undefined}>
                           <span className="flex items-center gap-2">
-                            <action.icon className="h-4 w-4 text-purple-500" />
+                            <action.icon className="h-4 w-4 text-teal-500" />
                             {action.label}
                           </span>
-                          <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-purple-500 group-hover:translate-x-1 transition-all" />
+                          <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-teal-500 group-hover:translate-x-1 transition-all" />
                         </Link>
                       </Button>
                     ))}
@@ -243,7 +243,7 @@ export default function MascotAssistant() {
                 </Card>
                 
                 {/* Speech bubble pointer */}
-                <div className="absolute -bottom-2 right-8 w-4 h-4 bg-white border-r-2 border-b-2 border-purple-100 transform rotate-45"></div>
+                <div className="absolute -bottom-2 right-8 w-4 h-4 bg-white border-r-2 border-b-2 border-teal-100 transform rotate-45"></div>
               </motion.div>
             )}
           </AnimatePresence>
