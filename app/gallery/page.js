@@ -38,10 +38,11 @@ export default function GalleryPage() {
       {/* Hero */}
       <PageHero
         icon={ImageIcon}
-        title="Gallery"
+        badge="Event Memories"
+        title="Photo|Gallery"
         subtitle="Relive the magic. Browse through moments captured at our events."
         backgroundImage="https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=1920"
-        gradient="from-pink-900/95 via-purple-800/90 to-indigo-700/85"
+        gradient="from-purple-900/95 via-pink-900/90 to-orange-900/85"
       />
 
       {/* Theme Grid */}
