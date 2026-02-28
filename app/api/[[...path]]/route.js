@@ -1465,6 +1465,18 @@ export async function DELETE(request) {
       return corsResponse({ message: 'Brand deleted successfully' });
     }
 
+    // Delete media coverage
+    if (path.startsWith('admin/media/')) {
+      const mediaId = path.replace('admin/media/', '');
+      const success = await MediaCoverage.delete(mediaId);
+      
+      if (!success) {
+        return corsResponse({ error: 'Media item not found' }, 404);
+      }
+
+      return corsResponse({ message: 'Media coverage deleted successfully' });
+    }
+
     // Delete gallery theme
     if (path.startsWith('admin/gallery/themes/') && !path.includes('/photos')) {
       const themeId = path.replace('admin/gallery/themes/', '');
