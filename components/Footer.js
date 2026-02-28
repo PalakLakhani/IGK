@@ -14,6 +14,7 @@ export default function Footer() {
     { href: '/about', label: 'About Us' },
     { href: '/team', label: 'Team' },
     { href: '/gallery', label: 'Gallery' },
+    { href: '/spotlight', label: 'In the Spotlight' },
     { href: '/collaborations', label: 'Trusted By' },
     { href: '/community', label: 'Community' },
     { href: '/partner', label: 'Partners' },
