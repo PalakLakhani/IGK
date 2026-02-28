@@ -16,7 +16,7 @@ import tempfile
 
 class GalleryThemeAPITester:
     def __init__(self):
-        self.base_url = "https://igk-deploy.preview.emergentagent.com"
+        self.base_url = "https://compact-consent-flow.preview.emergentagent.com"
         self.api_base = f"{self.base_url}/api"
         self.admin_password = "admin123"
         self.headers = {
