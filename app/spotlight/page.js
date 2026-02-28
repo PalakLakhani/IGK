@@ -1,15 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
-import Masonry from 'react-masonry-css';
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import Lightbox from 'yet-another-react-lightbox';
 import 'yet-another-react-lightbox/styles.css';
 import { 
   Newspaper, Instagram, Youtube, Globe, ExternalLink, Play, 
-  X, Quote, Calendar, Filter, ArrowRight, Sparkles
+  X, Quote, Calendar, Sparkles, Star, ChevronRight, Award,
+  TrendingUp, Camera, Video, FileText, ArrowRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -17,7 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 
 // Type icons mapping
 const typeIcons = {
@@ -27,29 +27,32 @@ const typeIcons = {
   online: Globe
 };
 
-// Type colors mapping
+const typeLabels = {
+  newspaper: 'Print Media',
+  instagram: 'Instagram',
+  youtube: 'YouTube',
+  online: 'Online Article'
+};
+
 const typeColors = {
-  newspaper: 'from-gray-700 to-gray-900',
-  instagram: 'from-pink-500 to-purple-600',
-  youtube: 'from-red-500 to-red-700',
-  online: 'from-blue-500 to-cyan-500'
+  newspaper: { bg: 'bg-slate-100', text: 'text-slate-700', border: 'border-slate-300', gradient: 'from-slate-600 to-slate-800' },
+  instagram: { bg: 'bg-gradient-to-r from-pink-100 to-purple-100', text: 'text-pink-700', border: 'border-pink-300', gradient: 'from-pink-500 to-purple-600' },
+  youtube: { bg: 'bg-red-100', text: 'text-red-700', border: 'border-red-300', gradient: 'from-red-500 to-red-700' },
+  online: { bg: 'bg-blue-100', text: 'text-blue-700', border: 'border-blue-300', gradient: 'from-blue-500 to-cyan-500' }
 };
 
-const typeBadgeColors = {
-  newspaper: 'bg-gray-100 text-gray-800',
-  instagram: 'bg-gradient-to-r from-pink-500 to-purple-600 text-white',
-  youtube: 'bg-red-500 text-white',
-  online: 'bg-blue-500 text-white'
-};
-
-export default function PressPage() {
+export default function SpotlightPage() {
   const [mediaItems, setMediaItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeFilter, setActiveFilter] = useState('all');
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [showVideoModal, setShowVideoModal] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState(null);
+  const containerRef = useRef(null);
+  
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"]
+  });
 
   useEffect(() => {
     fetchMediaItems();
@@ -67,317 +70,421 @@ export default function PressPage() {
     }
   };
 
-  // Filter media items
-  const filteredItems = activeFilter === 'all' 
-    ? mediaItems 
-    : mediaItems.filter(item => item.type === activeFilter);
+  // Group media by year and month for timeline
+  const groupedByDate = mediaItems.reduce((acc, item) => {
+    const date = item.publishedDate ? new Date(item.publishedDate) : new Date();
+    const yearMonth = format(date, 'yyyy-MM');
+    const year = format(date, 'yyyy');
+    
+    if (!acc[year]) acc[year] = {};
+    if (!acc[year][yearMonth]) acc[year][yearMonth] = [];
+    acc[year][yearMonth].push(item);
+    return acc;
+  }, {});
 
-  // Prepare lightbox slides (only for images)
-  const lightboxSlides = filteredItems
-    .filter(item => item.type !== 'youtube')
-    .map(item => ({
-      src: item.coverImage,
-      alt: item.title
-    }));
+  // Sort years descending
+  const sortedYears = Object.keys(groupedByDate).sort((a, b) => b - a);
 
-  const openLightbox = (item, index) => {
+  // Prepare lightbox slides
+  const lightboxSlides = mediaItems
+    .filter(item => item.coverImage && item.type !== 'youtube')
+    .map(item => ({ src: item.coverImage, alt: item.title }));
+
+  const openLightbox = (item) => {
     if (item.type === 'youtube' && item.embedUrl) {
-      setSelectedItem(item);
-      setShowVideoModal(true);
+      setSelectedVideo(item);
     } else {
-      // Find the correct index in filtered non-youtube items
-      const nonYoutubeItems = filteredItems.filter(i => i.type !== 'youtube');
-      const actualIndex = nonYoutubeItems.findIndex(i => i.id === item.id);
-      setLightboxIndex(actualIndex >= 0 ? actualIndex : 0);
-      setLightboxOpen(true);
+      const index = mediaItems.filter(i => i.coverImage && i.type !== 'youtube').findIndex(i => i.id === item.id);
+      if (index >= 0) {
+        setLightboxIndex(index);
+        setLightboxOpen(true);
+      }
     }
   };
 
-  // Masonry breakpoints
-  const breakpointColumns = {
-    default: 3,
-    1100: 2,
-    700: 1
+  // Stats
+  const stats = {
+    total: mediaItems.length,
+    newspapers: mediaItems.filter(i => i.type === 'newspaper').length,
+    instagram: mediaItems.filter(i => i.type === 'instagram').length,
+    youtube: mediaItems.filter(i => i.type === 'youtube').length,
+    online: mediaItems.filter(i => i.type === 'online').length
   };
 
-  const filters = [
-    { id: 'all', label: 'All', icon: Sparkles },
-    { id: 'newspaper', label: 'Print Media', icon: Newspaper },
-    { id: 'instagram', label: 'Instagram', icon: Instagram },
-    { id: 'youtube', label: 'YouTube', icon: Youtube },
-    { id: 'online', label: 'Online', icon: Globe }
-  ];
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50" ref={containerRef}>
       <Header />
       
-      {/* Hero Section */}
-      <section className="relative py-20 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-pink-800 to-orange-700" />
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute inset-0" style={{
-            backgroundImage: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.4"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
-          }} />
+      {/* Hero Section with Background Image */}
+      <section className="relative min-h-[70vh] flex items-center overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <Image
+            src="https://images.unsplash.com/photo-1478147427282-58a87a120781?w=1920&q=80"
+            alt="Spotlight Background"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-900/95 via-pink-900/90 to-orange-900/85" />
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%23ffffff\" fill-opacity=\"0.05\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-30" />
         </div>
         
-        <div className="relative container text-center text-white">
+        {/* Floating Elements */}
+        <motion.div 
+          className="absolute top-20 left-10 w-20 h-20 bg-yellow-400/20 rounded-full blur-xl"
+          animate={{ y: [0, 30, 0], scale: [1, 1.2, 1] }}
+          transition={{ duration: 5, repeat: Infinity }}
+        />
+        <motion.div 
+          className="absolute bottom-20 right-20 w-32 h-32 bg-pink-400/20 rounded-full blur-xl"
+          animate={{ y: [0, -30, 0], scale: [1, 1.1, 1] }}
+          transition={{ duration: 6, repeat: Infinity, delay: 1 }}
+        />
+        
+        <div className="relative container py-20">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8 }}
+            className="max-w-4xl"
           >
-            <Badge className="mb-6 bg-white/20 text-white border-white/30 text-lg px-6 py-2">
-              <Newspaper className="h-5 w-5 mr-2" />
-              Press & Media
-            </Badge>
-            <h1 className="text-5xl md:text-7xl font-black mb-6 drop-shadow-2xl">
-              In The Spotlight
+            {/* Badge */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2 }}
+              className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white px-5 py-2.5 rounded-full text-sm font-semibold mb-8"
+            >
+              <Sparkles className="h-4 w-4 text-yellow-400" />
+              IGK Media Journey
+              <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
+            </motion.div>
+            
+            {/* Main Title */}
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white mb-6 leading-tight">
+              In the{' '}
+              <span className="relative">
+                <span className="bg-gradient-to-r from-yellow-400 via-orange-400 to-pink-400 bg-clip-text text-transparent">
+                  Spotlight
+                </span>
+                <motion.span 
+                  className="absolute -bottom-2 left-0 right-0 h-2 bg-gradient-to-r from-yellow-400 via-orange-400 to-pink-400 rounded-full"
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ delay: 0.5, duration: 0.8 }}
+                />
+              </span>
             </h1>
-            <p className="text-xl md:text-2xl max-w-3xl mx-auto opacity-90 leading-relaxed">
-              See how our events have been featured in newspapers, social media, and video channels across Germany
+            
+            {/* Subtitle */}
+            <p className="text-xl md:text-2xl text-white/80 max-w-2xl leading-relaxed mb-10">
+              Our journey through the eyes of media. From local newspapers to viral social posts — 
+              see how IGK events have been making waves across Germany.
             </p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Filter Tabs */}
-      <section className="sticky top-0 z-40 bg-white/95 backdrop-blur-lg border-b shadow-sm">
-        <div className="container py-4">
-          <div className="flex flex-wrap justify-center gap-2 md:gap-4">
-            {filters.map((filter) => {
-              const Icon = filter.icon;
-              return (
-                <Button
-                  key={filter.id}
-                  variant={activeFilter === filter.id ? 'default' : 'outline'}
-                  onClick={() => setActiveFilter(filter.id)}
-                  className={`rounded-full transition-all duration-300 ${
-                    activeFilter === filter.id 
-                      ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg scale-105' 
-                      : 'hover:bg-gray-100'
-                  }`}
+            
+            {/* Quick Stats */}
+            <div className="flex flex-wrap gap-6">
+              {[
+                { icon: TrendingUp, value: stats.total, label: 'Media Features' },
+                { icon: FileText, value: stats.newspapers, label: 'Print Articles' },
+                { icon: Camera, value: stats.instagram, label: 'Instagram' },
+                { icon: Video, value: stats.youtube, label: 'Videos' }
+              ].map((stat, i) => (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 + i * 0.1 }}
+                  className="flex items-center gap-3 bg-white/10 backdrop-blur-sm px-5 py-3 rounded-xl border border-white/20"
                 >
-                  <Icon className="h-4 w-4 mr-2" />
-                  {filter.label}
-                  {activeFilter === filter.id && (
-                    <Badge className="ml-2 bg-white/20 text-white text-xs">
-                      {filter.id === 'all' ? mediaItems.length : mediaItems.filter(i => i.type === filter.id).length}
-                    </Badge>
-                  )}
-                </Button>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Media Wall */}
-      <section className="py-16">
-        <div className="container">
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="animate-pulse">
-                  <div className="bg-gray-200 rounded-2xl h-80" />
-                </div>
+                  <stat.icon className="h-5 w-5 text-yellow-400" />
+                  <div>
+                    <div className="text-2xl font-bold text-white">{stat.value}+</div>
+                    <div className="text-xs text-white/60">{stat.label}</div>
+                  </div>
+                </motion.div>
               ))}
             </div>
-          ) : filteredItems.length === 0 ? (
-            <div className="text-center py-20">
-              <Newspaper className="h-16 w-16 mx-auto text-gray-300 mb-4" />
-              <h3 className="text-2xl font-bold text-gray-400">No media coverage yet</h3>
-              <p className="text-gray-400 mt-2">Check back soon for updates!</p>
+          </motion.div>
+        </div>
+        
+        {/* Scroll Indicator */}
+        <motion.div 
+          className="absolute bottom-8 left-1/2 -translate-x-1/2"
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
+          <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center pt-2">
+            <div className="w-1 h-3 bg-white/60 rounded-full" />
+          </div>
+        </motion.div>
+      </section>
+
+      {/* Timeline Section */}
+      <section className="py-20 relative">
+        <div className="container">
+          {/* Section Header */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <Badge className="mb-4 bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 border-purple-200">
+              <Calendar className="h-3 w-3 mr-1" />
+              Our Media Timeline
+            </Badge>
+            <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4">
+              The Story of Our Growth
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Watch our journey unfold through media coverage over the years
+            </p>
+          </motion.div>
+
+          {loading ? (
+            <div className="flex justify-center py-20">
+              <div className="animate-spin h-12 w-12 border-4 border-purple-500 border-t-transparent rounded-full" />
             </div>
+          ) : mediaItems.length === 0 ? (
+            <Card className="max-w-lg mx-auto">
+              <CardContent className="py-12 text-center">
+                <Sparkles className="h-16 w-16 mx-auto text-gray-300 mb-4" />
+                <h3 className="text-2xl font-bold text-gray-400">Coming Soon</h3>
+                <p className="text-gray-400 mt-2">Our media coverage timeline will be updated soon!</p>
+              </CardContent>
+            </Card>
           ) : (
-            <Masonry
-              breakpointCols={breakpointColumns}
-              className="flex -ml-6 w-auto"
-              columnClassName="pl-6 bg-clip-padding"
-            >
-              <AnimatePresence mode="popLayout">
-                {filteredItems.map((item, index) => {
-                  const TypeIcon = typeIcons[item.type] || Globe;
+            <div className="relative">
+              {/* Central Timeline Line */}
+              <div className="absolute left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-purple-500 via-pink-500 to-orange-500 hidden lg:block" 
+                   style={{ transform: 'translateX(-50%)' }} />
+              
+              {/* Timeline Content */}
+              {sortedYears.map((year, yearIndex) => (
+                <div key={year} className="mb-16">
+                  {/* Year Marker */}
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    className="relative flex justify-center mb-12"
+                  >
+                    <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-2xl shadow-xl z-10">
+                      <div className="flex items-center gap-3">
+                        <Award className="h-6 w-6" />
+                        <span className="text-3xl font-black">{year}</span>
+                      </div>
+                    </div>
+                  </motion.div>
                   
-                  return (
-                    <motion.div
-                      key={item.id}
-                      layout
-                      initial={{ opacity: 0, scale: 0.8, y: 20 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      transition={{ duration: 0.4, delay: index * 0.05 }}
-                      className="mb-6"
-                    >
-                      <Card 
-                        className="group overflow-hidden border-none shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer bg-white rounded-2xl"
-                        onClick={() => openLightbox(item, index)}
-                      >
-                        {/* Image Container */}
-                        <div className={`relative overflow-hidden ${
-                          item.type === 'youtube' ? 'aspect-video' : 
-                          item.type === 'instagram' ? 'aspect-square' : 
-                          'aspect-[4/3]'
-                        }`}>
-                          <Image
-                            src={item.coverImage || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800'}
-                            alt={item.title}
-                            fill
-                            className="object-cover transition-transform duration-700 group-hover:scale-110"
-                          />
-                          
-                          {/* Gradient Overlay */}
-                          <div className={`absolute inset-0 bg-gradient-to-t ${typeColors[item.type]} opacity-0 group-hover:opacity-60 transition-opacity duration-500`} />
-                          
-                          {/* Play Button for YouTube */}
-                          {item.type === 'youtube' && (
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <div className="w-20 h-20 rounded-full bg-red-600 flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform duration-300">
-                                <Play className="h-10 w-10 text-white ml-1" fill="white" />
-                              </div>
+                  {/* Month Groups */}
+                  {Object.entries(groupedByDate[year])
+                    .sort(([a], [b]) => b.localeCompare(a))
+                    .map(([yearMonth, items], monthIndex) => {
+                      const monthDate = parseISO(`${yearMonth}-01`);
+                      const isLeft = monthIndex % 2 === 0;
+                      
+                      return (
+                        <div key={yearMonth} className="relative mb-12">
+                          {/* Month Label - Center on mobile, alternating on desktop */}
+                          <motion.div
+                            initial={{ opacity: 0, x: isLeft ? -50 : 50 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            className={`flex mb-6 lg:mb-0 ${isLeft ? 'lg:justify-end lg:pr-[52%]' : 'lg:justify-start lg:pl-[52%]'} justify-center`}
+                          >
+                            <div className="bg-white shadow-lg px-6 py-2 rounded-full border-2 border-gray-100">
+                              <span className="font-bold text-gray-700">{format(monthDate, 'MMMM')}</span>
                             </div>
-                          )}
+                          </motion.div>
                           
-                          {/* Type Badge */}
-                          <div className="absolute top-4 left-4">
-                            <Badge className={`${typeBadgeColors[item.type]} shadow-lg`}>
-                              <TypeIcon className="h-3 w-3 mr-1" />
-                              {item.type === 'newspaper' ? 'Print' : 
-                               item.type === 'instagram' ? 'Instagram' :
-                               item.type === 'youtube' ? 'YouTube' : 'Online'}
-                            </Badge>
-                          </div>
+                          {/* Timeline Node */}
+                          <div className="absolute left-1/2 top-0 w-5 h-5 bg-white border-4 border-purple-500 rounded-full hidden lg:block"
+                               style={{ transform: 'translate(-50%, 8px)' }} />
                           
-                          {/* Hover Content */}
-                          <div className="absolute inset-0 flex flex-col justify-end p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                            <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                              <p className="text-white text-sm font-medium flex items-center gap-2">
-                                <Calendar className="h-4 w-4" />
-                                {item.publishedDate ? format(new Date(item.publishedDate), 'MMM d, yyyy') : 'Recent'}
-                              </p>
+                          {/* Media Cards */}
+                          <div className={`lg:w-[45%] ${isLeft ? 'lg:mr-auto lg:pr-8' : 'lg:ml-auto lg:pl-8'}`}>
+                            <div className="space-y-4">
+                              {items.map((item, itemIndex) => {
+                                const TypeIcon = typeIcons[item.type] || Globe;
+                                const colors = typeColors[item.type] || typeColors.online;
+                                
+                                return (
+                                  <motion.div
+                                    key={item.id}
+                                    initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: itemIndex * 0.1 }}
+                                  >
+                                    <Card className="group overflow-hidden hover:shadow-2xl transition-all duration-500 border-2 hover:border-purple-200">
+                                      {/* Card Header with Cover Image */}
+                                      {item.coverImage && (
+                                        <div 
+                                          className="relative h-48 cursor-pointer overflow-hidden"
+                                          onClick={() => openLightbox(item)}
+                                        >
+                                          <Image
+                                            src={item.coverImage}
+                                            alt={item.title}
+                                            fill
+                                            className="object-cover transition-transform duration-700 group-hover:scale-110"
+                                          />
+                                          <div className={`absolute inset-0 bg-gradient-to-t ${colors.gradient} opacity-0 group-hover:opacity-40 transition-opacity duration-500`} />
+                                          
+                                          {/* Play button for YouTube */}
+                                          {item.type === 'youtube' && (
+                                            <div className="absolute inset-0 flex items-center justify-center">
+                                              <div className="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
+                                                <Play className="h-8 w-8 text-white ml-1" fill="white" />
+                                              </div>
+                                            </div>
+                                          )}
+                                          
+                                          {/* Type Badge */}
+                                          <Badge className={`absolute top-3 left-3 ${colors.bg} ${colors.text} border ${colors.border}`}>
+                                            <TypeIcon className="h-3 w-3 mr-1" />
+                                            {typeLabels[item.type]}
+                                          </Badge>
+                                          
+                                          {/* Date Badge */}
+                                          <Badge className="absolute top-3 right-3 bg-black/50 text-white border-0">
+                                            {item.publishedDate ? format(new Date(item.publishedDate), 'MMM d, yyyy') : 'Recent'}
+                                          </Badge>
+                                        </div>
+                                      )}
+                                      
+                                      <CardContent className="p-5">
+                                        {/* Publication Info */}
+                                        <div className="flex items-center gap-3 mb-3">
+                                          {item.publicationLogo ? (
+                                            <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-100 flex-shrink-0 ring-2 ring-gray-200">
+                                              <img src={item.publicationLogo} alt="" className="w-full h-full object-cover" />
+                                            </div>
+                                          ) : (
+                                            <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${colors.gradient} flex items-center justify-center flex-shrink-0`}>
+                                              <TypeIcon className="h-5 w-5 text-white" />
+                                            </div>
+                                          )}
+                                          <div className="min-w-0">
+                                            <p className="font-bold text-gray-900 truncate">{item.publicationName}</p>
+                                            <p className="text-xs text-gray-500">{typeLabels[item.type]}</p>
+                                          </div>
+                                        </div>
+                                        
+                                        {/* Title */}
+                                        <h3 className="font-bold text-lg text-gray-900 mb-2 line-clamp-2 group-hover:text-purple-600 transition-colors">
+                                          {item.title}
+                                        </h3>
+                                        
+                                        {/* Description */}
+                                        {item.description && (
+                                          <p className="text-gray-600 text-sm line-clamp-2 mb-3">{item.description}</p>
+                                        )}
+                                        
+                                        {/* Quote */}
+                                        {item.quote && (
+                                          <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 mb-4 border-l-4 border-purple-400">
+                                            <Quote className="h-4 w-4 text-purple-400 mb-2" />
+                                            <p className="text-sm text-gray-700 italic">{item.quote}</p>
+                                          </div>
+                                        )}
+                                        
+                                        {/* Action Buttons */}
+                                        <div className="flex flex-wrap gap-2 mt-4">
+                                          {item.articleUrl && (
+                                            <Button 
+                                              asChild 
+                                              size="sm" 
+                                              className={`bg-gradient-to-r ${colors.gradient} hover:opacity-90 text-white`}
+                                            >
+                                              <a href={item.articleUrl} target="_blank" rel="noopener noreferrer">
+                                                {item.type === 'youtube' ? (
+                                                  <>
+                                                    <Play className="h-3 w-3 mr-1" />
+                                                    Watch Video
+                                                  </>
+                                                ) : item.type === 'instagram' ? (
+                                                  <>
+                                                    <Instagram className="h-3 w-3 mr-1" />
+                                                    View Post
+                                                  </>
+                                                ) : (
+                                                  <>
+                                                    <ExternalLink className="h-3 w-3 mr-1" />
+                                                    Read Article
+                                                  </>
+                                                )}
+                                              </a>
+                                            </Button>
+                                          )}
+                                          
+                                          {item.type === 'youtube' && item.embedUrl && (
+                                            <Button 
+                                              size="sm" 
+                                              variant="outline"
+                                              onClick={() => setSelectedVideo(item)}
+                                              className="border-red-200 text-red-600 hover:bg-red-50"
+                                            >
+                                              <Play className="h-3 w-3 mr-1" />
+                                              Quick Play
+                                            </Button>
+                                          )}
+                                        </div>
+                                      </CardContent>
+                                    </Card>
+                                  </motion.div>
+                                );
+                              })}
                             </div>
                           </div>
                         </div>
-                        
-                        {/* Content */}
-                        <CardContent className="p-5">
-                          {/* Publication Info */}
-                          <div className="flex items-center gap-3 mb-3">
-                            {item.publicationLogo ? (
-                              <div className="relative w-10 h-10 rounded-full overflow-hidden bg-gray-100 flex-shrink-0">
-                                <Image
-                                  src={item.publicationLogo}
-                                  alt={item.publicationName}
-                                  fill
-                                  className="object-cover"
-                                />
-                              </div>
-                            ) : (
-                              <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${typeColors[item.type]} flex items-center justify-center flex-shrink-0`}>
-                                <TypeIcon className="h-5 w-5 text-white" />
-                              </div>
-                            )}
-                            <div className="min-w-0">
-                              <p className="font-semibold text-gray-900 truncate">{item.publicationName}</p>
-                              <p className="text-xs text-gray-500">
-                                {item.publishedDate ? format(new Date(item.publishedDate), 'MMMM yyyy') : ''}
-                              </p>
-                            </div>
-                          </div>
-                          
-                          {/* Title */}
-                          <h3 className="font-bold text-lg text-gray-900 mb-2 line-clamp-2 group-hover:text-purple-600 transition-colors">
-                            {item.title}
-                          </h3>
-                          
-                          {/* Description */}
-                          {item.description && (
-                            <p className="text-gray-600 text-sm line-clamp-2 mb-3">
-                              {item.description}
-                            </p>
-                          )}
-                          
-                          {/* Quote */}
-                          {item.quote && (
-                            <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-3 mb-3">
-                              <Quote className="h-4 w-4 text-purple-400 mb-1" />
-                              <p className="text-sm text-gray-700 italic line-clamp-2">{item.quote}</p>
-                            </div>
-                          )}
-                          
-                          {/* CTA */}
-                          {item.articleUrl && (
-                            <Link 
-                              href={item.articleUrl} 
-                              target="_blank"
-                              onClick={(e) => e.stopPropagation()}
-                              className="inline-flex items-center gap-2 text-sm font-semibold text-purple-600 hover:text-purple-800 transition-colors group/link"
-                            >
-                              {item.type === 'youtube' ? 'Watch Video' : 
-                               item.type === 'instagram' ? 'View Post' : 'Read Article'}
-                              <ArrowRight className="h-4 w-4 group-hover/link:translate-x-1 transition-transform" />
-                            </Link>
-                          )}
-                        </CardContent>
-                      </Card>
-                    </motion.div>
-                  );
-                })}
-              </AnimatePresence>
-            </Masonry>
+                      );
+                    })}
+                </div>
+              ))}
+            </div>
           )}
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-16 bg-gradient-to-r from-purple-900 via-pink-800 to-orange-700">
-        <div className="container">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-white">
-            <div>
-              <div className="text-4xl md:text-5xl font-black mb-2">
-                {mediaItems.filter(i => i.type === 'newspaper').length}+
-              </div>
-              <p className="text-white/80">Print Features</p>
-            </div>
-            <div>
-              <div className="text-4xl md:text-5xl font-black mb-2">
-                {mediaItems.filter(i => i.type === 'instagram').length}+
-              </div>
-              <p className="text-white/80">Social Media</p>
-            </div>
-            <div>
-              <div className="text-4xl md:text-5xl font-black mb-2">
-                {mediaItems.filter(i => i.type === 'youtube').length}+
-              </div>
-              <p className="text-white/80">Video Features</p>
-            </div>
-            <div>
-              <div className="text-4xl md:text-5xl font-black mb-2">
-                {mediaItems.filter(i => i.type === 'online').length}+
-              </div>
-              <p className="text-white/80">Online Articles</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* CTA Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="container text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Want to Feature Our Events?</h2>
-          <p className="text-gray-600 text-lg mb-8 max-w-2xl mx-auto">
-            Are you a journalist, blogger, or content creator? We'd love to collaborate with you!
-          </p>
-          <Button asChild size="lg" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 rounded-full px-8">
-            <Link href="/contact">
-              Get in Touch
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Link>
-          </Button>
+      <section className="py-20 bg-gradient-to-r from-purple-900 via-pink-800 to-orange-700 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%23ffffff\" fill-opacity=\"0.05\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-50" />
+        
+        <div className="container relative">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center text-white"
+          >
+            <Sparkles className="h-12 w-12 mx-auto mb-6 text-yellow-400" />
+            <h2 className="text-4xl md:text-5xl font-black mb-6">Want to Feature Our Events?</h2>
+            <p className="text-xl text-white/80 mb-10 max-w-2xl mx-auto">
+              Are you a journalist, blogger, or content creator? We'd love to collaborate with you and share our story!
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button asChild size="lg" className="bg-white text-purple-600 hover:bg-gray-100 font-bold rounded-full px-8">
+                <Link href="/contact">
+                  Get in Touch
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white/10 font-bold rounded-full px-8">
+                <Link href="/partner">
+                  Become a Partner
+                  <ChevronRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+            </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Lightbox for images */}
+      {/* Lightbox */}
       <Lightbox
         open={lightboxOpen}
         close={() => setLightboxOpen(false)}
@@ -387,30 +494,30 @@ export default function PressPage() {
 
       {/* Video Modal */}
       <AnimatePresence>
-        {showVideoModal && selectedItem && (
+        {selectedVideo && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
-            onClick={() => setShowVideoModal(false)}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 p-4"
+            onClick={() => setSelectedVideo(null)}
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="relative w-full max-w-4xl aspect-video bg-black rounded-2xl overflow-hidden"
+              className="relative w-full max-w-5xl aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
               <button
-                onClick={() => setShowVideoModal(false)}
-                className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors"
+                onClick={() => setSelectedVideo(null)}
+                className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors z-10"
               >
                 <X className="h-8 w-8" />
               </button>
               <iframe
-                src={selectedItem.embedUrl}
-                title={selectedItem.title}
+                src={selectedVideo.embedUrl}
+                title={selectedVideo.title}
                 className="w-full h-full"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
