@@ -709,12 +709,12 @@ export default function HomePage() {
           <div className="mt-16 bg-gradient-to-r from-pink-500 to-purple-600 rounded-2xl overflow-hidden shadow-2xl">
             <div className="flex flex-col md:flex-row items-center">
               {/* Image - Happy people celebrating */}
-              <div className="w-full md:w-1/3 relative h-64 md:h-80 bg-gradient-to-br from-pink-400 to-purple-500">
+              <div className="w-full md:w-1/3 relative h-64 md:h-80 bg-gradient-to-br from-pink-400 to-purple-500 overflow-hidden">
                 <Image
                   src="https://images.unsplash.com/photo-1607748862156-7c548e7e98f4?w=800"
                   alt="Happy people celebrating together"
                   fill
-                  className="object-cover object-center"
+                  className="object-cover object-[center_20%] scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent to-pink-500/50 md:bg-gradient-to-l md:from-pink-500/60 md:to-transparent" />
               </div>

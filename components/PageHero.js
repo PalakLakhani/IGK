@@ -42,7 +42,7 @@ export default function PageHero({
           src={backgroundImage}
           alt={title.replace('|', ' ')}
           fill
-          className="object-cover"
+          className="object-cover object-[center_25%]"
           priority
         />
         {/* Gradient Overlay */}
