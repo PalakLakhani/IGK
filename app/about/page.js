@@ -170,7 +170,7 @@ export default function AboutPage() {
                 </div>
                 <h3 className="font-bold text-lg mb-2">Community First</h3>
                 <p className="text-sm text-muted-foreground">
-                  Building connections and fostering belonging within the Indian diaspora.
+                  Building connections and fostering belonging within the diaspora.
                 </p>
               </CardContent>
             </Card>
