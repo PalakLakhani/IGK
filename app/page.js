@@ -383,7 +383,7 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Authentic Vibes */}
-            <div className="overflow-hidden rounded-xl shadow-2xl hover:shadow-pink-500/50 transition-all hover:scale-105">
+            <div className="overflow-hidden rounded-xl shadow-2xl hover:shadow-pink-500/50 transition-all hover:scale-105 bg-gradient-to-br from-pink-500 to-pink-600">
               <div className="relative h-48">
                 <Image src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800" alt="Live Performance" fill className="object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-pink-600/90 to-transparent" />
@@ -391,7 +391,7 @@ export default function HomePage() {
                   <Music className="h-12 w-12 text-white" />
                 </div>
               </div>
-              <div className="p-6 bg-gradient-to-br from-pink-500 to-pink-600 text-white">
+              <div className="p-6 text-white">
                 <h3 className="text-2xl font-bold mb-3">Authentic Vibes</h3>
                 <p className="text-pink-100">
                   Live music, traditional dance, and authentic cultural performances
@@ -400,7 +400,7 @@ export default function HomePage() {
             </div>
 
             {/* Safe & Organised - Updated Image */}
-            <div className="overflow-hidden rounded-xl shadow-2xl hover:shadow-green-500/50 transition-all hover:scale-105">
+            <div className="overflow-hidden rounded-xl shadow-2xl hover:shadow-green-500/50 transition-all hover:scale-105 bg-gradient-to-br from-green-500 to-green-600">
               <div className="relative h-48">
                 <Image src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800" alt="Professional Event Security" fill className="object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-green-600/90 to-transparent" />
@@ -408,7 +408,7 @@ export default function HomePage() {
                   <Shield className="h-12 w-12 text-white" />
                 </div>
               </div>
-              <div className="p-6 bg-gradient-to-br from-green-500 to-green-600 text-white">
+              <div className="p-6 text-white">
                 <h3 className="text-2xl font-bold mb-3">Safe & Organised</h3>
                 <p className="text-green-100">
                   Professional security, entry management, and strict safety protocols
@@ -417,7 +417,7 @@ export default function HomePage() {
             </div>
 
             {/* Community Connection - Updated Image */}
-            <div className="overflow-hidden rounded-xl shadow-2xl hover:shadow-blue-500/50 transition-all hover:scale-105">
+            <div className="overflow-hidden rounded-xl shadow-2xl hover:shadow-blue-500/50 transition-all hover:scale-105 bg-gradient-to-br from-blue-500 to-blue-600">
               <div className="relative h-48">
                 <Image src="https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=800" alt="People Networking" fill className="object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-blue-600/90 to-transparent" />
@@ -425,7 +425,7 @@ export default function HomePage() {
                   <Users className="h-12 w-12 text-white" />
                 </div>
               </div>
-              <div className="p-6 bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+              <div className="p-6 text-white">
                 <h3 className="text-2xl font-bold mb-3">Community Connection</h3>
                 <p className="text-blue-100">
                   Meet and network with the vibrant expat community in Germany
@@ -434,7 +434,7 @@ export default function HomePage() {
             </div>
 
             {/* Pure Vegetarian Food - Updated */}
-            <div className="overflow-hidden rounded-xl shadow-2xl hover:shadow-purple-500/50 transition-all hover:scale-105">
+            <div className="overflow-hidden rounded-xl shadow-2xl hover:shadow-purple-500/50 transition-all hover:scale-105 bg-gradient-to-br from-purple-500 to-purple-600">
               <div className="relative h-48">
                 <Image src="https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=800" alt="Vegetarian Indian Food" fill className="object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-purple-600/90 to-transparent" />
@@ -442,7 +442,7 @@ export default function HomePage() {
                   <Leaf className="h-12 w-12 text-white" />
                 </div>
               </div>
-              <div className="p-6 bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+              <div className="p-6 text-white">
                 <h3 className="text-2xl font-bold mb-3">Pure Vegetarian Food</h3>
                 <p className="text-purple-100">
                   100% vegetarian Indian cuisine, street food & traditional delicacies
@@ -451,7 +451,7 @@ export default function HomePage() {
             </div>
 
             {/* Family Friendly & Non-Alcohol */}
-            <div className="overflow-hidden rounded-xl shadow-2xl hover:shadow-orange-500/50 transition-all hover:scale-105">
+            <div className="overflow-hidden rounded-xl shadow-2xl hover:shadow-orange-500/50 transition-all hover:scale-105 bg-gradient-to-br from-orange-500 to-orange-600">
               <div className="relative h-48">
                 <Image src="https://images.unsplash.com/photo-1511895426328-dc8714191300?w=800" alt="Family Event" fill className="object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-orange-600/90 to-transparent" />
@@ -459,7 +459,7 @@ export default function HomePage() {
                   <Baby className="h-12 w-12 text-white" />
                 </div>
               </div>
-              <div className="p-6 bg-gradient-to-br from-orange-500 to-orange-600 text-white">
+              <div className="p-6 text-white">
                 <h3 className="text-2xl font-bold mb-3">Family-Friendly</h3>
                 <p className="text-orange-100">
                   Non-alcohol events with safe, family-friendly environment for all ages
@@ -468,7 +468,7 @@ export default function HomePage() {
             </div>
 
             {/* Year-Round Events */}
-            <div className="overflow-hidden rounded-xl shadow-2xl hover:shadow-yellow-500/50 transition-all hover:scale-105">
+            <div className="overflow-hidden rounded-xl shadow-2xl hover:shadow-yellow-500/50 transition-all hover:scale-105 bg-gradient-to-br from-yellow-500 to-yellow-600">
               <div className="relative h-48">
                 <Image src="https://images.unsplash.com/photo-1603228254119-e6a4d095dc59?w=800" alt="Seasonal Events" fill className="object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-yellow-600/90 to-transparent" />
@@ -476,7 +476,7 @@ export default function HomePage() {
                   <Calendar className="h-12 w-12 text-white" />
                 </div>
               </div>
-              <div className="p-6 bg-gradient-to-br from-yellow-500 to-yellow-600 text-white">
+              <div className="p-6 text-white">
                 <h3 className="text-2xl font-bold mb-3">Year-Round Events</h3>
                 <p className="text-yellow-100">
                   Regular events celebrating all major Indian festivals and occasions
@@ -705,16 +705,16 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Share Your Experience CTA with Namaste Lady */}
+          {/* Share Your Experience CTA with Happy People */}
           <div className="mt-16 bg-gradient-to-r from-pink-500 to-purple-600 rounded-2xl overflow-hidden shadow-2xl">
             <div className="flex flex-col md:flex-row items-center">
-              {/* Image - Indian Lady doing Namaste */}
+              {/* Image - Happy people celebrating */}
               <div className="w-full md:w-1/3 relative h-64 md:h-80 bg-gradient-to-br from-pink-400 to-purple-500">
                 <Image
-                  src="https://images.unsplash.com/photo-1611601322175-ef8ec8c85f01?w=800"
-                  alt="Indian woman greeting with namaste"
+                  src="https://images.unsplash.com/photo-1607748862156-7c548e7e98f4?w=800"
+                  alt="Happy people celebrating together"
                   fill
-                  className="object-cover object-top"
+                  className="object-cover object-center"
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent to-pink-500/50 md:bg-gradient-to-l md:from-pink-500/60 md:to-transparent" />
               </div>

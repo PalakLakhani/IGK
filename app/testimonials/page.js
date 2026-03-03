@@ -158,7 +158,7 @@ export default function TestimonialsPage() {
         icon={Star}
         title="Share Your Experience"
         subtitle="Tell us about your experience at our events. Your feedback helps us create better experiences for everyone!"
-        backgroundImage="https://images.unsplash.com/photo-1529543544277-c91de6e7e5a9?w=1920"
+        backgroundImage="https://images.unsplash.com/photo-1607748862156-7c548e7e98f4?w=1920"
         gradient="from-yellow-600/90 to-orange-600/90"
       />
 
