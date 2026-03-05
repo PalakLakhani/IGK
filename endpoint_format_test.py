@@ -9,7 +9,7 @@ import json
 
 def test_exact_endpoints():
     """Test the exact endpoint formats mentioned in requirements"""
-    base_url = "https://compact-consent-flow.preview.emergentagent.com/api"
+    base_url = "https://testimonials-fix.preview.emergentagent.com/api"
     headers = {
         "Content-Type": "application/json",
         "x-admin-password": "admin123"

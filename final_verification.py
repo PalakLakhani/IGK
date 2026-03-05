@@ -8,7 +8,7 @@ import json
 
 def final_verification():
     """Quick final verification of all major endpoints"""
-    base_url = "https://compact-consent-flow.preview.emergentagent.com/api"
+    base_url = "https://testimonials-fix.preview.emergentagent.com/api"
     headers = {
         "Content-Type": "application/json",
         "x-admin-password": "admin123"
