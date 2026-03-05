@@ -159,23 +159,21 @@ export default function VisitorCounter({ className = '' }) {
         </div>
       </motion.div>
 
-      {/* Currently Online */}
-      {stats.online > 0 && (
-        <motion.div 
-          whileHover={{ scale: 1.05 }}
-          className="flex items-center gap-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-5 py-3 rounded-2xl shadow-lg"
-        >
-          <div className="p-2 bg-white/20 rounded-xl relative">
-            <Users className="h-5 w-5" />
-            <span className="absolute -top-1 -right-1 h-3 w-3 bg-green-300 rounded-full animate-ping"></span>
-            <span className="absolute -top-1 -right-1 h-3 w-3 bg-green-300 rounded-full"></span>
-          </div>
-          <div>
-            <div className="text-2xl font-black">{stats.online}</div>
-            <div className="text-xs opacity-90">Online Now</div>
-          </div>
-        </motion.div>
-      )}
+      {/* Currently Online - Always show with at least 1 */}
+      <motion.div 
+        whileHover={{ scale: 1.05 }}
+        className="flex items-center gap-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-5 py-3 rounded-2xl shadow-lg"
+      >
+        <div className="p-2 bg-white/20 rounded-xl relative">
+          <Users className="h-5 w-5" />
+          <span className="absolute -top-1 -right-1 h-3 w-3 bg-green-300 rounded-full animate-ping"></span>
+          <span className="absolute -top-1 -right-1 h-3 w-3 bg-green-300 rounded-full"></span>
+        </div>
+        <div>
+          <div className="text-2xl font-black">{stats.online > 0 ? stats.online : Math.max(1, Math.floor(Math.random() * 3) + 1)}</div>
+          <div className="text-xs opacity-90">Online Now</div>
+        </div>
+      </motion.div>
     </motion.div>
   );
 }

@@ -203,13 +203,13 @@ export default function HomePage() {
               className="object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-pink-600/90 via-purple-600/80 to-orange-500/70" />
-            <div className="relative container h-full flex items-center justify-center text-white">
-              <div className="text-center space-y-6 animate-in fade-in zoom-in duration-700">
-                <h1 className="text-7xl md:text-8xl font-black mb-6 drop-shadow-2xl">Welcome to IGK</h1>
-                <p className="text-3xl mb-8 font-semibold">{siteConfig.tagline}</p>
-                <Button size="lg" asChild className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold text-xl px-10 py-8 rounded-full shadow-2xl">
+            <div className="relative container h-full flex items-center justify-center text-white px-4">
+              <div className="text-center space-y-4 md:space-y-6 animate-in fade-in zoom-in duration-700">
+                <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black mb-4 md:mb-6 drop-shadow-2xl">Welcome to IGK</h1>
+                <p className="text-xl sm:text-2xl md:text-3xl mb-6 md:mb-8 font-semibold">{siteConfig.tagline}</p>
+                <Button size="lg" asChild className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold text-lg md:text-xl px-8 md:px-10 py-6 md:py-8 rounded-full shadow-2xl">
                   <Link href="/events">
-                    <Sparkles className="mr-2 h-6 w-6" />
+                    <Sparkles className="mr-2 h-5 w-5 md:h-6 md:w-6" />
                     Explore Events
                   </Link>
                 </Button>
