@@ -27,7 +27,27 @@ export default function HomePage() {
   const [showWelcome, setShowWelcome] = useState(true);
   const [testimonialSlide, setTestimonialSlide] = useState(0);
   const [expandedReviews, setExpandedReviews] = useState({});
+  const [slidesPerView, setSlidesPerView] = useState(3);
   const testimonialRef = useRef(null);
+
+  // Handle responsive slides per view
+  useEffect(() => {
+    const handleResize = () => {
+      if (typeof window !== 'undefined') {
+        if (window.innerWidth < 640) {
+          setSlidesPerView(1);
+        } else if (window.innerWidth < 1024) {
+          setSlidesPerView(2);
+        } else {
+          setSlidesPerView(3);
+        }
+      }
+    };
+    
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     fetchUpcomingEvents();
@@ -75,16 +95,16 @@ export default function HomePage() {
   // Auto-slide testimonials every 4 seconds
   useEffect(() => {
     const totalTestimonials = testimonials.length > 0 ? testimonials.length : 3;
-    if (totalTestimonials > 3) {
+    if (totalTestimonials > slidesPerView) {
       const interval = setInterval(() => {
         setTestimonialSlide((prev) => {
-          const maxSlide = Math.max(0, totalTestimonials - 3);
+          const maxSlide = Math.max(0, totalTestimonials - slidesPerView);
           return prev >= maxSlide ? 0 : prev + 1;
         });
       }, 4000);
       return () => clearInterval(interval);
     }
-  }, [testimonials.length]);
+  }, [testimonials.length, slidesPerView]);
 
   const heroEvents = upcomingEvents.slice(0, 3);
 
@@ -626,79 +646,105 @@ export default function HomePage() {
       {/* As Featured In - Media Coverage */}
       <AsFeaturedIn />
 
-      {/* Testimonials - Paginated Grid */}
-      <section className="py-20 bg-gradient-to-br from-yellow-50 via-orange-50 to-pink-50">
+      {/* Testimonials - Compact Slider */}
+      <section className="py-16 bg-gradient-to-br from-yellow-50 via-orange-50 to-pink-50">
         <div className="container">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-black mb-6 bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
+          <div className="text-center mb-10">
+            <h2 className="text-4xl md:text-5xl font-black mb-4 bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
               What People Say
             </h2>
-            <p className="text-xl md:text-2xl text-gray-600 font-medium">Hear from our community</p>
+            <p className="text-xl text-gray-600 font-medium">Hear from our community</p>
           </div>
 
-          {/* Paginated Testimonials Grid */}
-          <div className="max-w-7xl mx-auto">
-            {/* Responsive Grid - 1 col mobile, 2 col tablet, 3 col desktop */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {displayTestimonials.slice(0, testimonialSlide + 6).map((testimonial, index) => {
-                const isExpanded = expandedReviews[testimonial.id || index];
-                const isLongReview = testimonial.testimonial?.length > 150;
-                
-                return (
-                  <Card key={testimonial.id || index} className="border-none shadow-xl hover:shadow-2xl transition-all h-full animate-in fade-in slide-in-from-bottom-4 duration-500" style={{ animationDelay: `${(index % 6) * 100}ms` }}>
-                    <CardContent className="p-6 flex flex-col h-full">
-                      <div className="flex gap-1 mb-4">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} className={`h-5 w-5 ${i < (testimonial.rating || 5) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
-                        ))}
-                      </div>
-                      <div className="flex-grow">
-                        <p className={`text-gray-700 text-base leading-relaxed ${!isExpanded && isLongReview ? 'line-clamp-4' : ''}`}>
-                          "{testimonial.testimonial}"
-                        </p>
-                        {isLongReview && (
-                          <button 
-                            onClick={() => setExpandedReviews(prev => ({ ...prev, [testimonial.id || index]: !isExpanded }))}
-                            className="text-pink-600 hover:text-pink-700 font-semibold text-sm mt-2 inline-flex items-center gap-1"
-                          >
-                            {isExpanded ? 'Show less' : 'Read more'}
-                            <ArrowRight className={`h-3 w-3 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
-                          </button>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-3 mt-4 pt-4 border-t">
-                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-pink-400 to-purple-400 flex items-center justify-center text-white font-bold">
-                          {testimonial.name?.charAt(0) || 'A'}
-                        </div>
-                        <div>
-                          <div className="font-bold text-sm">{testimonial.name}</div>
-                          <div className="text-gray-500 text-xs">{testimonial.city}</div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+          {/* Testimonials Slider */}
+          <div className="max-w-6xl mx-auto relative px-12 md:px-16">
+            {/* Navigation Arrows */}
+            <button 
+              onClick={() => setTestimonialSlide(prev => Math.max(0, prev - 1))}
+              disabled={testimonialSlide === 0}
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white shadow-lg flex items-center justify-center hover:bg-pink-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all border border-pink-100"
+            >
+              <ChevronLeft className="h-5 w-5 md:h-6 md:w-6 text-pink-600" />
+            </button>
+            <button 
+              onClick={() => {
+                const maxSlide = Math.max(0, displayTestimonials.length - slidesPerView);
+                setTestimonialSlide(prev => Math.min(maxSlide, prev + 1));
+              }}
+              disabled={testimonialSlide >= Math.max(0, displayTestimonials.length - slidesPerView)}
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white shadow-lg flex items-center justify-center hover:bg-pink-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all border border-pink-100"
+            >
+              <ChevronRight className="h-5 w-5 md:h-6 md:w-6 text-pink-600" />
+            </button>
+
+            {/* Slider Container */}
+            <div className="overflow-hidden">
+              <div 
+                className="flex transition-transform duration-500 ease-out"
+                style={{ 
+                  transform: `translateX(-${testimonialSlide * (100 / slidesPerView)}%)`,
+                  gap: '1rem'
+                }}
+              >
+                {displayTestimonials.map((testimonial, index) => {
+                  const isExpanded = expandedReviews[testimonial.id || index];
+                  const isLongReview = testimonial.testimonial?.length > 120;
+                  
+                  return (
+                    <div 
+                      key={testimonial.id || index} 
+                      className="flex-shrink-0"
+                      style={{ width: `calc(${100 / slidesPerView}% - ${(slidesPerView - 1) * 16 / slidesPerView}px)` }}
+                    >
+                      <Card className="border-none shadow-xl hover:shadow-2xl transition-all h-full bg-white">
+                        <CardContent className="p-5 flex flex-col h-full min-h-[220px]">
+                          <div className="flex gap-1 mb-3">
+                            {[...Array(5)].map((_, i) => (
+                              <Star key={i} className={`h-4 w-4 ${i < (testimonial.rating || 5) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                            ))}
+                          </div>
+                          <div className="flex-grow">
+                            <p className={`text-gray-700 text-sm leading-relaxed ${!isExpanded && isLongReview ? 'line-clamp-3' : ''}`}>
+                              "{testimonial.testimonial}"
+                            </p>
+                            {isLongReview && (
+                              <button 
+                                onClick={() => setExpandedReviews(prev => ({ ...prev, [testimonial.id || index]: !isExpanded }))}
+                                className="text-pink-600 hover:text-pink-700 font-semibold text-xs mt-1 inline-flex items-center gap-1"
+                              >
+                                {isExpanded ? 'Show less' : 'Read more'}
+                              </button>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2 mt-3 pt-3 border-t">
+                            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-pink-400 to-purple-400 flex items-center justify-center text-white font-bold text-sm">
+                              {testimonial.name?.charAt(0) || 'A'}
+                            </div>
+                            <div>
+                              <div className="font-bold text-sm">{testimonial.name}</div>
+                              <div className="text-gray-500 text-xs">{testimonial.city}</div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
 
-            {/* Load More Button - Shows when more testimonials available */}
-            {displayTestimonials.length > testimonialSlide + 6 && (
-              <div className="flex justify-center mt-10">
-                <Button 
-                  onClick={() => setTestimonialSlide(prev => prev + 6)}
-                  size="lg"
-                  className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-bold text-lg px-10 py-6 rounded-full shadow-lg"
-                >
-                  Load More Reviews
-                  <ChevronRight className="ml-2 h-5 w-5" />
-                </Button>
+            {/* Dot Indicators - Only show reasonable number */}
+            {displayTestimonials.length > slidesPerView && (
+              <div className="flex justify-center gap-2 mt-6">
+                {Array.from({ length: Math.min(displayTestimonials.length - slidesPerView + 1, 6) }).map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setTestimonialSlide(idx)}
+                    className={`h-2 rounded-full transition-all ${idx === testimonialSlide ? 'bg-pink-500 w-6' : 'bg-pink-200 w-2 hover:bg-pink-300'}`}
+                  />
+                ))}
               </div>
             )}
-
-            {/* Show count info */}
-            <div className="text-center mt-6 text-gray-500">
-              Showing {Math.min(testimonialSlide + 6, displayTestimonials.length)} of {displayTestimonials.length} reviews
-            </div>
           </div>
 
           {/* Share Your Experience CTA with Happy People */}
