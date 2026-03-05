@@ -62,13 +62,14 @@ export async function POST(request) {
     const buffer = Buffer.from(bytes);
     const base64Data = `data:${file.type};base64,${buffer.toString('base64')}`;
 
-    // Upload to Cloudinary
+    // Upload to Cloudinary with WebP conversion
     const uploadResult = await cloudinary.uploader.upload(base64Data, {
       folder: `igkonnekt/${type}`, // Organize by type: igkonnekt/events, igkonnekt/team, etc.
       resource_type: 'image',
+      format: 'webp',  // Force WebP format on upload - saves 70-80% vs PNG!
       transformation: [
         { quality: 'auto:good' }, // Automatic quality optimization
-        { fetch_format: 'auto' }, // Automatic format (WebP for supported browsers)
+        { fetch_format: 'webp' }, // Ensure WebP delivery
       ],
     });
 
