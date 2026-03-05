@@ -37,6 +37,13 @@ const nextConfig = {
   async headers() {
     return [
       {
+        // Cache images aggressively
+        source: "/:path*.(jpg|jpeg|png|gif|webp|svg|ico)",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+        ],
+      },
+      {
         source: "/(.*)",
         headers: [
           // Security Headers (OWASP Recommended)
