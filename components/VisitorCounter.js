@@ -25,9 +25,17 @@ export default function VisitorCounter({ className = '' }) {
     // Fetch visitor stats
     const fetchStats = async () => {
       try {
-        const res = await fetch('/api/analytics/visitors');
+        // Add cache-busting parameter to prevent browser/CDN caching
+        const timestamp = Date.now();
+        const res = await fetch(`/api/analytics/visitors?_t=${timestamp}`, {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache',
+          },
+        });
         if (res.ok) {
           const data = await res.json();
+          console.log('[VisitorCounter] Received stats:', data);
           setStats(data);
         }
       } catch (error) {
@@ -39,8 +47,8 @@ export default function VisitorCounter({ className = '' }) {
 
     fetchStats();
     
-    // Refresh every 30 seconds
-    const interval = setInterval(fetchStats, 30000);
+    // Refresh every 60 seconds (more reasonable for analytics)
+    const interval = setInterval(fetchStats, 60000);
     return () => clearInterval(interval);
   }, []);
 

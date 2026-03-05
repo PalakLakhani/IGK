@@ -12,7 +12,9 @@ const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type',
-  'Cache-Control': 'no-cache, no-store, must-revalidate', // Disable caching for real-time stats
+  'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
+  'Pragma': 'no-cache',
+  'Expires': '0',
 };
 
 export async function OPTIONS() {

@@ -8,6 +8,14 @@
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
+# Disable caching for analytics API
+[[headers]]
+  for = "/api/analytics/*"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate, max-age=0"
+    Pragma = "no-cache"
+    Expires = "0"
+
 # Environment variables needed (set these in Netlify Dashboard):
 # - MONGO_URL
 # - CLOUDINARY_CLOUD_NAME
@@ -17,3 +25,4 @@
 # - NEXT_PUBLIC_UMAMI_URL
 # - NEXT_PUBLIC_BASE_URL
 # - ADMIN_PASSWORD
+# - UMAMI_API_TOKEN
