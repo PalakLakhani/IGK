@@ -7,7 +7,7 @@ export const siteConfig = {
   // Fixed stats - Single source of truth for the entire site
   stats: {
     eventsOrganized: 50,      // Display as "50+"
-    happyAttendees: 25000,    // Display as "25K+"
+    happyAttendees: 35000,    // Display as "35K+"
     citiesCovered: 8,         // Display as "8"
     // averageRating is computed dynamically from reviews
   },

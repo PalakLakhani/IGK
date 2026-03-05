@@ -15,6 +15,7 @@ import OurBrands from '@/components/OurBrands';
 import AsFeaturedIn from '@/components/AsFeaturedIn';
 import MascotAssistant from '@/components/MascotAssistant';
 import StatsBar from '@/components/StatsBar';
+import VisitorCounter from '@/components/VisitorCounter';
 import { siteConfig } from '@/config/site';
 import { format } from 'date-fns';
 
@@ -282,6 +283,16 @@ export default function HomePage() {
 
       {/* Dynamic Stats Banner - Using shared StatsBar component */}
       <StatsBar variant="gradient" showReviewCount={false} />
+
+      {/* Live Visitor Counter - Fancy animated display */}
+      <section className="py-6 bg-gradient-to-r from-gray-50 to-white">
+        <div className="container">
+          <div className="flex flex-col items-center gap-3">
+            <p className="text-sm text-gray-500 font-medium">📊 Live Site Activity</p>
+            <VisitorCounter />
+          </div>
+        </div>
+      </section>
 
       {/* Event Categories Section */}
       <section className="py-20 bg-white">
@@ -577,7 +588,7 @@ export default function HomePage() {
       </section>
 
       {/* Community CTA - WhatsApp Button Always Visible */}
-      <section className="relative py-24 overflow-hidden">
+      <section className="relative py-16 md:py-24 overflow-hidden">
         <Image
           src="https://images.unsplash.com/photo-1529543544277-c91de6e7e5a9?w=1920"
           alt="Community"
@@ -585,23 +596,23 @@ export default function HomePage() {
           className="object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-purple-600/95 to-pink-600/95" />
-        <div className="relative container text-center text-white">
-          <Heart className="h-20 w-20 mx-auto mb-8 animate-pulse" />
-          <h2 className="text-6xl font-black mb-6 drop-shadow-2xl">Join Our Community</h2>
-          <p className="text-2xl mb-10 max-w-3xl mx-auto opacity-95 leading-relaxed">
+        <div className="relative container text-center text-white px-4">
+          <Heart className="h-14 w-14 md:h-20 md:w-20 mx-auto mb-6 md:mb-8 animate-pulse" />
+          <h2 className="text-4xl md:text-6xl font-black mb-4 md:mb-6 drop-shadow-2xl">Join Our Community</h2>
+          <p className="text-lg md:text-2xl mb-8 md:mb-10 max-w-3xl mx-auto opacity-95 leading-relaxed">
             Connect with thousands of expats across Germany. Join WhatsApp groups, follow us on social media, and stay updated.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center px-4 sm:px-0">
-            <Button size="lg" asChild className="bg-white text-purple-600 hover:bg-gray-100 font-bold text-xl px-10 py-8 rounded-full shadow-2xl w-full sm:w-auto justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center">
+            <Button size="lg" asChild className="bg-white text-purple-600 hover:bg-gray-100 font-bold text-base md:text-xl px-6 md:px-10 py-6 md:py-8 rounded-full shadow-2xl w-full sm:w-auto justify-center">
               <Link href="/community">
-                <Users className="mr-2 h-6 w-6" />
+                <Users className="mr-2 h-5 w-5 md:h-6 md:w-6" />
                 Explore Community
               </Link>
             </Button>
             {/* WhatsApp Button - Always Visible */}
-            <Button size="lg" asChild className="bg-green-500 hover:bg-green-600 text-white font-bold text-xl px-10 py-8 rounded-full shadow-2xl w-full sm:w-auto justify-center">
+            <Button size="lg" asChild className="bg-green-500 hover:bg-green-600 text-white font-bold text-base md:text-xl px-6 md:px-10 py-6 md:py-8 rounded-full shadow-2xl w-full sm:w-auto justify-center">
               <Link href={`https://wa.me/${siteConfig.contact.whatsapp.replace(/[^0-9]/g, '')}`} target="_blank">
-                <MessageCircle className="mr-2 h-6 w-6" />
+                <MessageCircle className="mr-2 h-5 w-5 md:h-6 md:w-6" />
                 WhatsApp Us
               </Link>
             </Button>
@@ -619,42 +630,51 @@ export default function HomePage() {
       <section className="py-20 bg-gradient-to-br from-yellow-50 via-orange-50 to-pink-50">
         <div className="container">
           <div className="text-center mb-12">
-            <h2 className="text-5xl font-black mb-6 bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
+            <h2 className="text-4xl md:text-5xl font-black mb-6 bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
               What People Say
             </h2>
-            <p className="text-2xl text-gray-600 font-medium">Hear from our community</p>
+            <p className="text-xl md:text-2xl text-gray-600 font-medium">Hear from our community</p>
           </div>
 
           {/* Testimonials Slider */}
-          <div className="relative max-w-7xl mx-auto">
-            {/* Navigation Arrows */}
+          <div className="relative max-w-7xl mx-auto px-12 md:px-16">
+            {/* Navigation Arrows - Always visible */}
             <button 
               onClick={() => setTestimonialSlide(prev => Math.max(0, prev - 1))}
               disabled={testimonialSlide === 0}
-              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center hover:bg-pink-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white shadow-lg flex items-center justify-center hover:bg-pink-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all border border-pink-100"
             >
-              <ChevronLeft className="h-6 w-6 text-pink-600" />
+              <ChevronLeft className="h-5 w-5 md:h-6 md:w-6 text-pink-600" />
             </button>
             <button 
-              onClick={() => setTestimonialSlide(prev => Math.min(Math.max(0, displayTestimonials.length - 3), prev + 1))}
-              disabled={testimonialSlide >= displayTestimonials.length - 3}
-              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center hover:bg-pink-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              onClick={() => {
+                const cardsPerView = typeof window !== 'undefined' && window.innerWidth < 768 ? 1 : (window.innerWidth < 1024 ? 2 : 3);
+                setTestimonialSlide(prev => Math.min(Math.max(0, displayTestimonials.length - cardsPerView), prev + 1));
+              }}
+              disabled={testimonialSlide >= Math.max(0, displayTestimonials.length - 1)}
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white shadow-lg flex items-center justify-center hover:bg-pink-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all border border-pink-100"
             >
-              <ChevronRight className="h-6 w-6 text-pink-600" />
+              <ChevronRight className="h-5 w-5 md:h-6 md:w-6 text-pink-600" />
             </button>
 
             {/* Slider Container */}
-            <div className="overflow-hidden px-4">
+            <div className="overflow-hidden">
               <div 
-                className="flex transition-transform duration-500 ease-out gap-6"
-                style={{ transform: `translateX(-${testimonialSlide * (100 / 3 + 2)}%)` }}
+                className="flex transition-transform duration-500 ease-out"
+                style={{ 
+                  transform: `translateX(-${testimonialSlide * 100}%)`,
+                  gap: '1.5rem'
+                }}
               >
                 {displayTestimonials.map((testimonial, index) => {
                   const isExpanded = expandedReviews[testimonial.id || index];
                   const isLongReview = testimonial.testimonial?.length > 150;
                   
                   return (
-                    <div key={testimonial.id || index} className="w-full md:w-[calc(33.333%-1rem)] flex-shrink-0">
+                    <div 
+                      key={testimonial.id || index} 
+                      className="w-full md:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] flex-shrink-0"
+                    >
                       <Card className="border-none shadow-xl hover:shadow-2xl transition-all h-full">
                         <CardContent className="p-6 flex flex-col h-full">
                           <div className="flex gap-1 mb-4">
@@ -695,11 +715,11 @@ export default function HomePage() {
 
             {/* Slide Indicators */}
             <div className="flex justify-center gap-2 mt-8">
-              {Array.from({ length: Math.max(1, displayTestimonials.length - 2) }).map((_, idx) => (
+              {displayTestimonials.map((_, idx) => (
                 <button
                   key={idx}
                   onClick={() => setTestimonialSlide(idx)}
-                  className={`h-2 rounded-full transition-all ${idx === testimonialSlide ? 'bg-pink-500 w-8' : 'bg-pink-200 w-2'}`}
+                  className={`h-2 rounded-full transition-all ${idx === testimonialSlide ? 'bg-pink-500 w-8' : 'bg-pink-200 w-2 hover:bg-pink-300'}`}
                 />
               ))}
             </div>
