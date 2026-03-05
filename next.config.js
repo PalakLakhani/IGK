@@ -54,7 +54,7 @@ const nextConfig = {
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
           { 
             key: "Content-Security-Policy", 
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cloud.umami.is; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://cloud.umami.is https://res.cloudinary.com https://*.mongodb.net; frame-ancestors 'self';"
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cloud.umami.is https://static.cloudflareinsights.com https://challenges.cloudflare.com; script-src-elem 'self' 'unsafe-inline' https://cloud.umami.is https://static.cloudflareinsights.com https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://cloud.umami.is https://cloudflareinsights.com https://res.cloudinary.com https://*.mongodb.net; frame-ancestors 'self';"
           },
           // HTTPS enforcement (Strict Transport Security)
           { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains" },
