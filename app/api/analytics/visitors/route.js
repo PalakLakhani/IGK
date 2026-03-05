@@ -5,15 +5,14 @@ import { NextResponse } from 'next/server';
  * 
  * GET /api/analytics/visitors
  * 
- * Note: Umami Cloud free tier has limited API access.
- * This endpoint returns stats from the Umami API or fallback values.
+ * Fetches real-time stats from Umami Cloud API (last 24 hours)
  */
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type',
-  'Cache-Control': 'public, max-age=30', // Cache for 30 seconds
+  'Cache-Control': 'no-cache, no-store, must-revalidate', // Disable caching for real-time stats
 };
 
 export async function OPTIONS() {
@@ -23,91 +22,97 @@ export async function OPTIONS() {
 export async function GET() {
   try {
     const websiteId = process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID;
-    const apiToken = process.env.UMAMI_API_TOKEN; // Optional: for authenticated API access
+    const apiToken = process.env.UMAMI_API_TOKEN;
     
-    // Default/fallback stats
+    console.log('[Analytics] Fetching stats for websiteId:', websiteId ? 'configured' : 'MISSING');
+    console.log('[Analytics] API Token:', apiToken ? 'configured' : 'MISSING');
+
+    // Default stats (will be overwritten if API succeeds)
     let stats = {
       visitors: 0,
       pageviews: 0,
       online: 0,
-      source: 'default',
+      source: 'none',
     };
 
-    // Try to fetch from Umami Cloud API
-    // Note: Umami Cloud free tier may have limited API access
-    // For full API access, you need a self-hosted Umami or paid plan
-    
-    if (websiteId && apiToken) {
-      try {
-        // Get stats for this week
-        const now = new Date();
-        const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);
-        const startAt = startOfWeek.getTime();
-        const endAt = now.getTime();
-
-        const response = await fetch(
-          `https://api.umami.is/v1/websites/${websiteId}/stats?startAt=${startAt}&endAt=${endAt}`,
-          {
-            headers: {
-              'x-umami-api-key': apiToken,
-              'Content-Type': 'application/json',
-            },
-          }
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          stats = {
-            visitors: data.visitors?.value || data.visitors || 0,
-            pageviews: data.pageviews?.value || data.pageviews || 0,
-            online: data.active || Math.floor(Math.random() * 3) + 1,
-            source: 'umami',
-          };
-        } else {
-          console.error('Umami API error:', response.status, await response.text());
-        }
-      } catch (umamiError) {
-        console.error('Umami API error:', umamiError);
-      }
+    if (!websiteId || !apiToken) {
+      console.error('[Analytics] Missing NEXT_PUBLIC_UMAMI_WEBSITE_ID or UMAMI_API_TOKEN');
+      return NextResponse.json({
+        ...stats,
+        error: 'Missing Umami configuration',
+      }, { headers: corsHeaders });
     }
 
-    // If no Umami data, return estimated stats based on site activity
-    // This provides a better UX than showing 0
-    if (stats.visitors === 0) {
-      // Get approximate stats from database activity
-      const { MongoClient } = await import('mongodb');
-      const client = await MongoClient.connect(process.env.MONGO_URL);
-      const db = client.db();
-      
-      // Count unique testimonials as a proxy for engaged visitors
-      const testimonialCount = await db.collection('testimonials').countDocuments();
-      const eventViews = await db.collection('events').countDocuments() * 100; // Estimate views per event
-      
-      // Estimate based on site age and activity
-      const baseVisitors = 500; // Base monthly visitors
-      const estimatedVisitors = baseVisitors + (testimonialCount * 50) + eventViews;
+    // Fetch last 24 hours data (same as Umami dashboard default view)
+    const now = new Date();
+    const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    const startAt = yesterday.getTime();
+    const endAt = now.getTime();
+
+    console.log('[Analytics] Fetching from:', new Date(startAt).toISOString(), 'to:', new Date(endAt).toISOString());
+
+    const apiUrl = `https://api.umami.is/v1/websites/${websiteId}/stats?startAt=${startAt}&endAt=${endAt}`;
+    
+    const response = await fetch(apiUrl, {
+      headers: {
+        'x-umami-api-key': apiToken,
+        'Content-Type': 'application/json',
+      },
+      cache: 'no-store', // Disable fetch caching
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log('[Analytics] Raw Umami response:', JSON.stringify(data));
       
       stats = {
-        visitors: Math.floor(estimatedVisitors),
-        pageviews: Math.floor(estimatedVisitors * 2.5), // Average 2.5 pages per visit
-        online: Math.floor(Math.random() * 5) + 1, // Random 1-5 for demo
-        source: 'estimated',
+        visitors: data.visitors?.value ?? data.visitors ?? 0,
+        pageviews: data.pageviews?.value ?? data.pageviews ?? 0,
+        visits: data.visits?.value ?? data.visits ?? 0,
+        bounces: data.bounces?.value ?? data.bounces ?? 0,
+        online: 0, // Umami stats endpoint doesn't return active users
+        source: 'umami_live',
+        lastUpdated: new Date().toISOString(),
       };
+    } else {
+      const errorText = await response.text();
+      console.error('[Analytics] Umami API error:', response.status, errorText);
+      stats.error = `API returned ${response.status}: ${errorText}`;
+    }
+
+    // Try to get active/online users from the active endpoint
+    try {
+      const activeResponse = await fetch(
+        `https://api.umami.is/v1/websites/${websiteId}/active`,
+        {
+          headers: {
+            'x-umami-api-key': apiToken,
+            'Content-Type': 'application/json',
+          },
+          cache: 'no-store',
+        }
+      );
       
-      await client.close();
+      if (activeResponse.ok) {
+        const activeData = await activeResponse.json();
+        console.log('[Analytics] Active users response:', JSON.stringify(activeData));
+        stats.online = activeData.x ?? activeData.active ?? activeData ?? 0;
+      }
+    } catch (activeError) {
+      console.error('[Analytics] Active users error:', activeError);
     }
 
     return NextResponse.json(stats, { headers: corsHeaders });
 
   } catch (error) {
-    console.error('Analytics API error:', error);
+    console.error('[Analytics] Fatal error:', error);
     
-    // Return fallback stats on error
     return NextResponse.json({
-      visitors: 150,
-      pageviews: 380,
-      online: 2,
-      source: 'fallback',
+      visitors: 0,
+      pageviews: 0,
+      online: 0,
+      source: 'error',
+      error: error.message,
     }, { headers: corsHeaders });
   }
 }
