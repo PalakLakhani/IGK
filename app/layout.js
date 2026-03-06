@@ -29,6 +29,13 @@ export const metadata = {
   authors: [{ name: 'IGK - Indo-German Konnekt' }],
   creator: 'IGK - Indo-German Konnekt',
   publisher: 'IGK - Indo-German Konnekt',
+  icons: {
+    icon: [
+      { url: 'https://customer-assets.emergentagent.com/job_0e9453d3-b628-4be1-8a9d-95c6b0eeae8b/artifacts/snpr9tbt_Original%20PNG.png', type: 'image/png' },
+    ],
+    shortcut: 'https://customer-assets.emergentagent.com/job_0e9453d3-b628-4be1-8a9d-95c6b0eeae8b/artifacts/snpr9tbt_Original%20PNG.png',
+    apple: 'https://customer-assets.emergentagent.com/job_0e9453d3-b628-4be1-8a9d-95c6b0eeae8b/artifacts/snpr9tbt_Original%20PNG.png',
+  },
   robots: {
     index: true,
     follow: true,
