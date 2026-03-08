@@ -8,9 +8,9 @@
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-# Disable caching for analytics API
+# Disable caching for ALL API routes (including admin)
 [[headers]]
-  for = "/api/analytics/*"
+  for = "/api/*"
   [headers.values]
     Cache-Control = "no-cache, no-store, must-revalidate, max-age=0"
     Pragma = "no-cache"
