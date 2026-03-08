@@ -31,6 +31,18 @@
 /*.woff2
   Cache-Control: public, max-age=31536000, immutable
 
-# Don't cache API responses
+# Don't cache API responses - IMPORTANT for dynamic data
 /api/*
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+  Pragma: no-cache
+  Expires: 0
+  CDN-Cache-Control: no-store
+  Surrogate-Control: no-store
+
+# Don't cache the homepage (dynamic events/testimonials)
+/
+  Cache-Control: no-cache, must-revalidate, max-age=0
+
+# Don't cache admin pages
+/admin/*
   Cache-Control: no-store, no-cache, must-revalidate
