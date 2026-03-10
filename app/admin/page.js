@@ -72,6 +72,40 @@ function SortableBrandCard({ brand, onEdit, onDelete }) {
   );
 }
 
+// Sortable Team Card Component
+function SortableTeamCard({ member, onEdit, onDelete, isCity = false }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: member.id });
+  
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1000 : 1,
+  };
+
+  return (
+    <Card ref={setNodeRef} style={style} className={isDragging ? 'shadow-xl ring-2 ring-pink-500' : ''}>
+      <CardContent className="p-4 text-center relative">
+        <div {...attributes} {...listeners} className="absolute top-2 left-2 cursor-grab active:cursor-grabbing p-1 hover:bg-gray-100 rounded">
+          <GripVertical className="h-4 w-4 text-gray-400" />
+        </div>
+        {member.image && (
+          <div className={`relative ${isCity ? 'w-16 h-16' : 'w-20 h-20'} rounded-full overflow-hidden mx-auto ${isCity ? 'mb-2' : 'mb-3'}`}>
+            <Image src={member.image} alt="" fill className="object-cover" />
+          </div>
+        )}
+        <h4 className={`font-bold ${isCity ? 'text-sm' : ''}`}>{member.name}</h4>
+        <p className={`${isCity ? 'text-xs' : 'text-sm'} text-pink-600`}>{isCity ? member.role : member.designation}</p>
+        {isCity && <p className="text-xs text-muted-foreground">{member.city}</p>}
+        <div className={`flex gap-2 justify-center ${isCity ? 'mt-2' : 'mt-3'}`}>
+          <Button size="sm" variant={isCity ? 'ghost' : 'outline'} onClick={() => onEdit(member)}><Edit2 className="h-3 w-3" /></Button>
+          <Button size="sm" variant={isCity ? 'ghost' : 'outline'} onClick={() => onDelete(member.id)}><Trash2 className="h-3 w-3 text-red-500" /></Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 // Sortable Team Member Row Component
 function SortableTeamRow({ member, onEdit, onDelete }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: member.id });
@@ -448,21 +482,36 @@ export default function AdminPage() {
     }
   };
 
-  // Handle drag end for team members
-  const handleTeamDragEnd = async (event) => {
+  // Handle drag end for team members (supports filtering by type)
+  const handleTeamDragEnd = async (event, teamType = null) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
-    const oldIndex = teamMembers.findIndex(m => m.id === active.id);
-    const newIndex = teamMembers.findIndex(m => m.id === over.id);
+    // Filter members by type if specified
+    const filteredMembers = teamType 
+      ? teamMembers.filter(m => m.type === teamType)
+      : teamMembers;
+
+    const oldIndex = filteredMembers.findIndex(m => m.id === active.id);
+    const newIndex = filteredMembers.findIndex(m => m.id === over.id);
     
-    const newMembers = arrayMove(teamMembers, oldIndex, newIndex);
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    // Reorder the filtered array
+    const reorderedFiltered = arrayMove(filteredMembers, oldIndex, newIndex);
+    
+    // Merge back with the rest of the team members
+    const otherMembers = teamType 
+      ? teamMembers.filter(m => m.type !== teamType)
+      : [];
+    const newMembers = [...otherMembers, ...reorderedFiltered];
+    
     setTeamMembers(newMembers);
 
     // Update order in database
     try {
-      for (let i = 0; i < newMembers.length; i++) {
-        await fetch(`/api/admin/team/${newMembers[i].id}`, {
+      for (let i = 0; i < reorderedFiltered.length; i++) {
+        await fetch(`/api/admin/team/${reorderedFiltered[i].id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json', 'x-admin-password': password },
           body: JSON.stringify({ order: i })
@@ -2471,44 +2520,37 @@ export default function AdminPage() {
             {/* Leadership Team */}
             <div className="mb-8">
               <h3 className="text-lg font-semibold mb-4">Leadership Team</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {teamMembers.filter(m => m.type === 'leadership').map(member => (
-                  <Card key={member.id}>
-                    <CardContent className="p-4 text-center">
-                      {member.image && <div className="relative w-20 h-20 rounded-full overflow-hidden mx-auto mb-3"><Image src={member.image} alt="" fill className="object-cover" /></div>}
-                      <h4 className="font-bold">{member.name}</h4>
-                      <p className="text-sm text-pink-600">{member.designation}</p>
-                      <div className="flex gap-2 justify-center mt-3">
-                        <Button size="sm" variant="outline" onClick={() => handleEditTeamMember(member)}><Edit2 className="h-3 w-3" /></Button>
-                        <Button size="sm" variant="outline" onClick={() => handleDeleteTeamMember(member.id)}><Trash2 className="h-3 w-3 text-red-500" /></Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+              <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={(event) => handleTeamDragEnd(event, 'leadership')}>
+                <SortableContext items={teamMembers.filter(m => m.type === 'leadership').map(m => m.id)} strategy={rectSortingStrategy}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {teamMembers.filter(m => m.type === 'leadership').map(member => (
+                      <SortableTeamCard key={member.id} member={member} onEdit={handleEditTeamMember} onDelete={handleDeleteTeamMember} />
+                    ))}
+                  </div>
+                </SortableContext>
+              </DndContext>
               {teamMembers.filter(m => m.type === 'leadership').length === 0 && <p className="text-muted-foreground">No leadership team members</p>}
+              {teamMembers.filter(m => m.type === 'leadership').length > 0 && (
+                <p className="text-sm text-muted-foreground mt-3"><GripVertical className="h-4 w-4 inline mr-1" />Drag to reorder</p>
+              )}
             </div>
 
             {/* City Teams */}
             <div>
               <h3 className="text-lg font-semibold mb-4">City Teams</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {teamMembers.filter(m => m.type === 'city').map(member => (
-                  <Card key={member.id}>
-                    <CardContent className="p-4 text-center">
-                      {member.image && <div className="relative w-16 h-16 rounded-full overflow-hidden mx-auto mb-2"><Image src={member.image} alt="" fill className="object-cover" /></div>}
-                      <h4 className="font-bold text-sm">{member.name}</h4>
-                      <p className="text-xs text-pink-600">{member.role}</p>
-                      <p className="text-xs text-muted-foreground">{member.city}</p>
-                      <div className="flex gap-2 justify-center mt-2">
-                        <Button size="sm" variant="ghost" onClick={() => handleEditTeamMember(member)}><Edit2 className="h-3 w-3" /></Button>
-                        <Button size="sm" variant="ghost" onClick={() => handleDeleteTeamMember(member.id)}><Trash2 className="h-3 w-3 text-red-500" /></Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+              <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={(event) => handleTeamDragEnd(event, 'city')}>
+                <SortableContext items={teamMembers.filter(m => m.type === 'city').map(m => m.id)} strategy={rectSortingStrategy}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {teamMembers.filter(m => m.type === 'city').map(member => (
+                      <SortableTeamCard key={member.id} member={member} onEdit={handleEditTeamMember} onDelete={handleDeleteTeamMember} isCity />
+                    ))}
+                  </div>
+                </SortableContext>
+              </DndContext>
               {teamMembers.filter(m => m.type === 'city').length === 0 && <p className="text-muted-foreground">No city team members</p>}
+              {teamMembers.filter(m => m.type === 'city').length > 0 && (
+                <p className="text-sm text-muted-foreground mt-3"><GripVertical className="h-4 w-4 inline mr-1" />Drag to reorder</p>
+              )}
             </div>
           </TabsContent>
 
