@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -237,7 +237,8 @@ function UnifiedEventCard({ event, isPast = false }) {
   );
 }
 
-export default function EventsPage() {
+// Inner component that uses useSearchParams
+function EventsContent() {
   const searchParams = useSearchParams();
   const categoryFromUrl = searchParams.get('category');
   
@@ -474,5 +475,18 @@ export default function EventsPage() {
       <Footer />
       <WhatsAppFloat />
     </div>
+  );
+}
+
+// Main export with Suspense wrapper
+export default function EventsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-pink-500"></div>
+      </div>
+    }>
+      <EventsContent />
+    </Suspense>
   );
 }
