@@ -9,7 +9,7 @@ import {
   Star, CheckCircle, XCircle, Settings, RefreshCw, Ticket, Save, UserPlus,
   Upload, Clock, MapPin, ExternalLink, AlertCircle, ZoomIn, ZoomOut, Move,
   Mail, Image as ImageIcon, Download, X, ImagePlus, Handshake, Building2, MessageSquare,
-  Newspaper, Instagram, Youtube, Globe, Quote, Sparkles, Play
+  Newspaper, Instagram, Youtube, Globe, Quote, Sparkles, Play, GripVertical
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,6 +26,209 @@ import { Slider } from '@/components/ui/slider';
 import { siteConfig } from '@/config/site';
 import { toast } from 'sonner';
 import { format, parseISO } from 'date-fns';
+
+// Drag and drop imports
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy, rectSortingStrategy } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+
+// Sortable Brand Card Component
+function SortableBrandCard({ brand, onEdit, onDelete }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: brand.id });
+  
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1000 : 1,
+  };
+
+  return (
+    <Card ref={setNodeRef} style={style} className={isDragging ? 'shadow-xl ring-2 ring-pink-500' : ''}>
+      <CardContent className="p-4 text-center relative">
+        <div {...attributes} {...listeners} className="absolute top-2 left-2 cursor-grab active:cursor-grabbing p-1 hover:bg-gray-100 rounded">
+          <GripVertical className="h-4 w-4 text-gray-400" />
+        </div>
+        {brand.logoUrl ? (
+          <div className="h-16 flex items-center justify-center mb-3">
+            <img src={brand.logoUrl} alt={brand.name} className="max-h-full max-w-full object-contain" />
+          </div>
+        ) : (
+          <div className="h-16 flex items-center justify-center mb-3 bg-gray-100 rounded">
+            <span className="text-2xl font-bold text-gray-400">{brand.name.charAt(0)}</span>
+          </div>
+        )}
+        <p className="font-semibold">{brand.name}</p>
+        <div className="flex justify-center gap-2 mt-3">
+          <Button size="sm" variant="outline" onClick={() => onEdit(brand)}>
+            <Edit2 className="h-3 w-3" />
+          </Button>
+          <Button size="sm" variant="ghost" className="text-red-500" onClick={() => onDelete(brand.id)}>
+            <Trash2 className="h-3 w-3" />
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Sortable Team Member Row Component
+function SortableTeamRow({ member, onEdit, onDelete }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: member.id });
+  
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1000 : 1,
+  };
+
+  return (
+    <tr ref={setNodeRef} style={style} className={`border-t hover:bg-muted/50 ${isDragging ? 'bg-pink-50' : ''}`}>
+      <td className="p-3">
+        <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing p-1 hover:bg-gray-100 rounded inline-block">
+          <GripVertical className="h-4 w-4 text-gray-400" />
+        </div>
+      </td>
+      <td className="p-3">
+        <div className="flex items-center gap-3">
+          {member.imageUrl ? (
+            <img src={member.imageUrl} alt={member.name} className="h-10 w-10 rounded-full object-cover" />
+          ) : (
+            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-pink-400 to-purple-400 flex items-center justify-center text-white font-bold">
+              {member.name?.charAt(0) || '?'}
+            </div>
+          )}
+          <div>
+            <div className="font-medium">{member.name}</div>
+            <div className="text-sm text-muted-foreground">{member.designation}</div>
+          </div>
+        </div>
+      </td>
+      <td className="p-3">{member.role || '-'}</td>
+      <td className="p-3">
+        <Badge variant={member.type === 'leadership' ? 'default' : 'secondary'}>
+          {member.type === 'leadership' ? 'Leadership' : member.city || 'City Team'}
+        </Badge>
+      </td>
+      <td className="p-3">
+        <div className="flex gap-2">
+          <Button size="sm" variant="outline" onClick={() => onEdit(member)}>
+            <Edit2 className="h-3 w-3" />
+          </Button>
+          <Button size="sm" variant="ghost" className="text-red-500" onClick={() => onDelete(member.id)}>
+            <Trash2 className="h-3 w-3" />
+          </Button>
+        </div>
+      </td>
+    </tr>
+  );
+}
+
+// Sortable Media Card Component
+function SortableMediaCard({ item, onEdit, onDelete }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: item.id });
+  
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1000 : 1,
+  };
+
+  const getTypeIcon = (type) => {
+    switch(type) {
+      case 'instagram': return <Instagram className="h-4 w-4" />;
+      case 'youtube': return <Youtube className="h-4 w-4" />;
+      case 'article': return <Newspaper className="h-4 w-4" />;
+      case 'podcast': return <Play className="h-4 w-4" />;
+      default: return <Globe className="h-4 w-4" />;
+    }
+  };
+
+  return (
+    <Card ref={setNodeRef} style={style} className={`overflow-hidden ${isDragging ? 'shadow-xl ring-2 ring-pink-500' : ''}`}>
+      <div className="relative">
+        <div {...attributes} {...listeners} className="absolute top-2 left-2 z-10 cursor-grab active:cursor-grabbing p-1 bg-white/80 hover:bg-white rounded shadow">
+          <GripVertical className="h-4 w-4 text-gray-600" />
+        </div>
+        {item.thumbnailUrl ? (
+          <img src={item.thumbnailUrl} alt={item.title} className="w-full h-32 object-cover" />
+        ) : (
+          <div className="w-full h-32 bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center">
+            {getTypeIcon(item.type)}
+          </div>
+        )}
+        <Badge className="absolute top-2 right-2" variant="secondary">
+          {item.type}
+        </Badge>
+      </div>
+      <CardContent className="p-4">
+        <h4 className="font-semibold line-clamp-1">{item.title}</h4>
+        <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{item.description}</p>
+        <div className="flex justify-between items-center mt-3">
+          <span className="text-xs text-muted-foreground">{item.source}</span>
+          <div className="flex gap-1">
+            <Button size="sm" variant="ghost" onClick={() => onEdit(item)}>
+              <Edit2 className="h-3 w-3" />
+            </Button>
+            <Button size="sm" variant="ghost" className="text-red-500" onClick={() => onDelete(item.id)}>
+              <Trash2 className="h-3 w-3" />
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Sortable Gallery Theme Card Component
+function SortableThemeCard({ theme, onEdit, onDelete, onManagePhotos }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: theme.id });
+  
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1000 : 1,
+  };
+
+  return (
+    <Card ref={setNodeRef} style={style} className={`overflow-hidden ${isDragging ? 'shadow-xl ring-2 ring-pink-500' : ''}`}>
+      <div className="relative h-40">
+        <div {...attributes} {...listeners} className="absolute top-2 left-2 z-10 cursor-grab active:cursor-grabbing p-1 bg-white/80 hover:bg-white rounded shadow">
+          <GripVertical className="h-4 w-4 text-gray-600" />
+        </div>
+        {theme.coverImageUrl ? (
+          <img src={theme.coverImageUrl} alt={theme.name} className="w-full h-full object-cover" />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center">
+            <ImageIcon className="h-12 w-12 text-gray-400" />
+          </div>
+        )}
+        <Badge className={`absolute top-2 right-2 ${theme.status === 'published' ? 'bg-green-500' : 'bg-gray-500'}`}>
+          {theme.status}
+        </Badge>
+      </div>
+      <CardContent className="p-4">
+        <h4 className="font-semibold">{theme.name}</h4>
+        <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{theme.description}</p>
+        <p className="text-xs text-muted-foreground mt-2">{theme.photoCount || 0} photos</p>
+        <div className="flex gap-2 mt-3">
+          <Button size="sm" variant="outline" className="flex-1" onClick={() => onManagePhotos(theme)}>
+            <ImagePlus className="h-3 w-3 mr-1" /> Photos
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => onEdit(theme)}>
+            <Edit2 className="h-3 w-3" />
+          </Button>
+          <Button size="sm" variant="ghost" className="text-red-500" onClick={() => onDelete(theme.id)}>
+            <Trash2 className="h-3 w-3" />
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 // Helper function to create cropped image
 const createImage = (url) =>
@@ -212,6 +415,116 @@ export default function AdminPage() {
     name: '', designation: '', role: '', image: '', linkedin: '', instagram: '',
     bio: '', city: '', type: 'city', order: 0
   });
+
+  // Drag and drop sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  // Handle drag end for brands
+  const handleBrandDragEnd = async (event) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = brands.findIndex(b => b.id === active.id);
+    const newIndex = brands.findIndex(b => b.id === over.id);
+    
+    const newBrands = arrayMove(brands, oldIndex, newIndex);
+    setBrands(newBrands);
+
+    // Update order in database
+    try {
+      for (let i = 0; i < newBrands.length; i++) {
+        await fetch(`/api/admin/brands/${newBrands[i].id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'x-admin-password': password },
+          body: JSON.stringify({ order: i })
+        });
+      }
+      toast.success('Brand order updated!');
+    } catch (err) {
+      toast.error('Failed to save order');
+    }
+  };
+
+  // Handle drag end for team members
+  const handleTeamDragEnd = async (event) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = teamMembers.findIndex(m => m.id === active.id);
+    const newIndex = teamMembers.findIndex(m => m.id === over.id);
+    
+    const newMembers = arrayMove(teamMembers, oldIndex, newIndex);
+    setTeamMembers(newMembers);
+
+    // Update order in database
+    try {
+      for (let i = 0; i < newMembers.length; i++) {
+        await fetch(`/api/admin/team/${newMembers[i].id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'x-admin-password': password },
+          body: JSON.stringify({ order: i })
+        });
+      }
+      toast.success('Team order updated!');
+    } catch (err) {
+      toast.error('Failed to save order');
+    }
+  };
+
+  // Handle drag end for media coverage
+  const handleMediaDragEnd = async (event) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = mediaCoverage.findIndex(m => m.id === active.id);
+    const newIndex = mediaCoverage.findIndex(m => m.id === over.id);
+    
+    const newMedia = arrayMove(mediaCoverage, oldIndex, newIndex);
+    setMediaCoverage(newMedia);
+
+    // Update order in database
+    try {
+      for (let i = 0; i < newMedia.length; i++) {
+        await fetch(`/api/admin/media/${newMedia[i].id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'x-admin-password': password },
+          body: JSON.stringify({ order: i })
+        });
+      }
+      toast.success('Media order updated!');
+    } catch (err) {
+      toast.error('Failed to save order');
+    }
+  };
+
+  // Handle drag end for gallery themes
+  const handleThemeDragEnd = async (event) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = galleryThemes.findIndex(t => t.id === active.id);
+    const newIndex = galleryThemes.findIndex(t => t.id === over.id);
+    
+    const newThemes = arrayMove(galleryThemes, oldIndex, newIndex);
+    setGalleryThemes(newThemes);
+
+    // Update order in database
+    try {
+      for (let i = 0; i < newThemes.length; i++) {
+        await fetch(`/api/admin/gallery/themes/${newThemes[i].id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'x-admin-password': password },
+          body: JSON.stringify({ order: i })
+        });
+      }
+      toast.success('Theme order updated!');
+    } catch (err) {
+      toast.error('Failed to save order');
+    }
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -2072,7 +2385,6 @@ export default function AdminPage() {
                     <div><Label>Instagram</Label><Input value={teamForm.instagram} onChange={(e) => setTeamForm({ ...teamForm, instagram: e.target.value })} placeholder="https://instagram.com/..." /></div>
                   </div>
                   {teamForm.type === 'leadership' && <div><Label>Bio</Label><Textarea value={teamForm.bio} onChange={(e) => setTeamForm({ ...teamForm, bio: e.target.value })} rows={2} placeholder="Short bio..." /></div>}
-                  <div><Label>Display Order</Label><Input type="number" value={teamForm.order} onChange={(e) => setTeamForm({ ...teamForm, order: parseInt(e.target.value) || 0 })} /></div>
                 </div>
                 <DialogFooter>
                   <Button variant="outline" onClick={() => setShowTeamForm(false)}>Cancel</Button>
@@ -2864,15 +3176,6 @@ export default function AdminPage() {
                       </label>
                     </div>
                   </div>
-                  <div>
-                    <Label>Display Order</Label>
-                    <Input 
-                      type="number"
-                      value={brandForm.order}
-                      onChange={(e) => setBrandForm({ ...brandForm, order: parseInt(e.target.value) || 0 })}
-                    />
-                    <p className="text-xs text-muted-foreground mt-1">Lower numbers appear first</p>
-                  </div>
                 </div>
                 <DialogFooter>
                   <Button variant="outline" onClick={() => setShowBrandForm(false)}>Cancel</Button>
@@ -2884,32 +3187,24 @@ export default function AdminPage() {
             </Dialog>
 
             {brands.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {brands.map((brand) => (
-                  <Card key={brand.id}>
-                    <CardContent className="p-4 text-center">
-                      {brand.logoUrl ? (
-                        <div className="h-16 flex items-center justify-center mb-3">
-                          <img src={brand.logoUrl} alt={brand.name} className="max-h-full max-w-full object-contain" />
-                        </div>
-                      ) : (
-                        <div className="h-16 flex items-center justify-center mb-3 bg-gray-100 rounded">
-                          <span className="text-2xl font-bold text-gray-400">{brand.name.charAt(0)}</span>
-                        </div>
-                      )}
-                      <p className="font-semibold">{brand.name}</p>
-                      <div className="flex justify-center gap-2 mt-3">
-                        <Button size="sm" variant="outline" onClick={() => openEditBrand(brand)}>
-                          <Edit2 className="h-3 w-3" />
-                        </Button>
-                        <Button size="sm" variant="ghost" className="text-red-500" onClick={() => handleDeleteBrand(brand.id)}>
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+              <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleBrandDragEnd}>
+                <SortableContext items={brands.map(b => b.id)} strategy={rectSortingStrategy}>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {brands.map((brand) => (
+                      <SortableBrandCard 
+                        key={brand.id} 
+                        brand={brand} 
+                        onEdit={openEditBrand} 
+                        onDelete={handleDeleteBrand} 
+                      />
+                    ))}
+                  </div>
+                </SortableContext>
+                <p className="text-sm text-muted-foreground mt-4 text-center">
+                  <GripVertical className="h-4 w-4 inline mr-1" />
+                  Drag items to reorder
+                </p>
+              </DndContext>
             ) : (
               <Card>
                 <CardContent className="py-12 text-center">
