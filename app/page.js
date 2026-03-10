@@ -599,7 +599,7 @@ export default function HomePage() {
       </section>
 
       {/* Newsletter Subscription */}
-      <section className="py-20 bg-white">
+      <section id="newsletter" className="py-20 bg-white scroll-mt-20">
         <div className="container">
           <div className="max-w-4xl mx-auto text-center">
             <Mail className="h-16 w-16 mx-auto mb-6 text-pink-500" />
