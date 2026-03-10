@@ -119,42 +119,48 @@ export default function HomePage() {
       emoji: '🎧',
       description: 'Dance to the hottest Bollywood beats all night',
       image: '/images/categories/bollywood-dj-events.jpg',
-      gradient: 'from-purple-600 to-pink-600'
+      gradient: 'from-purple-600 to-pink-600',
+      link: '/events?category=bollywood'
     },
     {
       title: 'Concerts & Live Performances',
       emoji: '🎤',
       description: 'Experience live music from top artists on stage',
       image: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800',
-      gradient: 'from-red-600 to-orange-500'
+      gradient: 'from-red-600 to-orange-500',
+      link: '/events?category=concert'
     },
     {
       title: 'Indian Cultural Events',
       emoji: '🌸',
       description: 'Garba, Dandiya, Holi & traditional celebrations',
       image: '/images/categories/indian-cultural-events.jpg',
-      gradient: 'from-orange-500 to-yellow-500'
+      gradient: 'from-orange-500 to-yellow-500',
+      link: '/events?category=cultural'
     },
     {
       title: 'Weddings & Private Celebrations',
       emoji: '💍',
       description: 'Stunning Indian wedding setups and private events',
       image: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=800',
-      gradient: 'from-pink-500 to-rose-500'
+      gradient: 'from-pink-500 to-rose-500',
+      link: '/events?category=wedding'
     },
     {
       title: 'Corporate Events & Brand Activations',
       emoji: '🏢',
       description: 'Professional corporate gatherings and activations',
       image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800',
-      gradient: 'from-blue-600 to-indigo-600'
+      gradient: 'from-blue-600 to-indigo-600',
+      link: '/events?category=corporate'
     },
     {
       title: 'Trend-led Experiences',
       emoji: '🔥',
       description: 'Fake Shaadi, Speed Dating & unique concepts',
       image: '/images/categories/trend-led-experiences.jpg',
-      gradient: 'from-amber-500 to-red-500'
+      gradient: 'from-amber-500 to-red-500',
+      link: '/events?category=trending'
     }
   ];
 
@@ -321,7 +327,7 @@ export default function HomePage() {
             <Badge className="bg-gradient-to-r from-pink-500 to-purple-500 text-white text-lg px-6 py-2 mb-4">
               Our Events
             </Badge>
-            <h2 className="text-5xl font-black mb-6 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+            <h2 className="text-5xl font-black mb-6 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent pb-2">
               Event Categories
             </h2>
             <p className="text-2xl text-gray-600 max-w-2xl mx-auto font-medium">
@@ -331,24 +337,26 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {eventTypes.map((type, index) => (
-              <Card key={index} className="overflow-hidden border-none shadow-2xl hover:shadow-pink-500/50 transition-all hover:scale-105 group cursor-pointer">
-                <div className="relative h-72">
-                  <Image
-                    src={type.image}
-                    alt={type.title}
-                    fill
-                    loading="lazy"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    className="object-cover transition-transform group-hover:scale-110"
-                  />
-                  <div className={`absolute inset-0 bg-gradient-to-t ${type.gradient} opacity-80 group-hover:opacity-90 transition-all`} />
-                  <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                    <div className="text-4xl mb-2">{type.emoji}</div>
-                    <h3 className="text-2xl font-black mb-2">{type.title}</h3>
-                    <p className="text-lg opacity-90">{type.description}</p>
+              <Link key={index} href={type.link}>
+                <Card className="overflow-hidden border-none shadow-2xl hover:shadow-pink-500/50 transition-all hover:scale-105 group cursor-pointer h-full">
+                  <div className="relative h-72">
+                    <Image
+                      src={type.image}
+                      alt={type.title}
+                      fill
+                      loading="lazy"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover transition-transform group-hover:scale-110"
+                    />
+                    <div className={`absolute inset-0 bg-gradient-to-t ${type.gradient} opacity-80 group-hover:opacity-90 transition-all`} />
+                    <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                      <div className="text-4xl mb-2">{type.emoji}</div>
+                      <h3 className="text-2xl font-black mb-2">{type.title}</h3>
+                      <p className="text-lg opacity-90">{type.description}</p>
+                    </div>
                   </div>
-                </div>
-              </Card>
+                </Card>
+              </Link>
             ))}
           </div>
         </div>
@@ -362,7 +370,7 @@ export default function HomePage() {
               <Sparkles className="h-5 w-5 mr-2" />
               Trending Now
             </Badge>
-            <h2 className="text-5xl font-black mb-6 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+            <h2 className="text-5xl font-black mb-6 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent pb-2">
               Upcoming Events
             </h2>
             <p className="text-2xl text-gray-600 max-w-2xl mx-auto font-medium">
@@ -404,7 +412,7 @@ export default function HomePage() {
       <section className="py-20 bg-white">
         <div className="container">
           <div className="text-center mb-16">
-            <h2 className="text-5xl font-black mb-6 bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
+            <h2 className="text-5xl font-black mb-6 bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent pb-2">
               Why Attend Our Events?
             </h2>
             <p className="text-2xl text-gray-600 max-w-2xl mx-auto font-medium">
@@ -522,7 +530,7 @@ export default function HomePage() {
       <section className="py-20 bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
         <div className="container">
           <div className="text-center mb-16">
-            <h2 className="text-5xl font-black mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <h2 className="text-5xl font-black mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent pb-2">
               Get Your Tickets
             </h2>
             <p className="text-2xl text-gray-600 max-w-3xl mx-auto font-medium">
@@ -595,7 +603,7 @@ export default function HomePage() {
         <div className="container">
           <div className="max-w-4xl mx-auto text-center">
             <Mail className="h-16 w-16 mx-auto mb-6 text-pink-500" />
-            <h2 className="text-5xl font-black mb-6 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+            <h2 className="text-5xl font-black mb-6 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent pb-2">
               Never Miss an Event
             </h2>
             <p className="text-2xl text-gray-600 mb-10 font-medium">
@@ -650,7 +658,7 @@ export default function HomePage() {
       <section className="py-16 bg-gradient-to-br from-yellow-50 via-orange-50 to-pink-50">
         <div className="container">
           <div className="text-center mb-10">
-            <h2 className="text-4xl md:text-5xl font-black mb-4 bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
+            <h2 className="text-4xl md:text-5xl font-black mb-4 bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent pb-2">
               What People Say
             </h2>
             <p className="text-xl text-gray-600 font-medium">Hear from our community</p>

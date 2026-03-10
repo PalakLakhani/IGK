@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Calendar, MapPin, Filter, Search, Sparkles, ExternalLink, Clock } from 'lucide-react';
@@ -237,6 +238,9 @@ function UnifiedEventCard({ event, isPast = false }) {
 }
 
 export default function EventsPage() {
+  const searchParams = useSearchParams();
+  const categoryFromUrl = searchParams.get('category');
+  
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [pastEvents, setPastEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -244,6 +248,23 @@ export default function EventsPage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('upcoming');
+
+  // Map URL category param to actual event categories
+  const categoryMapping = {
+    'bollywood': 'Bollywood',
+    'concert': 'Concert',
+    'cultural': 'Cultural',
+    'wedding': 'Wedding',
+    'corporate': 'Corporate',
+    'trending': 'Trending',
+  };
+
+  useEffect(() => {
+    // Set initial category from URL if present
+    if (categoryFromUrl && categoryMapping[categoryFromUrl]) {
+      setSelectedCategory(categoryMapping[categoryFromUrl]);
+    }
+  }, [categoryFromUrl]);
 
   useEffect(() => {
     fetchEvents();
