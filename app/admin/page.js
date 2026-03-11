@@ -375,6 +375,8 @@ export default function AdminPage() {
   const [themePhotos, setThemePhotos] = useState([]);
   const [showThemePhotos, setShowThemePhotos] = useState(false);
   const [themePhotosUploading, setThemePhotosUploading] = useState(false);
+  const [bulkPhotoUrls, setBulkPhotoUrls] = useState('');
+  const [addingBulkPhotos, setAddingBulkPhotos] = useState(false);
   
   // Event gallery management state
   const [showGalleryManager, setShowGalleryManager] = useState(false);
@@ -1763,6 +1765,60 @@ export default function AdminPage() {
     }
   };
 
+  // Bulk add photos from URLs (paste Cloudinary URLs)
+  const handleBulkAddPhotos = async () => {
+    if (!bulkPhotoUrls.trim() || !selectedTheme) return;
+    
+    setAddingBulkPhotos(true);
+    
+    try {
+      // Parse URLs - one per line or comma separated
+      const urls = bulkPhotoUrls
+        .split(/[\n,]+/)
+        .map(url => url.trim())
+        .filter(url => url.startsWith('http'));
+      
+      if (urls.length === 0) {
+        toast.error('No valid URLs found');
+        setAddingBulkPhotos(false);
+        return;
+      }
+
+      // Add each photo
+      const res = await fetch('/api/admin/gallery/photos/bulk', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-password': password
+        },
+        body: JSON.stringify({
+          themeId: selectedTheme.id,
+          photos: urls.map(url => ({ imageUrl: url }))
+        })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        toast.success(`Added ${data.count} photos!`);
+        setBulkPhotoUrls('');
+        
+        // Refresh photos
+        const refreshRes = await fetch(`/api/admin/gallery/themes/${selectedTheme.id}`, {
+          headers: { 'x-admin-password': password }
+        });
+        const refreshData = await refreshRes.json();
+        setThemePhotos(refreshData.photos || []);
+        fetchAllData(password);
+      } else {
+        toast.error('Failed to add photos');
+      }
+    } catch (err) {
+      toast.error('Error adding photos');
+    } finally {
+      setAddingBulkPhotos(false);
+    }
+  };
+
   const handleSetCoverPhoto = async (photoId) => {
     try {
       const res = await fetch('/api/admin/gallery/photos/set-cover', {
@@ -2830,13 +2886,14 @@ export default function AdminPage() {
                   </div>
                   <div>
                     <Label>Cover Image</Label>
-                    <div className="flex items-center gap-4">
+                    <div className="space-y-3">
                       {themeForm.coverImageUrl && (
                         <img src={themeForm.coverImageUrl} alt="Cover" className="h-20 w-32 object-cover rounded border" />
                       )}
-                      <input
-                        ref={themeCoverInputRef}
-                        type="file"
+                      <div className="flex gap-2">
+                        <input
+                          ref={themeCoverInputRef}
+                          type="file"
                         accept="image/*"
                         onChange={handleThemeCoverUpload}
                         disabled={themeCoverUploading}
@@ -2851,6 +2908,15 @@ export default function AdminPage() {
                       >
                         {themeCoverUploading ? 'Uploading...' : 'Upload Cover'}
                       </Button>
+                      </div>
+                      <div className="flex gap-2 items-center">
+                        <Input 
+                          placeholder="Or paste cover image URL"
+                          value={themeForm.coverImageUrl || ''}
+                          onChange={(e) => setThemeForm({ ...themeForm, coverImageUrl: e.target.value })}
+                          className="text-sm"
+                        />
+                      </div>
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
@@ -2923,6 +2989,34 @@ export default function AdminPage() {
                         </div>
                       )}
                     </label>
+                  </div>
+
+                  {/* OR Divider */}
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
+                    <div className="relative flex justify-center text-xs uppercase"><span className="bg-white px-2 text-muted-foreground">Or paste URLs</span></div>
+                  </div>
+
+                  {/* Bulk URL Input */}
+                  <div className="space-y-3">
+                    <Textarea
+                      placeholder="Paste Cloudinary URLs here (one per line)&#10;Example:&#10;https://res.cloudinary.com/...photo1.jpg&#10;https://res.cloudinary.com/...photo2.jpg"
+                      value={bulkPhotoUrls}
+                      onChange={(e) => setBulkPhotoUrls(e.target.value)}
+                      rows={4}
+                      className="text-sm"
+                    />
+                    <Button 
+                      onClick={handleBulkAddPhotos} 
+                      disabled={addingBulkPhotos || !bulkPhotoUrls.trim()}
+                      className="w-full"
+                    >
+                      {addingBulkPhotos ? (
+                        <><RefreshCw className="h-4 w-4 mr-2 animate-spin" /> Adding Photos...</>
+                      ) : (
+                        <><Plus className="h-4 w-4 mr-2" /> Add Photos from URLs</>
+                      )}
+                    </Button>
                   </div>
 
                   {/* Photos Grid */}

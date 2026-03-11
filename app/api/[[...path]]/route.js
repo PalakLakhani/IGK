@@ -1240,6 +1240,43 @@ export async function POST(request) {
       }
     }
 
+    // Admin: Bulk add photos from URLs
+    if (path === 'admin/gallery/photos/bulk') {
+      const password = request.headers.get('x-admin-password');
+      if (password !== process.env.ADMIN_PASSWORD) {
+        return corsResponse({ error: 'Unauthorized' }, 401);
+      }
+
+      try {
+        const { themeId, photos } = body;
+        
+        if (!themeId || !photos || !Array.isArray(photos)) {
+          return corsResponse({ error: 'Invalid request' }, 400);
+        }
+
+        let addedCount = 0;
+        for (const photo of photos) {
+          if (photo.imageUrl) {
+            await GalleryPhoto.create({
+              themeId,
+              imageUrl: photo.imageUrl,
+              caption: photo.caption || '',
+              order: addedCount
+            });
+            addedCount++;
+          }
+        }
+
+        // Update theme photo count
+        await GalleryTheme.updatePhotoCount(themeId);
+
+        return corsResponse({ message: 'Photos added successfully', count: addedCount });
+      } catch (error) {
+        console.error('Bulk photo error:', error);
+        return corsResponse({ error: 'Failed to add photos' }, 500);
+      }
+    }
+
     // Admin: Mark partner as replied
     if (path === 'admin/partners/reply') {
       const password = request.headers.get('x-admin-password');
