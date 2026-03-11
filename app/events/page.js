@@ -250,24 +250,28 @@ function EventsContent() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('upcoming');
 
-  // Map URL category param to search terms (supports multiple matches)
+  // Map URL category param to search terms (specific matching)
   const categorySearchTerms = {
-    'bollywood': ['bollywood', 'dj', 'night', 'club', 'party', 'neon'],
-    'concert': ['concert', 'live', 'performance', 'music'],
-    'cultural': ['cultural', 'holi', 'garba', 'navratri', 'diwali', 'bhajan', 'clubbing'],
-    'wedding': ['wedding', 'shaadi', 'celebration', 'private'],
-    'corporate': ['corporate', 'brand', 'activation', 'business'],
-    'trending': ['trend', 'fake shaadi', 'speed dating', 'bhajan', 'clubbing', 'unique'],
+    'bollywood': ['bollywood', 'neon'],  // Only Bollywood/Neon events
+    'concert': ['concert', 'live performance'],
+    'cultural': ['garba', 'navratri', 'diwali', 'bhajan clubbing'],  // NOT holi
+    'wedding': ['wedding', 'shaadi'],  // Only wedding events
+    'corporate': ['corporate', 'brand activation'],
+    'trending': ['bhajan clubbing', 'fake shaadi', 'speed dating'],  // Only trending concepts
   };
 
-  // Check if event matches a category based on title, category field, or description
+  // Check if event matches a category based on title or category field
   const eventMatchesCategory = (event, categoryKey) => {
     if (!categoryKey || categoryKey === 'all') return true;
     
     const searchTerms = categorySearchTerms[categoryKey] || [];
-    const eventText = `${event.title} ${event.category} ${event.description || ''}`.toLowerCase();
+    const eventTitle = (event.title || '').toLowerCase();
+    const eventCategory = (event.category || '').toLowerCase();
     
-    return searchTerms.some(term => eventText.includes(term.toLowerCase()));
+    return searchTerms.some(term => 
+      eventTitle.includes(term.toLowerCase()) || 
+      eventCategory.includes(term.toLowerCase())
+    );
   };
 
   useEffect(() => {
@@ -402,21 +406,15 @@ function EventsContent() {
             </div>
           ) : (
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-              <TabsList className="grid w-full max-w-lg mx-auto grid-cols-3 h-12 md:h-14">
-                <TabsTrigger value="upcoming" className="text-sm md:text-lg px-2 md:px-4">
-                  <span className="hidden sm:inline">Upcoming</span>
-                  <span className="sm:hidden">Up</span>
-                  <span className="ml-1">({filteredUpcoming.length})</span>
+              <TabsList className="grid w-full max-w-md mx-auto grid-cols-3 h-11 md:h-14">
+                <TabsTrigger value="upcoming" className="text-xs md:text-lg px-1 md:px-4">
+                  Upcoming ({filteredUpcoming.length})
                 </TabsTrigger>
-                <TabsTrigger value="past" className="text-sm md:text-lg px-2 md:px-4">
-                  <span className="hidden sm:inline">Past</span>
-                  <span className="sm:hidden">Past</span>
-                  <span className="ml-1">({filteredPast.length})</span>
+                <TabsTrigger value="past" className="text-xs md:text-lg px-1 md:px-4">
+                  Past ({filteredPast.length})
                 </TabsTrigger>
-                <TabsTrigger value="all" className="text-sm md:text-lg px-2 md:px-4">
-                  <span className="hidden sm:inline">All</span>
-                  <span className="sm:hidden">All</span>
-                  <span className="ml-1">({filteredAll.length})</span>
+                <TabsTrigger value="all" className="text-xs md:text-lg px-1 md:px-4">
+                  All ({filteredAll.length})
                 </TabsTrigger>
               </TabsList>
 
