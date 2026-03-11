@@ -250,20 +250,30 @@ function EventsContent() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('upcoming');
 
-  // Map URL category param to actual event categories
-  const categoryMapping = {
-    'bollywood': 'Bollywood',
-    'concert': 'Concert',
-    'cultural': 'Cultural',
-    'wedding': 'Wedding',
-    'corporate': 'Corporate',
-    'trending': 'Trending',
+  // Map URL category param to search terms (supports multiple matches)
+  const categorySearchTerms = {
+    'bollywood': ['bollywood', 'dj', 'night', 'club', 'party', 'neon'],
+    'concert': ['concert', 'live', 'performance', 'music'],
+    'cultural': ['cultural', 'holi', 'garba', 'navratri', 'diwali', 'bhajan', 'clubbing'],
+    'wedding': ['wedding', 'shaadi', 'celebration', 'private'],
+    'corporate': ['corporate', 'brand', 'activation', 'business'],
+    'trending': ['trend', 'fake shaadi', 'speed dating', 'bhajan', 'clubbing', 'unique'],
+  };
+
+  // Check if event matches a category based on title, category field, or description
+  const eventMatchesCategory = (event, categoryKey) => {
+    if (!categoryKey || categoryKey === 'all') return true;
+    
+    const searchTerms = categorySearchTerms[categoryKey] || [];
+    const eventText = `${event.title} ${event.category} ${event.description || ''}`.toLowerCase();
+    
+    return searchTerms.some(term => eventText.includes(term.toLowerCase()));
   };
 
   useEffect(() => {
     // Set initial category from URL if present
-    if (categoryFromUrl && categoryMapping[categoryFromUrl]) {
-      setSelectedCategory(categoryMapping[categoryFromUrl]);
+    if (categoryFromUrl && categorySearchTerms[categoryFromUrl]) {
+      setSelectedCategory(categoryFromUrl);
     }
   }, [categoryFromUrl]);
 
@@ -293,11 +303,11 @@ function EventsContent() {
   const cities = [...new Set(allEvents.map(e => e.city))].filter(Boolean);
   const categories = [...new Set(allEvents.map(e => e.category))].filter(Boolean);
 
-  // Filter function
+  // Filter function - uses smart category matching
   const filterEvents = (events) => {
     return events.filter(event => {
       const matchesCity = selectedCity === 'all' || event.city === selectedCity;
-      const matchesCategory = selectedCategory === 'all' || event.category === selectedCategory;
+      const matchesCategory = eventMatchesCategory(event, selectedCategory);
       const matchesSearch = !searchQuery || 
         event.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         event.city?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -392,15 +402,21 @@ function EventsContent() {
             </div>
           ) : (
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-              <TabsList className="grid w-full max-w-lg mx-auto grid-cols-3 h-14">
-                <TabsTrigger value="upcoming" className="text-lg">
-                  Upcoming ({filteredUpcoming.length})
+              <TabsList className="grid w-full max-w-lg mx-auto grid-cols-3 h-12 md:h-14">
+                <TabsTrigger value="upcoming" className="text-sm md:text-lg px-2 md:px-4">
+                  <span className="hidden sm:inline">Upcoming</span>
+                  <span className="sm:hidden">Up</span>
+                  <span className="ml-1">({filteredUpcoming.length})</span>
                 </TabsTrigger>
-                <TabsTrigger value="past" className="text-lg">
-                  Past ({filteredPast.length})
+                <TabsTrigger value="past" className="text-sm md:text-lg px-2 md:px-4">
+                  <span className="hidden sm:inline">Past</span>
+                  <span className="sm:hidden">Past</span>
+                  <span className="ml-1">({filteredPast.length})</span>
                 </TabsTrigger>
-                <TabsTrigger value="all" className="text-lg">
-                  All ({filteredAll.length})
+                <TabsTrigger value="all" className="text-sm md:text-lg px-2 md:px-4">
+                  <span className="hidden sm:inline">All</span>
+                  <span className="sm:hidden">All</span>
+                  <span className="ml-1">({filteredAll.length})</span>
                 </TabsTrigger>
               </TabsList>
 
