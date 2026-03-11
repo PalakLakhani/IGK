@@ -466,6 +466,13 @@ export async function GET(request) {
       }
 
       const themes = await GalleryTheme.getAll();
+      
+      // Update photo counts for all themes
+      for (const theme of themes) {
+        const count = await GalleryTheme.updatePhotoCount(theme.id);
+        theme.photoCount = count;
+      }
+      
       return corsResponse({ themes });
     }
 
