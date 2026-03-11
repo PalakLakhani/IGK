@@ -1776,12 +1776,28 @@ export default function AdminPage() {
 
       if (res.ok) {
         toast.success('Cover photo set!');
+        
         // Refresh photos
         const refreshRes = await fetch(`/api/admin/gallery/themes/${selectedTheme.id}`, {
           headers: { 'x-admin-password': password }
         });
         const refreshData = await refreshRes.json();
         setThemePhotos(refreshData.photos || []);
+        
+        // Also refresh the themes list to show updated cover
+        const themesRes = await fetch('/api/admin/gallery/themes', {
+          headers: { 'x-admin-password': password }
+        });
+        if (themesRes.ok) {
+          const themesData = await themesRes.json();
+          setGalleryThemes(themesData.themes || []);
+          
+          // Update selectedTheme with new cover URL
+          const updatedTheme = (themesData.themes || []).find(t => t.id === selectedTheme.id);
+          if (updatedTheme) {
+            setSelectedTheme(updatedTheme);
+          }
+        }
       }
     } catch (err) {
       toast.error('Error setting cover');
