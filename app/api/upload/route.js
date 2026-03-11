@@ -48,14 +48,8 @@ export async function POST(request) {
       );
     }
 
-    // Validate file size (max 30MB)
-    const maxSize = 30 * 1024 * 1024;
-    if (file.size > maxSize) {
-      return NextResponse.json(
-        { error: 'File too large. Maximum size is 30MB' },
-        { status: 400, headers: corsHeaders }
-      );
-    }
+    // No file size limit - WebP conversion handles optimization
+    // Note: Cloudinary free plan has 10MB limit per upload, paid plans have higher limits
 
     // Convert file to buffer then to base64 for Cloudinary
     const bytes = await file.arrayBuffer();
