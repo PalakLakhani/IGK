@@ -15,7 +15,7 @@ import OurBrands from '@/components/OurBrands';
 import AsFeaturedIn from '@/components/AsFeaturedIn';
 import MascotAssistant from '@/components/MascotAssistant';
 import StatsBar from '@/components/StatsBar';
-import VisitorCounter from '@/components/VisitorCounter';
+import StaticStatsCounter from '@/components/StaticStatsCounter';
 import { siteConfig } from '@/config/site';
 import { format } from 'date-fns';
 
@@ -315,7 +315,7 @@ export default function HomePage() {
         <div className="container">
           <div className="flex flex-col items-center gap-3">
             <p className="text-sm text-gray-500 font-medium">📊 Live Site Activity</p>
-            <VisitorCounter />
+            <StaticStatsCounter />
           </div>
         </div>
       </section>
