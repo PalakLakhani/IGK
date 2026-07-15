@@ -15,7 +15,6 @@ import OurBrands from '@/components/OurBrands';
 import AsFeaturedIn from '@/components/AsFeaturedIn';
 import MascotAssistant from '@/components/MascotAssistant';
 import StatsBar from '@/components/StatsBar';
-import StaticStatsCounter from '@/components/StaticStatsCounter';
 import { siteConfig } from '@/config/site';
 import { format } from 'date-fns';
 
@@ -309,16 +308,6 @@ export default function HomePage() {
 
       {/* Dynamic Stats Banner - Using shared StatsBar component */}
       <StatsBar variant="gradient" showReviewCount={false} />
-
-      {/* Live Visitor Counter - Fancy animated display */}
-      <section className="py-6 bg-gradient-to-r from-gray-50 to-white">
-        <div className="container">
-          <div className="flex flex-col items-center gap-3">
-            <p className="text-sm text-gray-500 font-medium">📊 Live Site Activity</p>
-            <StaticStatsCounter />
-          </div>
-        </div>
-      </section>
 
       {/* Event Categories Section */}
       <section className="py-20 bg-white">
