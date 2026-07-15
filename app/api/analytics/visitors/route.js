@@ -45,14 +45,14 @@ export async function GET() {
       }, { headers: corsHeaders });
     }
 
-    // Fetch ALL TIME data (from site launch to now)
+    // Fetch 1 YEAR of data
     const now = new Date();
-    // Set start date to January 1, 2020 (or whenever site launched)
-    const siteStartDate = new Date('2020-01-01');
-    const startAt = siteStartDate.getTime();
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+    const startAt = oneYearAgo.getTime();
     const endAt = now.getTime();
 
-    console.log('[Analytics] Fetching ALL TIME from:', siteStartDate.toISOString(), 'to:', now.toISOString());
+    console.log('[Analytics] Fetching 1 YEAR from:', oneYearAgo.toISOString(), 'to:', now.toISOString());
 
     const apiUrl = `https://api.umami.is/v1/websites/${websiteId}/stats?startAt=${startAt}&endAt=${endAt}`;
     
