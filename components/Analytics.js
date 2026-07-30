@@ -41,8 +41,6 @@ export default function Analytics() {
       <Script
         src={scriptUrl}
         data-website-id={websiteId}
-        data-domains="igkonnekt.com,www.igkonnekt.com"
-        data-do-not-track="true"
         strategy="afterInteractive"
       />
       {/* Track SPA route changes */}

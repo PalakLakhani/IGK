@@ -54,7 +54,7 @@ export default function OurBrands({ variant = 'full' }) {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 max-w-7xl mx-auto">
           {brands.map((brand) => (
             <Link 
               key={brand.id}
@@ -63,10 +63,10 @@ export default function OurBrands({ variant = 'full' }) {
               className="block"
             >
               <Card className="overflow-hidden border-2 hover:border-pink-500 transition-all hover:scale-105 group cursor-pointer h-full">
-                <CardContent className="p-8">
-                  <div className="relative h-56 mb-6 flex items-center justify-center">
+                <CardContent className="p-6">
+                  <div className="relative h-40 mb-4 flex items-center justify-center">
                     <div className={`absolute inset-0 bg-gradient-to-br ${brand.color} opacity-10 rounded-lg group-hover:opacity-20 transition-opacity`} />
-                    <div className="relative w-52 h-52">
+                    <div className="relative w-36 h-36">
                       <Image
                         src={brand.logo}
                         alt={brand.name}
@@ -76,15 +76,15 @@ export default function OurBrands({ variant = 'full' }) {
                     </div>
                   </div>
                   
-                  <h3 className="font-black text-2xl mb-2 text-center">{brand.name}</h3>
-                  <p className="text-sm text-gray-600 text-center mb-6 min-h-[40px]">
+                  <h3 className="font-black text-lg mb-2 text-center">{brand.name}</h3>
+                  <p className="text-xs text-gray-600 text-center mb-4 min-h-[32px]">
                     {brand.description}
                   </p>
                   
-                  <div className="flex items-center justify-center gap-2 text-pink-500 font-semibold group-hover:text-pink-600 transition-colors">
-                    <Instagram className="h-5 w-5" />
-                    Follow on Instagram
-                    <ExternalLink className="h-4 w-4" />
+                  <div className="flex items-center justify-center gap-1 text-pink-500 font-semibold group-hover:text-pink-600 transition-colors text-sm">
+                    <Instagram className="h-4 w-4" />
+                    Follow
+                    <ExternalLink className="h-3 w-3" />
                   </div>
                 </CardContent>
               </Card>
